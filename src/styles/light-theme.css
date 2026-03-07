@@ -1,0 +1,82 @@
+/* ========================================
+   LIGHT THEME STYLES
+   ========================================
+   This file contains all light theme color variables.
+   Edit these values to customize the light theme appearance.
+   ======================================== */
+
+/* ---------- Background Colors ---------- */
+/* Main background color for the entire site */
+--background: #ffffff;
+/* Secondary background for cards and sections */
+--background-secondary: #f8f9fa;
+/* Tertiary background for nested elements */
+--background-tertiary: #f1f3f5;
+
+/* ---------- Text Colors ---------- */
+/* Primary text color for headings and important content */
+--foreground: #0f172a;
+/* Secondary text color for body text */
+--text-secondary: #475569;
+/* Muted text color for labels and captions */
+--text-muted: #64748b;
+
+/* ---------- Brand Colors ---------- */
+/* Primary brand color (pink/magenta) */
+--primary: #e91e8c;
+/* Primary hover state */
+--primary-hover: #d11b7f;
+/* Primary light variant for backgrounds */
+--primary-light: #fdf2f8;
+/* Secondary brand color (purple) */
+--secondary: #9333ea;
+/* Secondary hover state */
+--secondary-hover: #7e22ce;
+
+/* ---------- Accent Colors ---------- */
+/* Success color (green checkmarks) */
+--success: #22c55e;
+/* Success light background */
+--success-light: #dcfce7;
+/* Error color (red X marks) */
+--error: #ef4444;
+/* Error light background */
+--error-light: #fee2e2;
+
+/* ---------- Border Colors ---------- */
+/* Default border color */
+--border: #e2e8f0;
+/* Light border for subtle separations */
+--border-light: #f1f5f9;
+/* Dark border for emphasis */
+--border-dark: #cbd5e1;
+
+/* ---------- Card Styles ---------- */
+/* Card background */
+--card-bg: #ffffff;
+/* Card shadow */
+--card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+/* Card hover shadow */
+--card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+/* ---------- Gradient Colors ---------- */
+/* CTA gradient start (purple) */
+--gradient-start: #9333ea;
+/* CTA gradient end (pink) */
+--gradient-end: #ec4899;
+
+/* ---------- Badge Colors ---------- */
+/* Pink badge background */
+--badge-pink-bg: #fdf2f8;
+/* Pink badge text */
+--badge-pink-text: #e91e8c;
+/* Purple badge background */
+--badge-purple-bg: #f3e8ff;
+/* Purple badge text */
+--badge-purple-text: #9333ea;
+
+/* ---------- Navigation ---------- */
+/* Nav background */
+--nav-bg: rgba(255, 255, 255, 0.95);
+/* Nav border */
+--nav-border: #e2e8f0;

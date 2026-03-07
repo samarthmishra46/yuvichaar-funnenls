@@ -1,26 +1,196 @@
 @import "tailwindcss";
 
+/* ========================================
+   YUVICHAAR FUNNELS - GLOBAL STYLES
+   ========================================
+   Theme variables are defined in:
+   - ../styles/light-theme.css (light mode colors)
+   - ../styles/dark-theme.css (dark mode colors)
+   ======================================== */
+
+/* ---------- Light Theme Variables ---------- */
 :root {
+  /* Background Colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --background-secondary: #f8f9fa;
+  --background-tertiary: #f1f3f5;
+  
+  /* Text Colors */
+  --foreground: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  
+  /* Brand Colors */
+  --primary: #e91e8c;
+  --primary-hover: #d11b7f;
+  --primary-light: #fdf2f8;
+  --secondary: #9333ea;
+  --secondary-hover: #7e22ce;
+  
+  /* Accent Colors */
+  --success: #22c55e;
+  --success-light: #dcfce7;
+  --error: #ef4444;
+  --error-light: #fee2e2;
+  
+  /* Border Colors */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-dark: #cbd5e1;
+  
+  /* Card Styles */
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Gradient Colors */
+  --gradient-start: #9333ea;
+  --gradient-end: #ec4899;
+  
+  /* Badge Colors */
+  --badge-pink-bg: #fdf2f8;
+  --badge-pink-text: #e91e8c;
+  --badge-purple-bg: #f3e8ff;
+  --badge-purple-text: #9333ea;
+  
+  /* Navigation */
+  --nav-bg: rgba(255, 255, 255, 0.95);
+  --nav-border: #e2e8f0;
+}
+
+/* ---------- Dark Theme Variables ---------- */
+.dark {
+  /* Background Colors */
+  --background: #0a0a0f;
+  --background-secondary: #111118;
+  --background-tertiary: #1a1a24;
+  
+  /* Text Colors */
+  --foreground: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  
+  /* Brand Colors */
+  --primary: #f472b6;
+  --primary-hover: #f9a8d4;
+  --primary-light: #2d1f2d;
+  --secondary: #a855f7;
+  --secondary-hover: #c084fc;
+  
+  /* Accent Colors */
+  --success: #4ade80;
+  --success-light: #14532d;
+  --error: #f87171;
+  --error-light: #450a0a;
+  
+  /* Border Colors */
+  --border: #27272a;
+  --border-light: #1f1f23;
+  --border-dark: #3f3f46;
+  
+  /* Card Styles */
+  --card-bg: #111118;
+  --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+  --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  
+  /* Gradient Colors */
+  --gradient-start: #7c3aed;
+  --gradient-end: #db2777;
+  
+  /* Badge Colors */
+  --badge-pink-bg: #2d1f2d;
+  --badge-pink-text: #f472b6;
+  --badge-purple-bg: #2e1f4a;
+  --badge-purple-text: #c084fc;
+  
+  /* Navigation */
+  --nav-bg: rgba(10, 10, 15, 0.95);
+  --nav-border: #27272a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-error: var(--error);
+  --color-error-light: var(--error-light);
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+  --color-border-dark: var(--border-dark);
+  --color-card-bg: var(--card-bg);
+  --color-badge-pink-bg: var(--badge-pink-bg);
+  --color-badge-pink-text: var(--badge-pink-text);
+  --color-badge-purple-bg: var(--badge-purple-bg);
+  --color-badge-purple-text: var(--badge-purple-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ---------- Base Styles ---------- */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ---------- Custom Utility Classes ---------- */
+.gradient-text {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+}
+
+.card-shadow {
+  box-shadow: var(--card-shadow);
+}
+
+.card-shadow-hover:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* ---------- Scrollbar Styles ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-dark);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ---------- Selection Styles ---------- */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+/* ---------- Focus Styles ---------- */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
