@@ -119,8 +119,18 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Revenue Stats */}
-              <div className="space-y-4 pt-2">
+              {/* Hero Image - Desktop Only (above stats) */}
+              <div className="hidden lg:block relative rounded-xl overflow-hidden">
+                <img
+                  src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1772895980/Frame_11_yzhy6m.png"
+                  alt="Behind the scenes"
+                  className="w-full h-48 object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-card-bg/80 to-transparent"></div>
+              </div>
+
+              {/* Revenue Stats - Desktop Only */}
+              <div className="hidden lg:block space-y-4 pt-2">
                 <div className="bg-badge-pink-bg rounded-xl p-4 border-l-4 border-primary">
                   <div className="text-3xl font-bold text-primary">₹45L</div>
                   <div className="text-xs text-text-muted">Single-month revenue (1 client)</div>
@@ -131,6 +141,20 @@ export default function Hero() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Mobile Hero Image Section */}
+        <div className="lg:hidden relative mt-12">
+          <div className="relative rounded-2xl overflow-hidden">
+            <img
+              src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1772895980/Frame_11_yzhy6m.png"
+              alt="Behind the scenes"
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.7 }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-background/20 to-background"></div>
+            
           </div>
         </div>
       </div>

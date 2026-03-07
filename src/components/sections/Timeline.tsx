@@ -100,30 +100,63 @@ export default function Timeline() {
 
         {/* Timeline */}
         <div className="relative">
-          {/* Center Line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-border via-primary/50 to-border"></div>
+          {/* Center Line - Desktop */}
+          <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-0.5 h-full bg-gradient-to-b from-border via-primary/50 to-border"></div>
+
+          {/* Left Line - Mobile */}
+          <div className="lg:hidden absolute left-4 w-0.5 h-full bg-gradient-to-b from-border via-primary/30 to-border"></div>
 
           {/* Events */}
-          <div className="space-y-12">
+          <div className="space-y-8 lg:space-y-12">
             {timelineEvents.map((event, index) => (
               <div
                 key={index}
-                className={`relative flex items-center ${
-                  event.side === 'left' ? 'justify-start' : 'justify-end'
+                className={`relative flex items-start lg:items-center ${
+                  event.side === 'left' ? 'lg:justify-start' : 'lg:justify-end'
                 }`}
               >
-                {/* Center Dot */}
+                {/* Center Dot - Desktop */}
                 <div
-                  className={`absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full ${
+                  className={`hidden lg:block absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full ${
                     event.isHighlight
                       ? 'bg-primary shadow-lg shadow-primary/50'
                       : 'bg-border border-4 border-background-secondary'
                   }`}
                 ></div>
 
-                {/* Card */}
+                {/* Left Dot - Mobile */}
                 <div
-                  className={`w-5/12 ${
+                  className={`lg:hidden absolute left-4 transform -translate-x-1/2 w-3 h-3 rounded-full ${
+                    event.isHighlight
+                      ? 'bg-primary shadow-lg shadow-primary/50'
+                      : 'bg-background-secondary border-2 border-border'
+                  }`}
+                ></div>
+
+                {/* Card - Mobile (always right) */}
+                <div className="lg:hidden pl-10 w-full">
+                  {/* Date */}
+                  <div className="text-xs font-semibold text-primary mb-1">{event.date}</div>
+
+                  {/* Title with Badge */}
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="text-base font-bold text-foreground">
+                      {event.title}
+                    </h3>
+                    {event.badge && (
+                      <span className="px-2 py-0.5 rounded-full bg-secondary text-white text-[10px] font-semibold">
+                        {event.badge}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-sm text-text-secondary">{event.description}</p>
+                </div>
+
+                {/* Card - Desktop (alternating sides) */}
+                <div
+                  className={`hidden lg:block w-5/12 ${
                     event.side === 'left' ? 'pr-8 text-right' : 'pl-8 text-left'
                   }`}
                 >

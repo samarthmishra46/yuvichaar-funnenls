@@ -1,4 +1,4 @@
-import { Search, Video, BarChart3, Layout, Bot, Heart } from 'lucide-react';
+import { Search, Video, BarChart3, Layout, Bot, Heart, Play } from 'lucide-react';
 
 interface Service {
   number: string;
@@ -6,18 +6,22 @@ interface Service {
   category: string;
   title: string;
   description: string;
-  stat?: { value: string; label: string };
+  video?: string;
+  videoLabel?: string;
+  stat?: { value: string; subtext: string; label: string };
 }
 
 const services: Service[] = [
   {
     number: '01',
     icon: <Search className="w-5 h-5" />,
-    category: 'Research & Strategy',
+    category: 'Research and strategy',
     title: 'We Study Your Market Before We Touch A Camera',
     description:
       'Before we create a single ad, our team goes deep. We reverse-engineer your top competitors — their ads, their angles, their user journey, everything.',
-    stat: { value: '100%', label: 'Data-driven GTM strategy built on what\'s actually working in your category right now.' },
+    video: '/service-video-1.mp4',
+    videoLabel: 'WhatsApp Video Message',
+    stat: { value: '100% data-', subtext: 'driven', label: "GTM strategy built on what's actually working in your category right now — not gut feeling." },
   },
   {
     number: '02',
@@ -26,7 +30,9 @@ const services: Service[] = [
     title: 'We Make Ads That Actually Stop The Scroll',
     description:
       'Our 30-person in-house creative team — writers, DOPs, directors, and world-class models — produces premium, research-backed video ads. Shot on Netflix-approved cameras.',
-    stat: { value: '2,500+', label: 'We know what hooks, what converts, and what dies in 2 seconds.' },
+    video: '/service-video-2.mp4',
+    videoLabel: 'Ad Creative Preview',
+    stat: { value: '2,500+', subtext: 'Ads Created', label: 'We know what hooks, what converts, and what dies in 2 seconds.' },
   },
   {
     number: '03',
@@ -35,7 +41,9 @@ const services: Service[] = [
     title: 'We Put Those Ads In Front Of The Right Eyeballs',
     description:
       'Our seasoned performance marketing team publishes your content on Meta (Facebook + Instagram) and Google — targeting your exact audience.',
-    stat: { value: '₹60Cr+', label: 'Ad Spend Managed. Day one, real traffic. Real clicks. Real intent.' },
+    video: '/service-video-3.mp4',
+    videoLabel: 'Campaign Dashboard',
+    stat: { value: '₹60Cr+', subtext: 'Ad Spend', label: 'Day one, real traffic. Real clicks. Real intent.' },
   },
   {
     number: '04',
@@ -44,6 +52,8 @@ const services: Service[] = [
     title: 'They Click. Your Landing Page Closes Them.',
     description:
       "The page they land on doesn't just look good — it works like a digital salesperson on commission. One-click upsells that bump average order values by 25%+.",
+    video: '/service-video-4.mp4',
+    videoLabel: 'Landing Page Demo',
   },
   {
     number: '05',
@@ -52,7 +62,9 @@ const services: Service[] = [
     title: "They Didn't Buy Yet? We Don't Give Up.",
     description:
       'Automated WhatsApp video sequences, email follow-ups, and AI-powered sales calls that go out without you lifting a finger.',
-    stat: { value: '15%', label: 'Revenue Recovered. On average, our clients recover 15% more revenue.' },
+    video: '/service-video-5.mp4',
+    videoLabel: 'AI Assistant Demo',
+    stat: { value: '15%', subtext: 'Revenue', label: 'On average, our clients recover 15% more revenue.' },
   },
   {
     number: '06',
@@ -61,7 +73,9 @@ const services: Service[] = [
     title: 'First Purchase Is Just The Beginning.',
     description:
       'Every customer who buys gets pulled into a WhatsApp community with exclusive offers, brand stories, and loyalty touchpoints.',
-    stat: { value: '↑LTV', label: "Repeat Customers. A brand that sells once isn't a brand." },
+    video: '/service-video-6.mp4',
+    videoLabel: 'Community Preview',
+    stat: { value: '↑LTV', subtext: 'Repeat', label: "A brand that sells once isn't a brand." },
   },
 ];
 
@@ -94,32 +108,63 @@ export default function WhatWeDo() {
               key={index}
               className="bg-card-bg rounded-2xl border border-border p-6 card-shadow hover:card-shadow-hover transition-shadow duration-300"
             >
-              {/* Icon & Number */}
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-12 h-12 rounded-xl bg-badge-purple-bg flex items-center justify-center text-secondary">
-                  {service.icon}
-                </div>
-                <span className="text-4xl font-bold text-background-tertiary">{service.number}</span>
-              </div>
-
-              {/* Category */}
-              <div className="text-xs font-semibold tracking-wider text-text-muted uppercase mb-2">
-                {service.category}
+              {/* Service Badge & Category Tag */}
+              <div className="flex items-center gap-3 mb-4">
+                <span className="px-3 py-1.5 bg-background-secondary border border-border rounded-lg text-xs font-semibold text-text-muted uppercase tracking-wider">
+                  Service {service.number}
+                </span>
+                <span className="px-3 py-1.5 bg-background-secondary border border-border rounded-full text-xs text-text-secondary">
+                  {service.category}
+                </span>
               </div>
 
               {/* Title */}
               <h3 className="text-lg font-bold text-foreground mb-3">{service.title}</h3>
 
               {/* Description */}
-              <p className="text-sm text-text-secondary mb-4">{service.description}</p>
+              <p className="text-sm text-text-secondary mb-5">{service.description}</p>
 
-              {/* Stat */}
+              {/* Video Player Section */}
+              {service.video && (
+                <div className="mb-4">
+                  <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/20 dark:to-green-800/10">
+                    <div className="flex items-center">
+                      {/* Video Preview */}
+                      <div className="flex-1 p-4">
+                        <div className="relative aspect-video rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg">
+                          <img
+                            src={`/service-thumbnail-${service.number}.jpg`}
+                            alt={service.videoLabel}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Play Button */}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <button className="w-12 h-12 rounded-full bg-white/90 dark:bg-gray-900/90 shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
+                              <Play className="w-5 h-5 text-foreground ml-1" fill="currentColor" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    
+                  </div>
+                </div>
+              )}
+
+              {/* Stat Section */}
               {service.stat && (
                 <div className="pt-4 border-t border-border">
-                  <div className="flex items-baseline space-x-2">
-                    <span className="text-2xl font-bold text-primary">{service.stat.value}</span>
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="text-xl font-bold text-primary leading-tight">{service.stat.value}</div>
+                      <div className="text-xl font-bold text-primary leading-tight">{service.stat.subtext}</div>
+                      <div className="text-[10px] text-text-muted mt-1">No guesswork</div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-text-secondary">{service.stat.label}</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-text-muted mt-1">{service.stat.label}</p>
                 </div>
               )}
             </div>

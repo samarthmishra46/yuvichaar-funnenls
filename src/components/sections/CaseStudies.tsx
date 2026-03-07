@@ -1,9 +1,10 @@
-import { TrendingUp, ShoppingCart, Eye, RefreshCw } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 interface CaseStudy {
   badge: string;
   badgeColor: 'pink' | 'purple' | 'green' | 'blue';
-  icon: React.ReactNode;
+  image: string;
+  imageBadges: Array<{ text: string; color: string }>;
   headline: string;
   subheadline: string;
   description: string;
@@ -13,24 +14,33 @@ interface CaseStudy {
 
 const caseStudies: CaseStudy[] = [
   {
-    badge: 'MANUFACTURER → D2C',
+    badge: 'Case Study',
     badgeColor: 'pink',
-    icon: <TrendingUp className="w-5 h-5" />,
+    image: '/case-study-1.jpg',
+    imageBadges: [
+      { text: 'ROAS 6X', color: 'bg-yellow-400 text-black' },
+      { text: '100%', color: 'bg-primary text-white' },
+      { text: 'BOOTSTRAPPED', color: 'bg-white text-black' },
+    ],
     headline: '₹45 Lakhs',
     subheadline: 'in a Single Month',
     description:
       "A manufacturer's son took his family's offline product online. Shipped us the product.",
     metrics: [
-      { label: 'Week 1', value: '300+ units' },
-      { label: 'Month 1', value: '₹13 Lakhs' },
-      { label: 'Month 7', value: '₹45 Lakhs' },
+      { label: '', value: '2.5L in 24hrs' },
+      { label: '', value: '12,500' },
+      { label: '', value: '7 before chai' },
     ],
     tags: ['Ads', 'Landing Page', 'AI Automations'],
   },
   {
-    badge: 'FIRST-TIME FOUNDER',
+    badge: 'Case Study',
     badgeColor: 'purple',
-    icon: <ShoppingCart className="w-5 h-5" />,
+    image: '/case-study-2.jpg',
+    imageBadges: [
+      { text: 'ROAS 4X', color: 'bg-purple-400 text-white' },
+      { text: 'ZERO EXP', color: 'bg-primary text-white' },
+    ],
     headline: '₹25 Lakhs',
     subheadline: '/Month Bootstrapped',
     description:
@@ -43,9 +53,13 @@ const caseStudies: CaseStudy[] = [
     tags: ['Full Funnel', 'Ads', 'Follow-Up'],
   },
   {
-    badge: 'BRAND NEW LAUNCH',
+    badge: 'Case Study',
     badgeColor: 'green',
-    icon: <Eye className="w-5 h-5" />,
+    image: '/case-study-3.jpg',
+    imageBadges: [
+      { text: 'DAY 1', color: 'bg-green-400 text-black' },
+      { text: '2.5L VIEWS', color: 'bg-primary text-white' },
+    ],
     headline: '2.5L Views',
     subheadline: 'on Day 1',
     description:
@@ -58,9 +72,13 @@ const caseStudies: CaseStudy[] = [
     tags: ['Meta Ads', 'Launch Strategy'],
   },
   {
-    badge: 'TECH FOUNDER',
+    badge: 'Case Study',
     badgeColor: 'blue',
-    icon: <RefreshCw className="w-5 h-5" />,
+    image: '/case-study-4.jpg',
+    imageBadges: [
+      { text: '90 DAYS', color: 'bg-blue-400 text-white' },
+      { text: '₹8L MRR', color: 'bg-primary text-white' },
+    ],
     headline: '₹8L MRR',
     subheadline: 'in 90 Days',
     description:
@@ -75,10 +93,10 @@ const caseStudies: CaseStudy[] = [
 ];
 
 const badgeColors = {
-  pink: 'bg-badge-pink-bg text-badge-pink-text border-primary/20',
-  purple: 'bg-badge-purple-bg text-badge-purple-text border-secondary/20',
-  green: 'bg-success-light text-success border-success/20',
-  blue: 'bg-badge-purple-bg text-badge-purple-text border-secondary/20',
+  pink: 'bg-badge-pink-bg text-badge-pink-text',
+  purple: 'bg-badge-purple-bg text-badge-purple-text',
+  green: 'bg-success-light text-success',
+  blue: 'bg-badge-purple-bg text-badge-purple-text',
 };
 
 export default function CaseStudies() {
@@ -107,52 +125,89 @@ export default function CaseStudies() {
           {caseStudies.map((study, index) => (
             <div
               key={index}
-              className="bg-card-bg rounded-2xl border border-border p-6 card-shadow hover:card-shadow-hover transition-shadow duration-300"
+              className="bg-card-bg rounded-2xl border border-border overflow-hidden card-shadow hover:card-shadow-hover transition-shadow duration-300"
             >
-              {/* Badge & Icon */}
-              <div className="flex items-start justify-between mb-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-semibold border ${badgeColors[study.badgeColor]}`}
-                >
-                  {study.badge}
-                </span>
-                <div className="w-10 h-10 rounded-full bg-background-secondary flex items-center justify-center text-text-muted">
-                  {study.icon}
+              {/* Image Section with Overlays */}
+              <div className="relative h-48 sm:h-56">
+                <img
+                  src={study.image}
+                  alt={study.headline}
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                
+                {/* Case Study Badge (top left) */}
+                <div className="absolute top-3 left-3">
+                  <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${badgeColors[study.badgeColor]}`}>
+                    {study.badge}
+                  </span>
+                  <span className="ml-2 px-2 py-1.5 rounded-lg bg-primary text-white text-xs font-bold">
+                    D2C
+                  </span>
+                </div>
+
+                {/* Stats Badges (scattered on image) */}
+                <div className="absolute top-3 right-3 flex flex-wrap gap-2 justify-end max-w-[60%]">
+                  {study.imageBadges.map((badge, idx) => (
+                    <span
+                      key={idx}
+                      className={`px-2 py-1 rounded-lg text-xs font-bold ${badge.color} shadow-md`}
+                    >
+                      {badge.text}
+                    </span>
+                  ))}
                 </div>
               </div>
 
-              {/* Headline */}
-              <h3 className="text-3xl lg:text-4xl font-bold text-foreground mb-1">
-                {study.headline}
-              </h3>
-              <p className="text-text-muted text-sm mb-4">{study.subheadline}</p>
+              {/* Content Section */}
+              <div className="p-5">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {study.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 rounded-full bg-background-secondary border border-border text-xs text-text-muted"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
 
-              {/* Description */}
-              <p className="text-text-secondary text-sm mb-6">{study.description}</p>
-
-              {/* Metrics */}
-              <div className="flex flex-wrap gap-3 mb-4">
-                {study.metrics.map((metric, idx) => (
-                  <div
-                    key={idx}
-                    className="flex-1 min-w-[100px] bg-background-secondary rounded-xl p-3 text-center"
-                  >
-                    <div className="text-xs text-text-muted mb-1">{metric.label}</div>
-                    <div className="text-sm font-semibold text-foreground">{metric.value}</div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-2">
-                {study.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 rounded-full bg-background-secondary border border-border text-xs text-text-muted"
-                  >
-                    {tag}
+                {/* Headline */}
+                <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
+                  {study.headline}{' '}
+                  <span className="text-lg lg:text-xl font-normal text-text-muted">
+                    {study.subheadline}
                   </span>
-                ))}
+                </h3>
+
+                {/* Description */}
+                <p className="text-text-secondary text-sm mt-2 mb-4">{study.description}</p>
+
+                {/* Metrics Row */}
+                <div className="flex gap-3 mb-4">
+                  {study.metrics.map((metric, idx) => (
+                    <div
+                      key={idx}
+                      className="flex-1 bg-background-secondary rounded-xl p-3 text-center"
+                    >
+                      {metric.label && (
+                        <div className="text-[10px] text-text-muted mb-0.5">{metric.label}</div>
+                      )}
+                      <div className="text-xs font-semibold text-foreground">{metric.value}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* View Case Study Link */}
+                <a
+                  href="#"
+                  className="inline-flex items-center text-sm font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                  View Case Study
+                  <ArrowRight className="w-4 h-4 ml-1" />
+                </a>
               </div>
             </div>
           ))}
