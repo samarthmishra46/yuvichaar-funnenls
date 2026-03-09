@@ -19,7 +19,7 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto lg:mx-0">
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight ">
+          <h1 className="text-5xl sm:text-4xl lg:text-6xl font-bold leading-tight ">
             Go From<br />
             <span className="text-primary">Zero To 1000</span> Paying<br />
             Customers In<br />
