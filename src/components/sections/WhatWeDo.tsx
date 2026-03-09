@@ -1,83 +1,101 @@
-import { Search, Video, BarChart3, Layout, Bot, Heart, Play } from 'lucide-react';
+import { Check, ArrowRight, Play } from 'lucide-react';
+import { ReactElement } from 'react';
+
+interface ServiceFeature {
+  text: string;
+  highlight?: string;
+  badge?: string;
+  avatars?: boolean;
+}
+
+interface ServiceVideo {
+  thumbnail: string;
+  label: string;
+  category: string;
+}
 
 interface Service {
   number: string;
-  icon: React.ReactNode;
   category: string;
   title: string;
-  description: string;
-  video?: string;
-  videoLabel?: string;
-  stat?: { value: string; subtext: string; label: string };
+  features: ServiceFeature[];
+  videos: ServiceVideo[];
+  portfolioLink?: string;
+  link ?: ReactElement<any,any>;
 }
 
 const services: Service[] = [
   {
     number: '01',
-    icon: <Search className="w-5 h-5" />,
-    category: 'Research and strategy',
-    title: 'We Study Your Market Before We Touch A Camera',
-    description:
-      'Before we create a single ad, our team goes deep. We reverse-engineer your top competitors — their ads, their angles, their user journey, everything.',
-    video: '/service-video-1.mp4',
-    videoLabel: 'WhatsApp Video Message',
-    stat: { value: '100% data-', subtext: 'driven', label: "GTM strategy built on what's actually working in your category right now — not gut feeling." },
+    category: 'Creative Production',
+    title: 'We Make World Class Content For Ads',
+    features: [
+      { text: '30 Person', highlight: 'Creative Team' },
+      { text: 'World Class', highlight: 'Models & Influencers', avatars: true },
+      { text: 'Shot On', highlight: 'Netflix Approved Cameras', badge: 'NETFLIX' },
+      { text: '2500+ Ads Produced,', highlight: '150Cr+ Revenue Generated 💰' },
+    ],
+    videos: [
+      { thumbnail: '/service-video-1.jpg', label: 'Family Legacy Hook', category: 'Awareness' },
+      { thumbnail: '/service-video-2.jpg', label: 'Product Demo Reel', category: 'Consideration' },
+    ],
+    portfolioLink: '#portfolio',
+    link: (
+  <>
+    View Entire Portfolio
+    <ArrowRight className="w-4 h-4 ml-1 inline" />
+  </>
+),
   },
   {
     number: '02',
-    icon: <Video className="w-5 h-5" />,
-    category: 'Creative Production',
-    title: 'We Make Ads That Actually Stop The Scroll',
-    description:
-      'Our 30-person in-house creative team — writers, DOPs, directors, and world-class models — produces premium, research-backed video ads. Shot on Netflix-approved cameras.',
-    video: '/service-video-2.mp4',
-    videoLabel: 'Ad Creative Preview',
-    stat: { value: '2,500+', subtext: 'Ads Created', label: 'We know what hooks, what converts, and what dies in 2 seconds.' },
+    category: 'Performance Marketing',
+    title: 'We Put Ads In Front Of Right Eyeballs',
+    features: [
+      { text: '₹60Cr+', highlight: 'Ad Spend Managed' },
+      { text: 'Meta &', highlight: 'Google Certified Team' },
+      { text: 'Real-time', highlight: 'Campaign Optimization' },
+      { text: 'Data-driven', highlight: 'Audience Targeting 🎯' },
+    ],
+    videos: [
+      { thumbnail: '/service-video-3.jpg', label: 'Campaign Dashboard', category: 'Analytics' },
+      { thumbnail: '/service-video-4.jpg', label: 'Performance Report', category: 'Results' },
+    ],
+    portfolioLink: '#case-studies',
   },
   {
     number: '03',
-    icon: <BarChart3 className="w-5 h-5" />,
-    category: 'Performance Marketing',
-    title: 'We Put Those Ads In Front Of The Right Eyeballs',
-    description:
-      'Our seasoned performance marketing team publishes your content on Meta (Facebook + Instagram) and Google — targeting your exact audience.',
-    video: '/service-video-3.mp4',
-    videoLabel: 'Campaign Dashboard',
-    stat: { value: '₹60Cr+', subtext: 'Ad Spend', label: 'Day one, real traffic. Real clicks. Real intent.' },
+    category: 'Tech & Smart Websties ',
+    title: 'Landing Pages That Convert Like Crazy',
+    features: [
+      { text: 'High-Converting', highlight: 'Landing Pages' },
+      { text: 'One-Click', highlight: 'Upsells & Bumps' },
+      { text: '25%+', highlight: 'Higher AOV' },
+      { text: 'Mobile-First', highlight: 'Checkout Experience 📱' },
+    ],
+    videos: [
+      { thumbnail: '/service-video-5.jpg', label: 'Landing Page Demo', category: 'Design' },
+    ],
+    portfolioLink: '#portfolio',
   },
   {
     number: '04',
-    icon: <Layout className="w-5 h-5" />,
-    category: 'Tech & Funnel',
-    title: 'They Click. Your Landing Page Closes Them.',
-    description:
-      "The page they land on doesn't just look good — it works like a digital salesperson on commission. One-click upsells that bump average order values by 25%+.",
-    video: '/service-video-4.mp4',
-    videoLabel: 'Landing Page Demo',
-  },
-  {
-    number: '05',
-    icon: <Bot className="w-5 h-5" />,
-    category: 'AI Follow-Up Systems',
-    title: "They Didn't Buy Yet? We Don't Give Up.",
-    description:
-      'Automated WhatsApp video sequences, email follow-ups, and AI-powered sales calls that go out without you lifting a finger.',
-    video: '/service-video-5.mp4',
-    videoLabel: 'AI Assistant Demo',
-    stat: { value: '15%', subtext: 'Revenue', label: 'On average, our clients recover 15% more revenue.' },
-  },
-  {
-    number: '06',
-    icon: <Heart className="w-5 h-5" />,
-    category: 'Retention & Repeat',
-    title: 'First Purchase Is Just The Beginning.',
-    description:
-      'Every customer who buys gets pulled into a WhatsApp community with exclusive offers, brand stories, and loyalty touchpoints.',
-    video: '/service-video-6.mp4',
-    videoLabel: 'Community Preview',
-    stat: { value: '↑LTV', subtext: 'Repeat', label: "A brand that sells once isn't a brand." },
+    category: 'AI Follow Ups & CRM',
+    title: "They Didn't Buy? We Don't Give Up.",
+    features: [
+      { text: 'Automated', highlight: 'WhatsApp Sequences' },
+      { text: 'AI-Powered', highlight: 'Sales Calls' },
+      { text: 'Smart', highlight: 'Email Follow-ups' },
+      { text: '15%', highlight: 'More Revenue Recovered 🤖' },
+    ],
+    videos: [
+      { thumbnail: '/service-video-7.jpg', label: 'AI Assistant Demo', category: 'Automation' },
+      { thumbnail: '/service-video-8.jpg', label: 'WhatsApp Flow', category: 'Follow-up' },
+    ],
+    portfolioLink: '#case-studies',
   },
 ];
+
 
 export default function WhatWeDo() {
   return (
@@ -102,70 +120,88 @@ export default function WhatWeDo() {
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 gap-12">
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-card-bg rounded-2xl border border-border p-6 card-shadow hover:card-shadow-hover transition-shadow duration-300"
+              className="relative bg-card-bg rounded-2xl border border-border p-6 pt-10 card-shadow hover:card-shadow-hover transition-shadow duration-300"
             >
-              {/* Service Badge & Category Tag */}
-              <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1.5 bg-background-secondary border border-border rounded-lg text-xs font-semibold text-text-muted uppercase tracking-wider">
+              {/* Service Badge - Positioned in center of top border */}
+              <div className="absolute -top-4 left-1/3 -translate-x-1/4 flex items-center bg-badge-purple-bg rounded-full  border border-purple-200 dark:border-purple-800">
+                <span className="px-2 py-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
                   Service {service.number}
                 </span>
-                <span className="px-3 py-1.5 bg-background-secondary border border-border rounded-full text-xs text-text-secondary">
+                <span className="px-4 py-1.5 bg-purple-600 text-white rounded-full text-[10px] font-semibold">
                   {service.category}
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="text-lg font-bold text-foreground mb-3">{service.title}</h3>
+              <h3 className="text-lg font-bold text-foreground mb-4 mt-2">{service.title}</h3>
 
-              {/* Description */}
-              <p className="text-sm text-text-secondary mb-5">{service.description}</p>
-
-              {/* Video Player Section */}
-              {service.video && (
-                <div className="mb-4">
-                  <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-green-100 to-green-50 dark:from-green-900/20 dark:to-green-800/10">
-                    <div className="flex items-center">
-                      {/* Video Preview */}
-                      <div className="flex-1 p-4">
-                        <div className="relative aspect-video rounded-xl overflow-hidden bg-white dark:bg-gray-800 shadow-lg">
-                          <img
-                            src={`/service-thumbnail-${service.number}.jpg`}
-                            alt={service.videoLabel}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Play Button */}
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <button className="w-12 h-12 rounded-full bg-white/90 dark:bg-gray-900/90 shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
-                              <Play className="w-5 h-5 text-foreground ml-1" fill="currentColor" />
-                            </button>
-                          </div>
-                        </div>
+              {/* Features List */}
+              <ul className="space-y-2 mb-6">
+                {service.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-xs">
+                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-text-secondary">
+                      {feature.text}{' '}
+                      <span className="font-semibold text-foreground">{feature.highlight}</span>
+                    </span>
+                    {feature.avatars && (
+                      <div className="flex -space-x-2 ml-2">
+                        <div className="w-6 h-6 rounded-full bg-purple-400 border-2 border-card-bg"></div>
+                        <div className="w-6 h-6 rounded-full bg-pink-400 border-2 border-card-bg"></div>
+                        <div className="w-6 h-6 rounded-full bg-fuchsia-400 border-2 border-card-bg"></div>
                       </div>
-                      
-                    </div>
-                    
-                  </div>
-                </div>
-              )}
+                    )}
+                    {feature.badge && (
+                      <span className="ml-2 px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">
+                        {feature.badge}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
 
-              {/* Stat Section */}
-              {service.stat && (
-                <div className="pt-4 border-t border-border">
-                  <div className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="text-xl font-bold text-primary leading-tight">{service.stat.value}</div>
-                      <div className="text-xl font-bold text-primary leading-tight">{service.stat.subtext}</div>
-                      <div className="text-[10px] text-text-muted mt-1">No guesswork</div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-text-secondary">{service.stat.label}</p>
+              {/* Phone Mockups */}
+              <div className={`flex gap-4 mb-4 ${service.videos.length === 1 ? 'justify-center' : ''}`}>
+                {service.videos.map((video, idx) => (
+                  <div key={idx} className={service.videos.length === 1 ? 'w-1/2' : 'flex-1'}>
+                    <div className="relative rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600 via-fuchsia-500 to-pink-500 aspect-[9/16] max-h-48">
+                      <img
+                        src={video.thumbnail}
+                        alt={video.label}
+                        className="w-full h-full object-cover opacity-60"
+                      />
+                      {/* Category Badge */}
+                      <span className="absolute bottom-12 left-2 px-2 py-1 bg-primary text-white text-[8px] font-semibold rounded">
+                        {video.category}
+                      </span>
+                      {/* Play Button */}
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <button className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:scale-110 transition-transform">
+                          <Play className="w-4 h-4 text-white ml-0.5" fill="currentColor" />
+                        </button>
+                      </div>
+                      {/* Label */}
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <p className="text-white text-xs font-medium truncate">{video.label}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))}
+              </div>
+
+              {/* View Portfolio Link */}
+              {service.portfolioLink && (
+                <a
+                  href={service.portfolioLink}
+                  className="flex items-center justify-center text-sm font-semibold text-primary hover:text-primary-hover transition-colors"
+                >
+                  {service.link}
+                  
+                </a>
               )}
             </div>
           ))}

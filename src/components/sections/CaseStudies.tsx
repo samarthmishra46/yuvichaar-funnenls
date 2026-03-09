@@ -1,4 +1,7 @@
+'use client';
+
 import { ArrowRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface CaseStudy {
   badge: string;
@@ -16,7 +19,7 @@ const caseStudies: CaseStudy[] = [
   {
     badge: 'Case Study',
     badgeColor: 'pink',
-    image: '/case-study-1.jpg',
+    image: 'https://images.unsplash.com/photo-1761839257144-297ce252742e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8',
     imageBadges: [
       { text: 'ROAS 6X', color: 'bg-yellow-400 text-black' },
       { text: '100%', color: 'bg-primary text-white' },
@@ -36,7 +39,7 @@ const caseStudies: CaseStudy[] = [
   {
     badge: 'Case Study',
     badgeColor: 'purple',
-    image: '/case-study-2.jpg',
+    image: 'https://plus.unsplash.com/premium_photo-1772902298649-7b3ebcbe2f29?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D',
     imageBadges: [
       { text: 'ROAS 4X', color: 'bg-purple-400 text-white' },
       { text: 'ZERO EXP', color: 'bg-primary text-white' },
@@ -100,32 +103,73 @@ const badgeColors = {
 };
 
 export default function CaseStudies() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-swipe on mobile
+  useEffect(() => {
+    if (!isMobile || !scrollRef.current) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = (prev + 1) % caseStudies.length;
+        if (scrollRef.current) {
+          const cardWidth = scrollRef.current.offsetWidth * 0.85; // 85% width per card
+          scrollRef.current.scrollTo({
+            left: next * cardWidth,
+            behavior: 'smooth',
+          });
+        }
+        return next;
+      });
+    }, 3000); // 3 seconds between swipes
+
+    return () => clearInterval(interval);
+  }, [isMobile]);
+
+  // Handle manual scroll to update indicator
+  const handleScroll = () => {
+    if (!scrollRef.current || !isMobile) return;
+    const cardWidth = scrollRef.current.offsetWidth * 0.85;
+    const newIndex = Math.round(scrollRef.current.scrollLeft / cardWidth);
+    setCurrentIndex(newIndex);
+  };
+
   return (
     <section id="case-studies" className="py-16 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid lg:grid-cols-2 gap-8 mb-8">
           <div>
             <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
-              Case Studies
+              Our Case Studies
             </div>
             <h2 className="text-4xl lg:text-5xl font-bold text-foreground">
-              Real Brands. Real Results.
+              This Could Be Your <br /> Brand Story Next
             </h2>
           </div>
-          <div className="lg:text-right lg:self-end">
-            <p className="text-text-secondary max-w-md lg:ml-auto">
-              From first product launch to ₹45L months — we've done it across categories.
-            </p>
-          </div>
+          
         </div>
 
         {/* Case Study Cards */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex md:grid md:grid-cols-2 gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0"
+        >
           {caseStudies.map((study, index) => (
             <div
               key={index}
-              className="bg-card-bg rounded-2xl border border-border overflow-hidden card-shadow hover:card-shadow-hover transition-shadow duration-300"
+              className="flex-shrink-0 w-[85vw] aspect-square min-[465px]:w-[392px] min-[465px]:h-[392px] min-[465px]:aspect-auto md:w-auto md:aspect-auto md:h-[395px] snap-center bg-card-bg rounded-2xl border border-border overflow-hidden card-shadow hover:card-shadow-hover transition-shadow duration-300"
             >
               {/* Image Section with Overlays */}
               <div className="relative h-48 sm:h-56">
@@ -137,79 +181,88 @@ export default function CaseStudies() {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 
-                {/* Case Study Badge (top left) */}
-                <div className="absolute top-3 left-3">
-                  <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${badgeColors[study.badgeColor]}`}>
-                    {study.badge}
-                  </span>
-                  <span className="ml-2 px-2 py-1.5 rounded-lg bg-primary text-white text-xs font-bold">
-                    D2C
-                  </span>
-                </div>
+                
 
                 {/* Stats Badges (scattered on image) */}
-                <div className="absolute top-3 right-3 flex flex-wrap gap-2 justify-end max-w-[60%]">
-                  {study.imageBadges.map((badge, idx) => (
-                    <span
-                      key={idx}
-                      className={`px-2 py-1 rounded-lg text-xs font-bold ${badge.color} shadow-md`}
-                    >
-                      {badge.text}
-                    </span>
-                  ))}
-                </div>
+                
               </div>
 
-              {/* Content Section */}
-              <div className="p-5">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {study.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3 py-1 rounded-full bg-background-secondary border border-border text-xs text-text-muted"
-                    >
-                      {tag}
+              {/* Content Section with Blurred Background */}
+              <div className="relative overflow-hidden">
+                {/* Blurred background image */}
+                <div className="absolute inset-0">
+                  <img
+                    src={study.image}
+                    alt=""
+                    className="w-full h-full object-cover scale-110 blur-2xl"
+                  />
+                  <div className="absolute inset-0 bg-black/70"></div>
+                </div>
+                
+                {/* Content */}
+                <div className="relative p-2">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-1 mb-1">
+                    {study.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[8px] text-white/80"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Headline */}
+                  <h3 className="text-xl lg:text-3xl font-bold text-white">
+                    {study.headline}{' '}
+                    <span className="text-sm lg:text-xl font-normal text-white/70">
+                      {study.subheadline}
                     </span>
-                  ))}
+                  </h3>
+
+                  {/* Description */}
+                  <p className="text-white/80 text-xs mt-2 mb-4">{study.description}</p>
+
+                  {/* Separator line */}
+                  <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mb-1"></div>
+
+                  {/* View Case Study Link */}
+                  <a
+                    href="#"
+                    className="flex items-center justify-center text-sm  font-semibold text-primary hover:text-primary-hover transition-colors"
+                  >
+                    View Case Study
+                    <ArrowRight className="w-4 h-4 ml-1" />
+                  </a>
                 </div>
-
-                {/* Headline */}
-                <h3 className="text-2xl lg:text-3xl font-bold text-foreground">
-                  {study.headline}{' '}
-                  <span className="text-lg lg:text-xl font-normal text-text-muted">
-                    {study.subheadline}
-                  </span>
-                </h3>
-
-                {/* Description */}
-                <p className="text-text-secondary text-sm mt-2 mb-4">{study.description}</p>
-
-                {/* Metrics Row */}
-                <div className="flex gap-3 mb-4">
-                  {study.metrics.map((metric, idx) => (
-                    <div
-                      key={idx}
-                      className="flex-1 bg-background-secondary rounded-xl p-3 text-center"
-                    >
-                      {metric.label && (
-                        <div className="text-[10px] text-text-muted mb-0.5">{metric.label}</div>
-                      )}
-                      <div className="text-xs font-semibold text-foreground">{metric.value}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* View Case Study Link */}
-                <a
-                  href="#"
-                  className="inline-flex items-center text-sm font-semibold text-foreground hover:text-primary transition-colors"
-                >
-                  View Case Study
-                  <ArrowRight className="w-4 h-4 ml-1" />
-                </a>
               </div>
             </div>
+          ))}
+        </div>
+
+        {/* Mobile Dot Indicators */}
+        <div className="flex md:hidden justify-center gap-2 mt-4">
+          {caseStudies.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentIndex(index);
+                if (scrollRef.current) {
+                  const cardWidth = scrollRef.current.offsetWidth * 0.85;
+                  scrollRef.current.scrollTo({
+                    left: index * cardWidth,
+                    behavior: 'smooth',
+                  });
+                }
+              }}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                currentIndex === index
+                  ? 'bg-primary w-6'
+                  : 'bg-border hover:bg-text-muted'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
           ))}
         </div>
       </div>

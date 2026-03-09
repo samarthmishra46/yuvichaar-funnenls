@@ -1,20 +1,21 @@
 import { Check, X } from 'lucide-react';
+import {  CTAWithIdealFor } from '@/components/CTAButton';
 
 const forYou = [
   {
-    title: 'Manufacturer Going Online',
+    title: `You’re a manufacturer with a proven offline business`,
     description:
-      'You have a proven offline business and want to build a ₹100Cr D2C brand online.',
+      ' And want to build a ₹100Cr D2C brand online.',
   },
   {
-    title: 'Tech Founder with Weak Distribution',
+    title: `You’re a tech founder built something genuinely valuable`,
     description:
-      "You've built something genuinely valuable — app, SaaS, platform. Strong tech, weak distribution.",
+      "(Saas/ app/ platform) product ready for market, but no clear go-to-market strategy yet; strong tech, weak distribution.",
   },
   {
-    title: 'D2C Founder with Ambition',
+    title: 'You’re A D2C Founder With Ambition',
     description:
-      "You've got the product, ₹5-10L set aside for marketing, and a genuine ambition to build the next unicorn.",
+      "You've got the product, ₹5–10L set aside for marketing, and a genuine ambition to build the next unicorn.",
   },
 ];
 
@@ -51,7 +52,7 @@ export default function WhoIsThisFor() {
               <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
                 <Check className="w-4 h-4 text-white" />
               </div>
-              <span className="text-success font-semibold">This is for you if...</span>
+              <span className="text-success text-3xl font-bold">This is for you if...</span>
             </div>
             <div className="space-y-4">
               {forYou.map((item, index) => (
@@ -64,8 +65,8 @@ export default function WhoIsThisFor() {
                       <Check className="w-3 h-3 text-success" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
-                      <p className="text-sm text-text-secondary">{item.description}</p>
+                      <h3 className="text-sm font-bold text-foreground mb-1">{item.title}</h3>
+                      <p className="text-xs text-text-secondary">{item.description}</p>
                     </div>
                   </div>
                 </div>
@@ -79,7 +80,7 @@ export default function WhoIsThisFor() {
               <div className="w-6 h-6 rounded-full bg-error flex items-center justify-center">
                 <X className="w-4 h-4 text-white" />
               </div>
-              <span className="text-error font-semibold">This isn't for you if...</span>
+              <span className="text-error text-3xl font-bold">This isn't for you if...</span>
             </div>
             <div className="space-y-4">
               {notForYou.map((item, index) => (
@@ -92,22 +93,14 @@ export default function WhoIsThisFor() {
                       <X className="w-3 h-3 text-error" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
-                      <p className="text-sm text-text-secondary">{item.description}</p>
+                      <h3 className="font-bold text-sm text-foreground mb-1">{item.title}</h3>
+                      <p className="text-xs text-text-secondary">{item.description}</p>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Founder Quote */}
-            <div className="mt-6 bg-badge-pink-bg rounded-xl border border-primary/20 p-5">
-              <p className="text-sm text-foreground italic mb-3">
-                "We only take on partners we know we can scale. If we're not confident we can 10×
-                your investment — we'll tell you upfront."
-              </p>
-              <p className="text-primary font-semibold text-sm">— Yuvraj Singh Rajawat, Founder</p>
-            </div>
+                  <CTAWithIdealFor className="mt-8" />
           </div>
         </div>
       </div>

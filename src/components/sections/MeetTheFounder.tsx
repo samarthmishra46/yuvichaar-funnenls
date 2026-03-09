@@ -1,17 +1,72 @@
-import { TrendingUp, Clock, Users, Instagram, Linkedin } from 'lucide-react';
+import { TrendingUp, Clock, Users, Linkedin } from 'lucide-react';
+import {  CTAWithIdealFor } from '@/components/CTAButton';
 
 const stats = [
   { icon: TrendingUp, value: '₹60Cr+', label: 'Ad Spend Managed' },
   { icon: Clock, value: '6+', label: 'Years Experience' },
   { icon: Users, value: '50+', label: 'Brands Scaled' },
-  { icon: Instagram, value: '₹150Cr+', label: 'Revenue Generated' },
+];
+const coreCrew = [
+  {
+    title: 'Creative Heads',
+    members: [
+      { image: '/team/creative-1.jpg' },
+      { image: '/team/creative-2.jpg' },
+      { image: '/team/creative-3.jpg' },
+      { image: '/team/creative-4.jpg' },
+    ],
+  },
+  {
+    title: 'Core Operations',
+    members: [
+      { image: '/team/ops-1.jpg' },
+      { image: '/team/ops-2.jpg' },
+      { image: '/team/ops-3.jpg' },
+      { image: '/team/ops-4.jpg' },
+    ],
+  },
+  {
+    title: 'Tech & AI',
+    members: [
+      { image: '/team/tech-1.jpg' },
+      { image: '/team/tech-2.jpg' },
+      { image: '/team/tech-3.jpg' },
+      { image: '/team/tech-4.jpg' },
+    ],
+   
+  },
 ];
 
-const highlights = [
-  'Performance Marketer turned Founder',
-  'Managed ₹60Cr+ across Meta & Google',
-  'Built & scaled 50+ D2C brands in India',
+const otherCrew = [
+  {
+    title: 'The Models / Influencers',
+    members: [
+      { image: '/team/model-1.jpg' },
+      { image: '/team/model-2.jpg' },
+      { image: '/team/model-3.jpg' },
+      { image: '/team/model-4.jpg' },
+    ],
+  },
+  {
+    title: 'Camera Crew',
+    members: [
+      { image: '/team/camera-1.jpg' },
+      { image: '/team/camera-2.jpg' },
+      { image: '/team/camera-3.jpg' },
+      { image: '/team/camera-4.jpg' },
+    ],
+  },
+  {
+    title: 'Video Editing',
+    members: [
+      { image: '/team/editor-1.jpg' },
+      { image: '/team/editor-2.jpg' },
+      { image: '/team/editor-3.jpg' },
+      { image: '/team/editor-4.jpg' },
+    ],
+  },
 ];
+
 
 export default function MeetTheFounder() {
   return (
@@ -20,9 +75,9 @@ export default function MeetTheFounder() {
         {/* Header */}
         <div className="mb-12">
           <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
-            Led By
+            Meet The Team
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground">Meet the Founder</h2>
+          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">People At <br />Yuvichaar Funnels</h2>
         </div>
 
         {/* Content Grid */}
@@ -48,42 +103,44 @@ export default function MeetTheFounder() {
               >
                 <Linkedin className="w-5 h-5" />
               </a>
-            </div>
-            
-            {/* Name & Title */}
-            <div className="mt-6">
-              <h3 className="text-2xl font-bold text-foreground">Yuvraj Singh Rajawat</h3>
-              <p className="text-text-muted">Founder & Managing Partner</p>
-              
-              {/* Education Badge */}
-              <div className="mt-4 inline-flex items-center space-x-2 bg-card-bg rounded-full px-4 py-2 border border-border">
-                <div className="w-8 h-8 rounded-full bg-[#0D47A1] flex items-center justify-center text-white text-xs font-bold">
-                  UoB
+
+              {/* Name & Title - Inside image at bottom left */}
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="bg-black/50 backdrop-blur-sm rounded-xl p-4">
+                  <h3 className="text-xl font-bold text-white">Yuvraj Singh Rajawat</h3>
+                  <p className="text-white/80 text-sm">Founder & Managing Partner</p>
                 </div>
-                <span className="text-sm text-text-secondary">
-                  MSc International Business — University of Birmingham, UK
-                </span>
               </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="bg-card-bg rounded-xl border border-border p-4 card-shadow"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-badge-purple-bg flex items-center justify-center text-secondary mb-2">
+                    <stat.icon className="w-4 h-4" />
+                  </div>
+                  <div className="text-md font-bold text-foreground">{stat.value}</div>
+                  <div className="text-[10px] text-text-muted">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+            {/* Education Badge */}
+            <div className="mt-4 inline-flex items-center space-x-2 bg-card-bg rounded-full px-4 py-2 border border-border">
+              <div className="w-8 h-8 rounded-full bg-[#0D47A1] flex items-center justify-center text-white text-xs font-bold">
+                UoB
+              </div>
+              <span className="text-sm text-text-secondary">
+                MSc International Business — University of Birmingham, UK
+              </span>
             </div>
           </div>
 
           {/* Right - Stats & Quote */}
           <div className="space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <div
-                  key={index}
-                  className="bg-card-bg rounded-xl border border-border p-4 card-shadow"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-badge-purple-bg flex items-center justify-center text-secondary mb-3">
-                    <stat.icon className="w-5 h-5" />
-                  </div>
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <div className="text-xs text-text-muted">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+            
 
             {/* Quote */}
             <div className="bg-badge-pink-bg rounded-xl border border-primary/20 p-6">
@@ -96,15 +153,56 @@ export default function MeetTheFounder() {
               <p className="text-primary font-semibold">— Yuvraj Singh Rajawat</p>
             </div>
 
-            {/* Highlights */}
-            <div className="space-y-2">
-              {highlights.map((highlight, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  <span className="text-text-secondary">{highlight}</span>
-                </div>
-              ))}
+            {/* The Core Crew */}
+            <div className="pt-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-xs font-semibold tracking-wider text-primary uppercase">The Core Crew</span>
+                <div className="flex-1 h-px bg-border"></div>
+              </div>
+
+              <div className="space-y-6">
+                {coreCrew.map((group, index) => (
+                  <div key={index} className={group.highlight ? 'border border-dashed border-blue-300 dark:border-blue-600 rounded-xl p-4' : ''}>
+                    <h4 className="text-sm font-bold text-foreground mb-3">{group.title}</h4>
+                    <div className="flex gap-2">
+                      {group.members.map((member, idx) => (
+                        <div key={idx} className="w-14 h-14 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700">
+                          <img src={member.image} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
+            {/* The Other Crew */}
+            <div className="pt-6">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-xs font-semibold tracking-wider text-primary uppercase">The Other Crew</span>
+                <div className="flex-1 h-px bg-border"></div>
+              </div>
+
+              <div className="space-y-6">
+                {otherCrew.map((group, index) => (
+                  <div key={index}>
+                    <h4 className="text-sm font-bold text-foreground mb-3">{group.title}</h4>
+                    <div className="flex gap-2">
+                      {group.members.map((member, idx) => (
+                        <div key={idx} className="w-14 h-14 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700">
+                          <img src={member.image} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Highlights */}
+            <CTAWithIdealFor className="mt-8" />
           </div>
         </div>
       </div>
