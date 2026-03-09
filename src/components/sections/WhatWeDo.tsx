@@ -21,7 +21,7 @@ interface Service {
   features: ServiceFeature[];
   videos: ServiceVideo[];
   portfolioLink?: string;
-  link ?: ReactElement<any,any>;
+  link ?: any;
 }
 
 const services: Service[] = [

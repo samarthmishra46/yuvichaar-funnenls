@@ -24,6 +24,8 @@ export default function Navbar() {
             <span className="text-xl font-bold">
               <span className="text-foreground">Yuvi</span>
               <span className="text-primary">chaar</span>
+               <span className="text-text-muted ml-1 text-sm font-normal">FUNNELS</span>
+
             </span>
           </Link>
 

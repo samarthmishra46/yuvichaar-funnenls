@@ -163,7 +163,7 @@ export default function MeetTheFounder() {
 
               <div className="space-y-6">
                 {coreCrew.map((group, index) => (
-                  <div key={index} className={group.highlight ? 'border border-dashed border-blue-300 dark:border-blue-600 rounded-xl p-4' : ''}>
+                  <div key={index}>
                     <h4 className="text-sm font-bold text-foreground mb-3">{group.title}</h4>
                     <div className="flex gap-2">
                       {group.members.map((member, idx) => (
