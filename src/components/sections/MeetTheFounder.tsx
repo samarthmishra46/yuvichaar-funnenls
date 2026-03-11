@@ -10,28 +10,31 @@ const coreCrew = [
   {
     title: 'Creative Heads',
     members: [
-      { image: '/team/creative-1.jpg' },
-      { image: '/team/creative-2.jpg' },
-      { image: '/team/creative-3.jpg' },
-      { image: '/team/creative-4.jpg' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
   },
   {
     title: 'Core Operations',
     members: [
-      { image: '/team/ops-1.jpg' },
-      { image: '/team/ops-2.jpg' },
-      { image: '/team/ops-3.jpg' },
-      { image: '/team/ops-4.jpg' },
+       { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
   },
   {
     title: 'Tech & AI',
     members: [
-      { image: '/team/tech-1.jpg' },
-      { image: '/team/tech-2.jpg' },
-      { image: '/team/tech-3.jpg' },
-      { image: '/team/tech-4.jpg' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
    
   },
@@ -41,28 +44,31 @@ const otherCrew = [
   {
     title: 'The Models / Influencers',
     members: [
-      { image: '/team/model-1.jpg' },
-      { image: '/team/model-2.jpg' },
-      { image: '/team/model-3.jpg' },
-      { image: '/team/model-4.jpg' },
+       { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
   },
   {
     title: 'Camera Crew',
     members: [
-      { image: '/team/camera-1.jpg' },
-      { image: '/team/camera-2.jpg' },
-      { image: '/team/camera-3.jpg' },
-      { image: '/team/camera-4.jpg' },
+     { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
   },
   {
     title: 'Video Editing',
     members: [
-      { image: '/team/editor-1.jpg' },
-      { image: '/team/editor-2.jpg' },
-      { image: '/team/editor-3.jpg' },
-      { image: '/team/editor-4.jpg' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      
     ],
   },
 ];
@@ -83,20 +89,16 @@ export default function MeetTheFounder() {
         {/* Content Grid */}
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left - Photo */}
-          <div className="relative">
-            <div className="bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl overflow-hidden aspect-[3/4] relative">
+          <div className="relative ">
+            <div className="border-transparent shadow-md rounded-2xl overflow-hidden relative ">
               {/* Placeholder for founder image */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto mb-4 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center">
-                    <Users className="w-16 h-16 text-white/50" />
-                  </div>
-                  <p className="text-text-muted text-sm">Founder Image</p>
-                  <p className="text-text-muted text-xs">(400 x 533px)</p>
-                </div>
-              </div>
+             
+                  <img className="w-full h-full object-cover" src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218007/Image_Yuvraj_Singh_Rajawat_vjuvxq.png" alt="Yuvraj Singh Rajawat" />
+                
+              
               
               {/* LinkedIn Badge */}
+              
               <a
                 href="#"
                 className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0077B5] flex items-center justify-center text-white shadow-lg hover:scale-110 transition-transform"
@@ -106,12 +108,13 @@ export default function MeetTheFounder() {
 
               {/* Name & Title - Inside image at bottom left */}
               <div className="absolute bottom-4 left-4 right-4">
-                <div className="bg-black/50 backdrop-blur-sm rounded-xl p-4">
-                  <h3 className="text-xl font-bold text-white">Yuvraj Singh Rajawat</h3>
-                  <p className="text-white/80 text-sm">Founder & Managing Partner</p>
+                <div className="">
+                  <h3 className="text-lg font-bold text-white">Yuvraj Singh Rajawat</h3>
+                  <p className="text-white/80 text-xs">Founder & Managing Partner</p>
                 </div>
               </div>
             </div>
+            <br />
             <div className="grid grid-cols-3 gap-2">
               {stats.map((stat, index) => (
                 <div

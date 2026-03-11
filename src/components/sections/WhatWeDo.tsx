@@ -39,7 +39,7 @@ const services: Service[] = [
       { thumbnail: '/service-video-1.jpg', label: 'Family Legacy Hook', category: 'Awareness' },
       { thumbnail: '/service-video-2.jpg', label: 'Product Demo Reel', category: 'Consideration' },
     ],
-    portfolioLink: '#portfolio',
+    portfolioLink: '/portfolio',
     link: (
   <>
     View Entire Portfolio
@@ -62,6 +62,12 @@ const services: Service[] = [
       { thumbnail: '/service-video-4.jpg', label: 'Performance Report', category: 'Results' },
     ],
     portfolioLink: '#case-studies',
+    link: (
+      <>
+        View Case Studies
+        <ArrowRight className="w-4 h-4 ml-1 inline" />
+      </>
+    ),
   },
   {
     number: '03',
@@ -76,7 +82,13 @@ const services: Service[] = [
     videos: [
       { thumbnail: '/service-video-5.jpg', label: 'Landing Page Demo', category: 'Design' },
     ],
-    portfolioLink: '#portfolio',
+    portfolioLink: '/portfolio',
+    link: (
+      <>
+        View Portfolio
+        <ArrowRight className="w-4 h-4 ml-1 inline" />
+      </>
+    ),
   },
   {
     number: '04',
@@ -93,6 +105,12 @@ const services: Service[] = [
       { thumbnail: '/service-video-8.jpg', label: 'WhatsApp Flow', category: 'Follow-up' },
     ],
     portfolioLink: '#case-studies',
+    link: (
+      <>
+        View Case Studies
+        <ArrowRight className="w-4 h-4 ml-1 inline" />
+      </>
+    ),
   },
 ];
 
