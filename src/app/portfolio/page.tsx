@@ -13,6 +13,22 @@ interface PortfolioItem {
   videoUrl?: string;
 }
 
+// Brand logos for marquee (placeholder emojis/text - replace with actual logos)
+const brandLogos = [
+  { id: 1, name: 'Nike', emoji: '👟' },
+  { id: 2, name: 'Apple', emoji: '🍎' },
+  { id: 3, name: 'Amazon', emoji: '📦' },
+  { id: 4, name: 'Google', emoji: '🔍' },
+  { id: 5, name: 'Meta', emoji: '👤' },
+  { id: 6, name: 'Netflix', emoji: '🎬' },
+  { id: 7, name: 'Spotify', emoji: '🎵' },
+  { id: 8, name: 'Tesla', emoji: '🚗' },
+  { id: 9, name: 'Samsung', emoji: '📱' },
+  { id: 10, name: 'Adidas', emoji: '👕' },
+  { id: 11, name: 'Puma', emoji: '🐆' },
+  { id: 12, name: 'Sony', emoji: '🎮' },
+];
+
 // Portfolio data organized by tab
 const ugcAds: PortfolioItem[] = [
   { id: 1, brand: 'Spinemat', category: 'HEALTH & WELLNESS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
@@ -61,6 +77,25 @@ export default function PortfolioPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
+      {/* Top Navigation with Logo */}
+      <nav className="py-4 px-4 border-b border-gray-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex font-bold items-center gap-">
+            
+          <span className="text-white">Yuvi</span>
+              <span className="text-primary">chaar</span>
+               <span className="text-text-muted ml-1 text-sm font-normal">FUNNELS</span>
+
+          </Link>
+          <Link
+            href="/#cta"
+            className="bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
+          >
+            Book a Call
+          </Link>
+        </div>
+      </nav>
+
       {/* Header */}
       <header className="py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
@@ -93,6 +128,38 @@ export default function PortfolioPage() {
           </div>
         </div>
       </header>
+
+      {/* Brand Logo Marquee */}
+      <div className="py-8 overflow-hidden border-y border-gray-800">
+        <div className="relative">
+          <div className="flex animate-marquee whitespace-nowrap">
+            {[...brandLogos, ...brandLogos].map((brand, index) => (
+              <div
+                key={`${brand.id}-${index}`}
+                className="flex items-center gap-3 mx-8"
+              >
+                <span className="text-4xl">{brand.emoji}</span>
+                <span className="text-gray-400 font-medium text-lg">{brand.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Add CSS for marquee animation */}
+      <style jsx>{`
+        @keyframes marquee {
+          0% {
+            transform: translateX(0%);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .animate-marquee {
+          animation: marquee 20s linear infinite;
+        }
+      `}</style>
 
       {/* Category Filters */}
       <div className="sticky top-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-gray-800 py-4">
