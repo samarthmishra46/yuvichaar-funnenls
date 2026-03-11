@@ -1,9 +1,11 @@
 'use client';
 
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 interface CaseStudy {
+  slug: string;
   badge: string;
   badgeColor: 'pink' | 'purple' | 'green' | 'blue';
   image: string;
@@ -17,6 +19,7 @@ interface CaseStudy {
 
 const caseStudies: CaseStudy[] = [
   {
+    slug: 'spinemat',
     badge: 'Case Study',
     badgeColor: 'pink',
     image: 'https://images.unsplash.com/photo-1761839257144-297ce252742e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8',
@@ -37,6 +40,7 @@ const caseStudies: CaseStudy[] = [
     tags: ['Ads', 'Landing Page', 'AI Automations'],
   },
   {
+    slug: 'case-study-2',
     badge: 'Case Study',
     badgeColor: 'purple',
     image: 'https://plus.unsplash.com/premium_photo-1772902298649-7b3ebcbe2f29?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D',
@@ -56,6 +60,7 @@ const caseStudies: CaseStudy[] = [
     tags: ['Full Funnel', 'Ads', 'Follow-Up'],
   },
   {
+    slug: 'case-study-3',
     badge: 'Case Study',
     badgeColor: 'green',
     image: '/case-study-3.jpg',
@@ -75,6 +80,7 @@ const caseStudies: CaseStudy[] = [
     tags: ['Meta Ads', 'Launch Strategy'],
   },
   {
+    slug: 'case-study-4',
     badge: 'Case Study',
     badgeColor: 'blue',
     image: '/case-study-4.jpg',
@@ -167,9 +173,10 @@ export default function CaseStudies() {
           className="flex md:grid md:grid-cols-2 gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-hide pb-4 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0"
         >
           {caseStudies.map((study, index) => (
-            <div
+            <Link
+              href={`/case-study/${study.slug}`}
               key={index}
-              className="flex-shrink-0 w-[85vw] aspect-square min-[465px]:w-[392px] min-[465px]:h-[392px] min-[465px]:aspect-auto md:w-auto md:aspect-auto md:h-[395px] snap-center bg-card-bg rounded-2xl border border-border overflow-hidden card-shadow hover:card-shadow-hover transition-shadow duration-300"
+              className="flex-shrink-0 w-[85vw] aspect-square min-[465px]:w-[392px] min-[465px]:h-[392px] min-[465px]:aspect-auto md:w-auto md:aspect-auto md:h-[395px] snap-center bg-card-bg rounded-2xl border border-border overflow-hidden card-shadow hover:card-shadow-hover transition-shadow duration-300 cursor-pointer"
             >
               {/* Image Section with Overlays */}
               <div className="relative h-48 sm:h-56">
@@ -228,16 +235,15 @@ export default function CaseStudies() {
                   <div className="h-px bg-gradient-to-r from-transparent via-white/30 to-transparent mb-1"></div>
 
                   {/* View Case Study Link */}
-                  <a
-                    href="#"
+                  <span
                     className="flex items-center justify-center text-sm  font-semibold text-primary hover:text-primary-hover transition-colors"
                   >
                     View Case Study
                     <ArrowRight className="w-4 h-4 ml-1" />
-                  </a>
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
