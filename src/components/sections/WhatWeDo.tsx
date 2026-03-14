@@ -1,6 +1,6 @@
 import { Check, ArrowRight, Play } from 'lucide-react';
 import { ReactElement } from 'react';
-
+import { CTAWithIdealFor } from '../CTAButton';
 interface ServiceFeature {
   text: string;
   highlight?: string;
@@ -36,8 +36,8 @@ const services: Service[] = [
       { text: '2500+ Ads Produced,', highlight: '150Cr+ Revenue Generated 💰' },
     ],
     videos: [
-      { thumbnail: '/service-video-1.jpg', label: 'Family Legacy Hook', category: 'Awareness' },
-      { thumbnail: '/service-video-2.jpg', label: 'Product Demo Reel', category: 'Consideration' },
+      { thumbnail: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1755359134/go_wheelo_quqgxp.gif', label: 'Family Legacy Hook', category: 'Awareness' },
+      { thumbnail: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1755506027/fictales_rim5pq.gif', label: 'Product Demo Reel', category: 'Consideration' },
     ],
     portfolioLink: '/portfolio',
     link: (
@@ -58,16 +58,10 @@ const services: Service[] = [
       { text: 'Data-driven', highlight: 'Audience Targeting 🎯' },
     ],
     videos: [
-      { thumbnail: '/service-video-3.jpg', label: 'Campaign Dashboard', category: 'Analytics' },
-      { thumbnail: '/service-video-4.jpg', label: 'Performance Report', category: 'Results' },
+      { thumbnail: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1773401598/Rectangle_34626407_sxfu9c.png', label: 'Campaign Dashboard', category: 'Analytics' },
     ],
     portfolioLink: '#case-studies',
-    link: (
-      <>
-        View Case Studies
-        <ArrowRight className="w-4 h-4 ml-1 inline" />
-      </>
-    ),
+   
   },
   {
     number: '03',
@@ -80,15 +74,10 @@ const services: Service[] = [
       { text: 'Mobile-First', highlight: 'Checkout Experience 📱' },
     ],
     videos: [
-      { thumbnail: '/service-video-5.jpg', label: 'Landing Page Demo', category: 'Design' },
+      { thumbnail: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1773400862/image_3006_1_noyubh.png', label: 'Landing Page Demo', category: 'Design' },
     ],
     portfolioLink: '/portfolio',
-    link: (
-      <>
-        View Portfolio
-        <ArrowRight className="w-4 h-4 ml-1 inline" />
-      </>
-    ),
+    
   },
   {
     number: '04',
@@ -101,13 +90,12 @@ const services: Service[] = [
       { text: '15%', highlight: 'More Revenue Recovered 🤖' },
     ],
     videos: [
-      { thumbnail: '/service-video-7.jpg', label: 'AI Assistant Demo', category: 'Automation' },
-      { thumbnail: '/service-video-8.jpg', label: 'WhatsApp Flow', category: 'Follow-up' },
+      { thumbnail: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1773401418/Screenshot_from_2026-03-13_16-54-46_vtrq7d.png', label: 'AI Assistant Demo', category: 'Automation' },
     ],
     portfolioLink: '#case-studies',
     link: (
       <>
-        View Case Studies
+        Listen AI Sales Call Recording
         <ArrowRight className="w-4 h-4 ml-1 inline" />
       </>
     ),
@@ -122,17 +110,16 @@ export default function WhatWeDo() {
         {/* Header */}
         <div className="grid lg:grid-cols-2 gap-8 mb-12">
           <div>
-            <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
-              What Exactly Do We Do
+            <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-6">
+              OUR SERVICES
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-foreground">
-              We Turn Scrollers Into Paying Customers.
+            <h2 className="text-3xl lg:text-5xl font-black text-foreground">
+              What Exactly We Do?
             </h2>
           </div>
           <div className="lg:text-right lg:self-end">
-            <p className="text-text-secondary max-w-md lg:ml-auto">
-              A complete, end-to-end growth system — from research and creative to media buying,
-              funnel tech, and retention.
+            <p className="text-text-secondary  max-w-md lg:ml-auto">
+             We Build End To <span className='font-bold'> End Sales Funnels & <br /> Customer Journeys </span>To Turn People Scrolling On <br />Instagram & Facebook Into Paying <br /> Customers <span className='font-bold'> Repeatedly & Predictably </span>
             </p>
           </div>
         </div>
@@ -145,11 +132,11 @@ export default function WhatWeDo() {
               className="relative bg-card-bg rounded-2xl border border-border p-6 pt-10 card-shadow hover:card-shadow-hover transition-shadow duration-300"
             >
               {/* Service Badge - Positioned in center of top border */}
-              <div className="absolute -top-4 left-1/3 -translate-x-1/4 flex items-center bg-badge-purple-bg rounded-full  border border-purple-200 dark:border-purple-800">
-                <span className="px-2 py-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+              <div className="absolute -top-4 left-1/2 flex w-[260px] -translate-x-1/2 items-center justify-between whitespace-nowrap rounded-full border border-purple-200 bg-badge-purple-bg dark:border-purple-800">
+                <span className="px-2 py-1 text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 sm:text-[10px]">
                   Service {service.number}
                 </span>
-                <span className="px-4 py-1.5 bg-purple-600 text-white rounded-full text-[10px] font-semibold">
+                <span className="rounded-full bg-purple-600 px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-white sm:px-4 sm:text-[10px]">
                   {service.category}
                 </span>
               </div>
@@ -167,10 +154,28 @@ export default function WhatWeDo() {
                       <span className="font-semibold text-foreground">{feature.highlight}</span>
                     </span>
                     {feature.avatars && (
-                      <div className="flex -space-x-2 ml-2">
-                        <div className="w-6 h-6 rounded-full bg-purple-400 border-2 border-card-bg"></div>
-                        <div className="w-6 h-6 rounded-full bg-pink-400 border-2 border-card-bg"></div>
-                        <div className="w-6 h-6 rounded-full bg-fuchsia-400 border-2 border-card-bg"></div>
+                      <div className="ml-2 flex -space-x-2">
+                        <div className="h-6 w-6 overflow-hidden rounded-full border-2 border-card-bg">
+                          <img
+                            src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png"
+                            alt="Team member"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="h-6 w-6 overflow-hidden rounded-full border-2 border-card-bg">
+                          <img
+                            src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png"
+                            alt="Team member"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="h-6 w-6 overflow-hidden rounded-full border-2 border-card-bg">
+                          <img
+                            src="https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png"
+                            alt="Team member"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
                       </div>
                     )}
                     {feature.badge && (
@@ -183,19 +188,19 @@ export default function WhatWeDo() {
               </ul>
 
               {/* Phone Mockups */}
-              <div className={`flex gap-4 mb-4 ${service.videos.length === 1 ? 'justify-center' : ''}`}>
+              <div
+                className="mb-4 grid gap-4"
+                style={{ gridTemplateColumns: `repeat(${service.videos.length}, minmax(0, 1fr))` }}
+              >
                 {service.videos.map((video, idx) => (
-                  <div key={idx} className={service.videos.length === 1 ? 'w-1/2' : 'flex-1'}>
-                    <div className="relative rounded-2xl overflow-hidden bg-gradient-to-b from-purple-600 via-fuchsia-500 to-pink-500 aspect-[9/16] max-h-48">
+                  <div key={idx} className="min-w-0">
+                    <div className="relative rounded-2xl overflow-hidden  ">
                       <img
                         src={video.thumbnail}
                         alt={video.label}
-                        className="w-full h-full object-cover opacity-60"
+                        className="w-full h-full object-contain "
                       />
-                      {/* Category Badge */}
-                      <span className="absolute bottom-12 left-2 px-2 py-1 bg-primary text-white text-[8px] font-semibold rounded">
-                        {video.category}
-                      </span>
+                      
                       {/* Play Button */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <button className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center hover:scale-110 transition-transform">
@@ -204,7 +209,6 @@ export default function WhatWeDo() {
                       </div>
                       {/* Label */}
                       <div className="absolute bottom-2 left-2 right-2">
-                        <p className="text-white text-xs font-medium truncate">{video.label}</p>
                       </div>
                     </div>
                   </div>
@@ -225,6 +229,7 @@ export default function WhatWeDo() {
           ))}
         </div>
       </div>
+      <CTAWithIdealFor className='pt-10 p-4'/>
     </section>
   );
 }

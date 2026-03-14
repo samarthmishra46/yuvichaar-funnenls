@@ -159,8 +159,8 @@ export default function CaseStudies() {
             <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
               Our Case Studies
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-foreground">
-              This Could Be Your <br /> Brand Story Next
+            <h2 className="text-3xl lg:text-5xl font-black text-foreground">
+              This Could Be Your <br /> Brand Story
             </h2>
           </div>
           
@@ -188,9 +188,6 @@ export default function CaseStudies() {
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 
-                
-
-                {/* Stats Badges (scattered on image) */}
                 
               </div>
 

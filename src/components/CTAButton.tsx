@@ -1,10 +1,10 @@
 'use client';
 
-import { Factory, Rocket } from 'lucide-react';
+import { Factory, User } from 'lucide-react';
 
 const idealFor = [
   { icon: Factory, label: 'Established Manufacturers' },
-  { icon: Rocket, label: 'Tech Founders (GTM Ready)' },
+  { icon: User, label: 'Tech Founders (GTM Ready)' },
 ];
 
 interface CTAButtonProps {
@@ -52,7 +52,7 @@ export function IdealForSection({ className = '' }: IdealForSectionProps) {
       <div className="flex justify-center gap-8">
         {idealFor.map((item, index) => (
           <div key={index} className="flex items-center gap-2 text-[10px] text-text-secondary">
-            <item.icon className="w-4 h-4" />
+            <item.icon color="#F72585" className="w-4 h-4 "  />
             <span>{item.label}</span>
           </div>
         ))}
@@ -77,7 +77,7 @@ export function CTAWithIdealFor({
   return (
     <div className={className}>
       <CTAButton href={ctaHref} title={ctaTitle} subtitle={ctaSubtitle} />
-      <IdealForSection className="mt-8" />
+      <IdealForSection className="mt-2" />
     </div>
   );
 }

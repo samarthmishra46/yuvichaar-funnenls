@@ -19,7 +19,7 @@ export default function Hero() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-xl mx-auto lg:mx-0">
           {/* Heading */}
-          <h1 className="text-5xl sm:text-4xl lg:text-6xl font-bold leading-tight ">
+          <h1 className=" pt-6 text-5xl sm:text-4xl lg:text-6xl font-black ">
             Go From<br />
             <span className="text-primary">Zero To 1000</span> Paying<br />
             Customers In<br />
@@ -28,8 +28,8 @@ export default function Hero() {
           </h1>
 
           {/* Description */}
-          <p className="text-sm text-text-secondary mt-6 max-w-md">
-            Hire the Growth & Marketing <span className="font-semibold text-foreground">Team Behind India&apos;s Largest D2C Brands</span> As Your End-to-End Marketing Department
+          <p className="text-sm text-text-secondary font-medium mt-6 max-w-md">
+            Hire the Growth & Marketing <span className="font-semibold text-foreground">Team Behind <br />India&apos;s Largest D2C Brands</span> As Your End-to-End <br />Marketing  Department
           </p>
 
           {/* Trust Badge */}
@@ -55,7 +55,7 @@ export default function Hero() {
           <CTAButton className="mt-8" />
 
           {/* Ideal For Section */}
-          <IdealForSection className="mt-8" />
+          <IdealForSection className="mt-4" />
         </div>
       </div>
     </section>

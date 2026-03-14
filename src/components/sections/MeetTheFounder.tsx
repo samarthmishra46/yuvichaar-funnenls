@@ -83,7 +83,7 @@ export default function MeetTheFounder() {
           <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
             Meet The Team
           </div>
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground">People At <br />Yuvichaar Funnels</h2>
+          <h2 className="text-3xl lg:text-4xl font-black text-foreground">People At <br />Yuvichaar Funnels</h2>
         </div>
 
         {/* Content Grid */}
@@ -130,10 +130,12 @@ export default function MeetTheFounder() {
               ))}
             </div>
             {/* Education Badge */}
-            <div className="mt-4 inline-flex items-center space-x-2 bg-card-bg rounded-full px-4 py-2 border border-border">
-              <div className="w-8 h-8 rounded-full bg-[#0D47A1] flex items-center justify-center text-white text-xs font-bold">
-                UoB
-              </div>
+            <div className="mt-4 inline-flex items-center space-x-2 bg-card-bg rounded-full px-4 py-2 border object-contain w-full h-[25px] border-border">
+              <img
+                src="https://res.cloudinary.com/dvxqb1wge/image/upload/v1773402272/download_kgusuc.jpg"
+                alt="University logo"
+                className="h-10 w-10 shrink-0 object-contain"
+              />
               <span className="text-sm text-text-secondary">
                 MSc International Business — University of Birmingham, UK
               </span>

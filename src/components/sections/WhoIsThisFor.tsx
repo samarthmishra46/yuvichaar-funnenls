@@ -37,11 +37,10 @@ export default function WhoIsThisFor() {
     <section className="py-16 lg:py-24 bg-background-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-12">
-          <div className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">
+        <div className="mb-2">
+          <div className="text-xs font-semibold tracking-wider text-primary uppercase ">
             Who Is This For
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-foreground">Is This Right For You?</h2>
         </div>
 
         {/* Content Grid */}
@@ -52,7 +51,7 @@ export default function WhoIsThisFor() {
               <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
                 <Check className="w-4 h-4 text-white" />
               </div>
-              <span className="text-success text-3xl font-bold">This is for you if...</span>
+              <span className="text-success text-3xl font-bold">This is for you if</span>
             </div>
             <div className="space-y-4">
               {forYou.map((item, index) => (
@@ -80,7 +79,7 @@ export default function WhoIsThisFor() {
               <div className="w-6 h-6 rounded-full bg-error flex items-center justify-center">
                 <X className="w-4 h-4 text-white" />
               </div>
-              <span className="text-error text-3xl font-bold">This isn't for you if...</span>
+              <span className="text-error text-3xl font-bold">This isn't for you if</span>
             </div>
             <div className="space-y-4">
               {notForYou.map((item, index) => (
@@ -100,7 +99,7 @@ export default function WhoIsThisFor() {
                 </div>
               ))}
             </div>
-                  <CTAWithIdealFor className="mt-8" />
+                  <CTAWithIdealFor className="mt-8 pt-6" />
           </div>
         </div>
       </div>
