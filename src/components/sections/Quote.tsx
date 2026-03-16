@@ -33,7 +33,9 @@ export default function Quote() {
                 
               </div>
               {/* Placeholder image - replace src with your video/gif */}
-              <div className="w-full h-full rounded-2xl flex items-center justify-center text-gray-400 bg-[#F72585]">
+              <div className="w-full h-full  flex items-center justify-center text-gray-400 style={{
+                background: 'linear-gradient(180deg, #E91E8C 0%, #9C27B0 100%)'
+              }}">
               <img src="https://res.cloudinary.com/dvxqb1wge/image/upload/v1755443771/YHL_thsupk.gif" alt="" />
               </div>
             </div>

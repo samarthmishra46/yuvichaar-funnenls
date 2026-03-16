@@ -45,12 +45,14 @@ export default function Navbar() {
           {/* Right side - Theme Toggle + CTA */}
           <div className="flex items-center space-x-4">
             <ThemeToggle />
-            <Link
-              href="#cta"
+            <a
+              href="https://rzp.io/rzp/SiDWLsca"
+              target="_blank"
+              rel="noopener noreferrer"
               className="hidden sm:inline-flex items-center justify-center px-5 py-2 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary-hover transition-colors duration-200"
             >
               BOOK A CALL
-            </Link>
+            </a>
 
             {/* Mobile menu button */}
             <button
@@ -77,13 +79,15 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <Link
-                href="#cta"
+              <a
+                href="https://rzp.io/rzp/SiDWLsca"
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => setIsMenuOpen(false)}
                 className="sm:hidden inline-flex items-center justify-center px-5 py-2 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary-hover transition-colors duration-200"
               >
                 BOOK A CALL
-              </Link>
+              </a>
             </div>
           </div>
         )}

@@ -87,12 +87,14 @@ export default function PortfolioPage() {
                <span className="text-text-muted ml-1 text-sm font-normal">FUNNELS</span>
 
           </Link>
-          <Link
-            href="/#cta"
+          <a
+            href="https://rzp.io/rzp/SiDWLsca"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white text-black px-5 py-2 rounded-full text-sm font-medium hover:bg-gray-200 transition-colors"
           >
             Book a Call
-          </Link>
+          </a>
         </div>
       </nav>
 
@@ -249,12 +251,14 @@ export default function PortfolioPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
               Let's Scale your Brand with Video Ads
             </h2>
-            <Link
-              href="/#cta"
+            <a
+              href="https://rzp.io/rzp/SiDWLsca"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center bg-white text-black font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition-colors text-lg"
             >
               Book a call
-            </Link>
+            </a>
           </div>
         </div>
       </section>

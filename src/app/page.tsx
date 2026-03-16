@@ -9,6 +9,7 @@ import BehindTheScenes from '@/components/sections/BehindTheScenes';
 import Timeline from '@/components/sections/Timeline';
 import CTA from '@/components/sections/CTA';
 import Footer from '@/components/sections/Footer';
+import { StickyCTA } from '@/components/CTAButton';
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
         <CTA />
       </main>
       <Footer />
+      <StickyCTA />
     </div>
   );
 }

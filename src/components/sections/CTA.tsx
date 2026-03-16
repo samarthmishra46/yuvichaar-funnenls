@@ -26,7 +26,9 @@ export default function CTA() {
             {/* Right - CTA Button */}
             <div className="text-center">
               <a
-                href="#"
+                href="https://rzp.io/rzp/SiDWLsca"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center px-8 py-4 rounded-lg bg-white text-primary font-bold text-sm hover:bg-white/90 transition-colors duration-200 shadow-xl group"
               >
                 BOOK A CALL

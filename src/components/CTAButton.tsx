@@ -15,7 +15,7 @@ interface CTAButtonProps {
 }
 
 export function CTAButton({
-  href = '#cta',
+  href = 'https://rzp.io/rzp/SiDWLsca',
   title = 'Book A Call',
   subtitle = 'Minimum ₹5 Lakhs Budget',
   className = '',
@@ -68,8 +68,26 @@ interface CTAWithIdealForProps {
   className?: string;
 }
 
+export function StickyCTA({
+  href = 'https://rzp.io/rzp/SiDWLsca',
+  title = 'Book A Call',
+  subtitle = 'Minimum ₹5 Lakhs Budget',
+}: {
+  href?: string;
+  title?: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 bg-background/80 backdrop-blur-md border-t border-border">
+      <div className="max-w-sm mx-auto">
+        <CTAButton href={href} title={title} subtitle={subtitle} />
+      </div>
+    </div>
+  );
+}
+
 export function CTAWithIdealFor({
-  ctaHref = '#cta',
+  ctaHref = 'https://rzp.io/rzp/SiDWLsca',
   ctaTitle = 'Book A Call',
   ctaSubtitle = 'Minimum ₹5 Lakhs Budget',
   className = '',

@@ -966,10 +966,15 @@ export default function CaseStudyPage() {
           <h3 className="text-xl sm:text-2xl font-bold text-white mb-6">
             {caseStudy.cta.title}
           </h3>
-          <button className="bg-white text-primary font-semibold px-8 py-3 rounded-full flex items-center justify-center mx-auto hover:bg-gray-50 transition-colors">
+          <a
+            href="https://rzp.io/rzp/SiDWLsca"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-primary font-semibold px-8 py-3 rounded-full inline-flex items-center justify-center mx-auto hover:bg-gray-50 transition-colors"
+          >
             {caseStudy.cta.buttonText}
             <ArrowRight className="w-4 h-4 ml-2" />
-          </button>
+          </a>
           <p className="text-white/70 text-sm mt-4">{caseStudy.cta.note}</p>
         </div>
       </main>
