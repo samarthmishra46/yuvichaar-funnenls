@@ -1,16 +1,27 @@
 'use client';
 
+import Image from 'next/image';
+import Marquee from 'react-fast-marquee';
+
 import { CTAButton, IdealForSection } from '../CTAButton';
 
-const brands = [
-  'VC Backed',
-  'D2C Brand',
-  'Bootstrapped',
-  'Series A',
-  'VC Backed',
-  'D2C Brand',
-  'Bootstrapped',
-  'Series A',
+const brandLogos = [
+  { name: 'Next.js', src: 'https://kingkoil.in/images/logo.png' },
+  { name: 'Vercel', src: 'https://skillnation.ai/wp-content/uploads/2023/08/SN_logo-17-1024x415.png' },
+  { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
+  { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
+  { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/SPINEMAT_WHITE_LOGO.png?v=1772714242&width=200' },
+  { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
+  { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
+   { name: 'Next.js', src: 'https://kingkoil.in/images/logo.png' },
+  { name: 'Vercel', src: 'https://skillnation.ai/wp-content/uploads/2023/08/SN_logo-17-1024x415.png' },
+  { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
+  { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
+  { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/SPINEMAT_WHITE_LOGO.png?v=1772714242&width=200' },
+  { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
+  { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
 ];
 
 export default function Hero() {
@@ -36,19 +47,29 @@ export default function Hero() {
           <p className="text-sm text-text-secondary text-center mt-8">
             Trusted by 75+ <span className="text-primary font-semibold">D2C brands</span> across India
           </p>
-
+<br />
           {/* Brand Pills - Marquee */}
           <div className="mt-4 overflow-hidden relative">
-            <div className="flex gap-3 animate-marquee whitespace-nowrap">
-              {brands.map((brand, index) => (
-                <span
-                  key={index}
-                  className="px-4 py-2 rounded-full border border-border text-sm text-text-secondary bg-card-bg flex-shrink-0"
-                >
-                  {brand}
-                </span>
-              ))}
-            </div>
+            <Marquee speed={50} gradient={false} pauseOnHover>
+              <div className="flex gap-2 pr-2 pt-2">
+                {brandLogos.map((brand, index) => (
+                  <div
+                    key={`logo-${index}`}
+                    className="w-28 h-20 rounded-xl border border-border bg-card-bg flex items-center justify-center p-4 shrink-0"
+                  >
+                    <Image
+                      src={brand.src}
+                      alt={brand.name}
+                      width={28}
+                      height={22}
+                      className="w-14 h-11 object-contain"
+                      unoptimized
+                      loader={({ src }) => src}
+                    />
+                  </div>
+                ))}
+              </div>
+            </Marquee>
           </div>
 
           {/* CTA Box */}

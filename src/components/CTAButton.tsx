@@ -78,9 +78,19 @@ export function StickyCTA({
   subtitle?: string;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-4 pt-2 bg-background/80 backdrop-blur-md border-t border-border">
+    <div className="fixed bottom-[20px] left-0 right-0 z-70 px-4 pb-4 mb-12 bg-transparent  ">
       <div className="max-w-sm mx-auto">
-        <CTAButton href={href} title={title} subtitle={subtitle} />
+        <a
+      href={href}
+      className={`block w-full px-2 py-1 rounded-2xl bg-gradient-to-b from-pink-500 via-fuchsia-500 to-purple-600 text-center hover:opacity-90 transition-opacity duration-200 `}
+    >
+      <span className="block text-white font-bold text-sm uppercase tracking-wide">
+        {title}
+      </span>
+      <span className="block text-white/80 text-xs mt-1">
+        {subtitle}
+      </span>
+    </a>
       </div>
     </div>
   );
