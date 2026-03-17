@@ -1,44 +1,70 @@
 'use client';
 
-import { Play } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
 const videos = [
-  { id: 1, label: 'Production Reel — 2025', thumbnail: '/bts/video-1.jpg' },
-  { id: 2, label: 'Shoot Day Bloopers', thumbnail: '/bts/video-2.jpg' },
-  { id: 3, label: 'Studio Tour', thumbnail: '/bts/video-3.jpg' },
-  { id: 4, label: 'Client Reactions', thumbnail: '/bts/video-4.jpg' },
-  { id: 5, label: 'Team Moments', thumbnail: '/bts/video-5.jpg' },
+  { id: 1, label: 'Production Reel — 2025', src: 'https://res.cloudinary.com/dvxqb1wge/video/upload/v1773657403/25ac9ad3-ab7e-4cf3-b5e2-8346fcade600_ehfif0.mp4' },
+  { id: 2, label: 'Shoot Day Bloopers', src: 'https://res.cloudinary.com/dvxqb1wge/video/upload/v1773716576/IMG_3556_u4rwtg.mp4' },
+  { id: 3, label: 'Studio Tour', src: 'https://res.cloudinary.com/dvxqb1wge/video/upload/v1773657422/2918C6FE-635D-42A8-8AA4-A6571CA0FF0B_dnj7bo.mp4' },
+  { id: 4, label: 'Client Reactions', src: 'https://res.cloudinary.com/dvxqb1wge/video/upload/v1773716588/IMG_3300_f5fdx6.mp4' },
+  { id: 5, label: 'Team Moments', src: 'https://res.cloudinary.com/dvxqb1wge/video/upload/v1773716592/IMG_8981_xrtm2x.mp4' },
 ];
 
 export default function BehindTheScenes() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(Array(videos.length).fill(true));
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-slide every 3 seconds
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    if (!isAutoPlaying || !isMuted[currentIndex]) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % videos.length);
-    }, 3000);
+    }, 6000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, isMuted, currentIndex]);
+
+  // Ensure only current video is playing and others are paused
+  useEffect(() => {
+    videoRefs.current.forEach((video, idx) => {
+      if (!video) return;
+      if (idx === currentIndex) {
+        video.play();
+      } else {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+  }, [currentIndex]);
 
   // Handle touch/swipe
-  const touchStartX = useRef(0);
-  const touchEndX = useRef(0);
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    // Ignore taps on interactive controls like mute/unmute button.
+    if (target.closest('button')) {
+      touchStartX.current = null;
+      touchEndX.current = null;
+      return;
+    }
+
     touchStartX.current = e.touches[0].clientX;
+    touchEndX.current = e.touches[0].clientX;
     setIsAutoPlaying(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
     touchEndX.current = e.touches[0].clientX;
   };
 
   const handleTouchEnd = () => {
+    if (touchStartX.current === null || touchEndX.current === null) return;
+
     const diff = touchStartX.current - touchEndX.current;
     if (Math.abs(diff) > 50) {
       if (diff > 0) {
@@ -47,8 +73,39 @@ export default function BehindTheScenes() {
         setCurrentIndex((prev) => (prev - 1 + videos.length) % videos.length);
       }
     }
-    setTimeout(() => setIsAutoPlaying(true), 5000);
+
+    touchStartX.current = null;
+    touchEndX.current = null;
+
+    setTimeout(() => {
+      if (isMuted[currentIndex]) setIsAutoPlaying(true);
+    }, 5000);
   };
+
+  const handleMuteToggle = (idx: number) => {
+    setIsMuted((prev) => {
+      // Only one video can be unmuted at a time
+      const next = prev.map((m, i) => (i === idx ? !m : true));
+      // If unmuting, pause auto-play immediately
+      if (!prev[idx]) {
+        setIsAutoPlaying(true); // muting, so resume auto-play
+      } else {
+        setIsAutoPlaying(false); // unmuting, so pause auto-play
+      }
+      return next;
+    });
+  };
+
+  // When mute state changes, update video element
+  useEffect(() => {
+    videoRefs.current.forEach((video, idx) => {
+      if (!video) return;
+      video.muted = isMuted[idx];
+      if (idx === currentIndex && !isMuted[idx]) {
+        video.play();
+      }
+    });
+  }, [isMuted, currentIndex]);
 
   return (
     <section className="py-16 lg:py-24">
@@ -82,28 +139,41 @@ export default function BehindTheScenes() {
                 key={video.id}
                 className="w-full shrink-0 px-2 first:pl-0 last:pr-0"
               >
-                <div className="relative aspect-[9/16] max-w-[320px] mx-auto rounded-3xl overflow-hidden bg-gradient-to-br from-gray-700 to-gray-900 group cursor-pointer">
-                  {/* Video Thumbnail Placeholder */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/50" />
-                  
-                  {/* Placeholder pattern for demo */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-full h-full bg-gradient-to-br from-zinc-700 via-zinc-800 to-zinc-900" />
-                  </div>
-                  
+                <div className="relative aspect-9/16 max-w-[320px] mx-auto rounded-3xl overflow-hidden bg-linear-to-br from-gray-700 to-gray-900 group">
+                  {/* Video Element */}
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[index] = el;
+                    }}
+                    src={video.src}
+                    className="w-full h-full object-cover"
+                    playsInline
+                    autoPlay
+                    muted={isMuted[index]}
+                    loop
+                    controls={false}
+                    onClick={() => handleMuteToggle(index)}
+                    style={{ cursor: 'pointer' }}
+                  />
                   {/* Top Label */}
-                  <div className="absolute top-4 left-4 right-4">
+                  <div className="absolute top-4 left-4 right-4 z-10">
                     <span className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium text-gray-900 inline-block">
                       {video.label}
                     </span>
                   </div>
-                  
-                  {/* Play Button */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 via-pink-500 to-fuchsia-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                      <Play className="w-7 h-7 text-white ml-1" fill="white" />
-                    </div>
-                  </div>
+                  {/* Mute/Unmute Button */}
+                  <button
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 text-white rounded-full px-4 py-2 flex items-center gap-2 text-xs font-semibold shadow-lg hover:bg-black/90 transition-colors"
+                    onClick={e => { e.stopPropagation(); handleMuteToggle(index); }}
+                    aria-label={isMuted[index] ? 'Unmute video' : 'Mute video'}
+                  >
+                    {isMuted[index] ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9v6h4l5 5V4l-5 5H9z" /></svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 9v6h4l5 5V4l-5 5H9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 19L5 5" /></svg>
+                    )}
+                    {isMuted[index] ? 'Unmute' : 'Mute'}
+                  </button>
                 </div>
               </div>
             ))}

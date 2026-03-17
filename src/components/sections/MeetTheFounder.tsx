@@ -10,9 +10,8 @@ const coreCrew = [
   {
     title: 'Creative Heads',
     members: [
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1773718060/72086315114_zone93.png' },
+      { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/c_crop,g_north_west,h_234,w_257,x_269,y_276/IMG_20250415_161554_Original_-_Kuldeep_Singh_Rathore_iboclu.jpg' },
       { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
       
     ],
