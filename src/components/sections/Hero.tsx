@@ -11,7 +11,7 @@ const brandLogos = [
   { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
   { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
   { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
-  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/SPINEMAT_WHITE_LOGO.png?v=1772714242&width=200' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/50976577-0829-44c9-8f61-66aa4d5482f7_72fb27ce-9be2-4e54-ae2f-8a863a773ef1.png?v=1772009162&width=550' },
   { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
   { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
    { name: 'Next.js', src: 'https://kingkoil.in/images/logo.png' },
@@ -19,7 +19,7 @@ const brandLogos = [
   { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
   { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
   { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
-  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/SPINEMAT_WHITE_LOGO.png?v=1772714242&width=200' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/50976577-0829-44c9-8f61-66aa4d5482f7_72fb27ce-9be2-4e54-ae2f-8a863a773ef1.png?v=1772009162&width=550' },
   { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
   { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
 ];

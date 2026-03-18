@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Factory, User } from 'lucide-react';
 
 const idealFor = [
@@ -77,8 +78,27 @@ export function StickyCTA({
   title?: string;
   subtitle?: string;
 }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsVisible(window.scrollY > 0);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="fixed bottom-[20px] left-0 right-0 z-70 px-4 pb-4 mb-12 bg-transparent  ">
+    <div
+      className={`fixed bottom-[20px] left-0 right-0 z-70 px-4 pb-4 mb-12 bg-transparent transition-all duration-300 ${
+        isVisible
+          ? 'opacity-100 translate-y-0 pointer-events-auto'
+          : 'opacity-0 translate-y-3 pointer-events-none'
+      }`}
+    >
       <div className="max-w-sm mx-auto">
         <a
       href={href}

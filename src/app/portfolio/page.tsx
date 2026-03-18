@@ -1,57 +1,163 @@
 'use client';
 
 import { useState } from 'react';
-import { Play } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
+import Marquee from 'react-fast-marquee';
+import VideoHoverGrid, { VideoHoverItem } from '@/components/VideoHoverGrid';
 
 // Portfolio item type
-interface PortfolioItem {
-  id: number;
-  brand: string;
-  category: string;
-  thumbnail: string;
-  videoUrl?: string;
-}
-
 // Brand logos for marquee (placeholder emojis/text - replace with actual logos)
 const brandLogos = [
-  { id: 1, name: 'Nike', emoji: '👟' },
-  { id: 2, name: 'Apple', emoji: '🍎' },
-  { id: 3, name: 'Amazon', emoji: '📦' },
-  { id: 4, name: 'Google', emoji: '🔍' },
-  { id: 5, name: 'Meta', emoji: '👤' },
-  { id: 6, name: 'Netflix', emoji: '🎬' },
-  { id: 7, name: 'Spotify', emoji: '🎵' },
-  { id: 8, name: 'Tesla', emoji: '🚗' },
-  { id: 9, name: 'Samsung', emoji: '📱' },
-  { id: 10, name: 'Adidas', emoji: '👕' },
-  { id: 11, name: 'Puma', emoji: '🐆' },
-  { id: 12, name: 'Sony', emoji: '🎮' },
+  { name: 'Next.js', src: 'https://kingkoil.in/images/logo.png' },
+  { name: 'Vercel', src: 'https://skillnation.ai/wp-content/uploads/2023/08/SN_logo-17-1024x415.png' },
+  { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
+  { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
+  { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/50976577-0829-44c9-8f61-66aa4d5482f7_72fb27ce-9be2-4e54-ae2f-8a863a773ef1.png?v=1772009162&width=550' },
+  { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
+  { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
+  { name: 'Next.js', src: 'https://kingkoil.in/images/logo.png' },
+  { name: 'Vercel', src: 'https://skillnation.ai/wp-content/uploads/2023/08/SN_logo-17-1024x415.png' },
+  { name: 'Globe', src: 'https://mintree.in/cdn/shop/files/Mintree_Logo_3c7e9336-d594-41ef-abbd-610791bfb90b.png?v=1706126721&width=160' },
+  { name: 'Window', src: 'https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg' },
+  { name: 'File', src: 'https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/f10eb934-422b-448f-aa2c-157078acb032.webp' },
+  { name: 'Next.js', src: 'https://spinemat.com/cdn/shop/files/50976577-0829-44c9-8f61-66aa4d5482f7_72fb27ce-9be2-4e54-ae2f-8a863a773ef1.png?v=1772009162&width=550' },
+  { name: 'Vercel', src: 'https://tiimg.tistatic.com/images/l/1/logo_163430.jpg' },
+  { name: 'Globe', src: 'https://static.pw.live/production-curiousjr-fundoo/static/images/landing-page/cjr-black-logo.webp' },
 ];
 
 // Portfolio data organized by tab
-const ugcAds: PortfolioItem[] = [
-  { id: 1, brand: 'Spinemat', category: 'HEALTH & WELLNESS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 2, brand: 'SleepWell Pro', category: 'HEALTH & WELLNESS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 3, brand: 'GlowSkin', category: 'PERSONAL CARE', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 4, brand: 'FreshBite', category: 'FOOD & DRINK', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 5, brand: 'TechGadget', category: 'TECH & PRODUCTS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 6, brand: 'StyleHub', category: 'FASHION & LIFESTYLE', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 7, brand: 'HomeGlow', category: 'HOME IMPROVEMENT', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 8, brand: 'PetCare Plus', category: 'KIDS & PETS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 9, brand: 'QuickApp', category: 'APPS & SERVICES', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 10, brand: 'NatureTea', category: 'FOOD & DRINK', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 11, brand: 'FitLife', category: 'HEALTH & WELLNESS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 12, brand: 'CleanHome', category: 'HOME IMPROVEMENT', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
+const ugcAds: VideoHoverItem[] = [
+  {
+    id: 1,
+    title: 'AMACOM',
+    category: 'PERSONAL CARE',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/ed565711-f757-473e-ae6e-0bbe847e8394/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/ed565711-f757-473e-ae6e-0bbe847e8394/playlist.m3u8',
+  },
+  {
+    id: 2,
+    title: 'Binni',
+    category: 'FASHION & LIFESTYLE',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/787e93fe-a2c7-4810-84dc-e340ccece50b/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/787e93fe-a2c7-4810-84dc-e340ccece50b/playlist.m3u8',
+  },
+  {
+    id: 3,
+    title: 'Atmos',
+    category: 'FASHION & LIFESTYLE',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/349c5b19-2212-446a-8e7b-fb2e8fde56cf/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/349c5b19-2212-446a-8e7b-fb2e8fde56cf/playlist.m3u8',
+  },
+  {
+    id: 4,
+    title: 'Asli Gems',
+    category: 'FASHION & LIFESTYLE',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/304f4db6-7aed-4355-b1f0-58b26303c444/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/304f4db6-7aed-4355-b1f0-58b26303c444/playlist.m3u8',
+  },
+  {
+    id: 5,
+    title: 'Arlak BioTech',
+    category: 'HEALTH & WELLNESS',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/fb61c54f-eb65-481e-9e72-618f3b4c136b/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/fb61c54f-eb65-481e-9e72-618f3b4c136b/playlist.m3u8',
+  },
+  {
+    id: 6,
+    title: '',
+    category: '',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/1333707d-7c6b-431f-84fb-e67f5eb312b5/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/1333707d-7c6b-431f-84fb-e67f5eb312b5/playlist.m3u8',
+  },
+  {
+    id: 7,
+    title: 'DNA ',
+    category: 'APPS & SERVICES',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/8474f82e-66bb-41e6-bc9e-39b45dad4b6e/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/8474f82e-66bb-41e6-bc9e-39b45dad4b6e/playlist.m3u8',
+  },
+  {
+    id: 8,
+    title: 'Arabian Aroma',
+    category: 'FASHION & LIFESTYLE',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/3aa036c1-91b7-401e-a2b2-041126f70a2a/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/3aa036c1-91b7-401e-a2b2-041126f70a2a/playlist.m3u8',
+  },
+  {
+    id: 9,
+    title: 'Add-Ed`s',
+    category: 'Kids & Pets',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/ca84b655-d76d-4745-ad60-16d6ae8759ac/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/ca84b655-d76d-4745-ad60-16d6ae8759ac/playlist.m3u8',
+  },
+  {
+    id: 10,
+    title: 'Physics Wallah',
+    category: 'APPS & SERVICES',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/379ff2f0-e94b-4725-94e5-5d7026c9b429/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/379ff2f0-e94b-4725-94e5-5d7026c9b429/playlist.m3u8',
+  },
+  {
+    id: 11,
+    title: 'Purpose Healthcare',
+    category: 'HEALTH & WELLNESS',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/26d9ee50-93b1-453b-b14e-ca90d2f5e51d/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/26d9ee50-93b1-453b-b14e-ca90d2f5e51d/playlist.m3u8',
+  },
+  {
+    id: 12,
+    title: 'Spinemat',
+    category: 'HEALTH & WELLNESS',
+    poster: 'https://vz-5ad9b308-4a4.b-cdn.net/32d21443-4200-4d17-99a2-68005e38fd33/thumbnail.jpg',
+    hlsUrl: 'https://vz-5ad9b308-4a4.b-cdn.net/32d21443-4200-4d17-99a2-68005e38fd33/playlist.m3u8',
+  },
 ];
 
-const highProductionAds: PortfolioItem[] = [
-  { id: 101, brand: 'LuxuryBrand', category: 'FASHION & LIFESTYLE', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 102, brand: 'PremiumTech', category: 'TECH & PRODUCTS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 103, brand: 'EliteWellness', category: 'HEALTH & WELLNESS', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 104, brand: 'GourmetChef', category: 'FOOD & DRINK', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 105, brand: 'DesignerHome', category: 'HOME IMPROVEMENT', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
-  { id: 106, brand: 'BeautyLux', category: 'PERSONAL CARE', thumbnail: 'https://res.cloudinary.com/dq5vdlfhw/image/upload/v1741456155/Screenshot_2025-03-08_233541_rplzjs.png' },
+const highProductionAds: VideoHoverItem[] = [
+  {
+    id: 101,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
+  {
+    id: 102,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
+  {
+    id: 103,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
+  {
+    id: 104,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
+  {
+    id: 105,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
+  {
+    id: 106,
+    title: '',
+    category: '',
+    poster: '',
+    hlsUrl: '',
+  },
 ];
 
 const categories = [
@@ -72,7 +178,9 @@ export default function PortfolioPage() {
   const currentItems = activeTab === 'ugc' ? ugcAds : highProductionAds;
   
   const filteredItems = activeCategory
-    ? currentItems.filter(item => item.category.toLowerCase() === activeCategory.toLowerCase().replace('&', '&'))
+    ? currentItems.filter((item) =>
+        item.category.toLowerCase() === activeCategory.toLowerCase().replace('&', '&')
+      )
     : currentItems;
 
   return (
@@ -131,37 +239,29 @@ export default function PortfolioPage() {
         </div>
       </header>
 
-      {/* Brand Logo Marquee */}
-      <div className="py-8 overflow-hidden border-y border-gray-800">
-        <div className="relative">
-          <div className="flex animate-marquee whitespace-nowrap">
-            {[...brandLogos, ...brandLogos].map((brand, index) => (
+      {/* Brand Pills - Marquee */}
+      <div className="mt-4 overflow-hidden relative">
+        <Marquee speed={50} gradient={false} pauseOnHover>
+          <div className="flex gap-2 pr-2 pt-2">
+            {brandLogos.map((brand, index) => (
               <div
-                key={`${brand.id}-${index}`}
-                className="flex items-center gap-3 mx-8"
+                key={`logo-${index}`}
+                className="w-28 h-20 rounded-xl border border-border bg-card-bg flex items-center justify-center p-4 shrink-0"
               >
-                <span className="text-4xl">{brand.emoji}</span>
-                <span className="text-gray-400 font-medium text-lg">{brand.name}</span>
+                <Image
+                  src={brand.src}
+                  alt={brand.name}
+                  width={28}
+                  height={22}
+                  className="w-14 h-11 object-contain"
+                  unoptimized
+                  loader={({ src }) => src}
+                />
               </div>
             ))}
           </div>
-        </div>
+        </Marquee>
       </div>
-
-      {/* Add CSS for marquee animation */}
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .animate-marquee {
-          animation: marquee 20s linear infinite;
-        }
-      `}</style>
 
       {/* Category Filters */}
       <div className="sticky top-0 z-50 bg-[#0a0a0a]/95 backdrop-blur-sm border-b border-gray-800 py-4">
@@ -196,45 +296,7 @@ export default function PortfolioPage() {
 
       {/* Portfolio Grid */}
       <main className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {filteredItems.map((item) => (
-            <div
-              key={item.id}
-              className="group relative rounded-2xl overflow-hidden bg-[#1a1a1a] aspect-[9/16] cursor-pointer hover:scale-[1.02] transition-transform duration-300"
-            >
-              {/* Phone Frame */}
-              <div className="absolute inset-0 border-4 border-gray-800 rounded-2xl pointer-events-none z-10" />
-              
-              {/* Video Thumbnail */}
-              <img
-                src={item.thumbnail}
-                alt={item.brand}
-                className="w-full h-full object-cover"
-              />
-              
-              {/* Category Badge */}
-              <div className="absolute top-4 left-3 right-3 z-20">
-                <span className="text-[10px] font-semibold text-gray-400 tracking-wider">
-                  {item.category}
-                </span>
-              </div>
-
-              {/* Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <Play className="w-5 h-5 text-white ml-0.5" fill="currentColor" />
-                </div>
-              </div>
-
-              {/* Brand Name */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20">
-                <h4 className="text-white font-semibold text-sm">
-                  {item.brand}
-                </h4>
-              </div>
-            </div>
-          ))}
-        </div>
+        <VideoHoverGrid items={filteredItems} />
 
         {/* Empty State */}
         {filteredItems.length === 0 && (
