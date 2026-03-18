@@ -9,8 +9,8 @@ interface UseHlsHoverVideoOptions {
 }
 
 interface UseHlsHoverVideoResult {
-  containerRef: RefObject<HTMLDivElement>;
-  videoRef: RefObject<HTMLVideoElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
+  videoRef: RefObject<HTMLVideoElement | null>;
   isHovering: boolean;
   isReady: boolean;
   shouldRenderVideo: boolean;
