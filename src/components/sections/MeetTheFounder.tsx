@@ -12,28 +12,26 @@ const coreCrew = [
     members: [
       { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1773718060/72086315114_zone93.png' },
       { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/c_crop,g_north_west,h_234,w_257,x_269,y_276/IMG_20250415_161554_Original_-_Kuldeep_Singh_Rathore_iboclu.jpg' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+      { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774110452/Screenshot_from_2026-03-21_21-57-04_zkx3zo.png' },
       
     ],
   },
-  {
-    title: 'Core Operations',
-    members: [
-       { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+  // {
+  //   title: 'Core Operations',
+  //   members: [
+  //      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+  //     { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+  //     { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
+  //     { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
       
-    ],
-  },
+  //   ],
+  // },
   {
     title: 'Tech & AI',
     members: [
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
-      
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1774184425/Screenshot_from_2026-03-22_18-30-05_sogiwl.png' },
+      { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1774184376/Screenshot_from_2026-03-22_18-29-20_e5dmbq.png' },
+     
     ],
    
   },
@@ -182,7 +180,7 @@ export default function MeetTheFounder() {
             </div>
 
             {/* The Other Crew */}
-            <div className="pt-6">
+            {/* <div className="pt-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex-1 h-px bg-border"></div>
                 <span className="text-xs font-semibold tracking-wider text-primary uppercase">The Other Crew</span>
@@ -203,7 +201,7 @@ export default function MeetTheFounder() {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Highlights */}
             <CTAWithIdealFor className="mt-8" />

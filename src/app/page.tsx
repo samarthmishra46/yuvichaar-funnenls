@@ -18,7 +18,7 @@ export default function Home() {
       <main>
         <Hero />
         <Quote />
-        <CaseStudies />
+        {/* <CaseStudies /> */}
         <WhoIsThisFor />
         <WhatWeDo />
         <MeetTheFounder />
