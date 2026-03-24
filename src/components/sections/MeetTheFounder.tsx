@@ -46,7 +46,14 @@ const otherCrew = [
               { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365120/548518163_17992561097832802_8159819587310002180_n_tjummw.jpg' },
                 { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365120/629849312_18450393856100087_1316244282805537861_n_tyu3je.jpg' },
                   { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365120/519682291_17866106991422537_7427448598937310435_n_v2mtpw.jpg' },
-                    { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365121/650969140_18093099449471293_3192646460394751713_n_rgkcfv.jpg' },
+                    
+    ],
+  },
+  {
+    title:"",
+    members: [
+        { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365121/650969140_18093099449471293_3192646460394751713_n_rgkcfv.jpg' },
+                    
                       { image: 'https://res.cloudinary.com/dix4pzu0k/image/upload/v1773218906/image_3006_qhiilf.png' },
                         { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365120/499202352_18196232164308736_2469038785588982259_n_ocxtbr.jpg' },
                           { image: 'https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365126/473811164_1017321807107262_8153379905253506214_n_jyghxj.jpg' },
