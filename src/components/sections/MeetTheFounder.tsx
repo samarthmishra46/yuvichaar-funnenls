@@ -152,6 +152,12 @@ const otherCrew = [
       },
       {
         image:
+          "https://res.cloudinary.com/dqyizevct/image/upload/v1774676713/322293242_562316835744706_8707535068712416806_n_p1j4jg.jpg",
+        instagram: "https://www.instagram.com/sharma.vyomesh?igsh=MW9nbG5yNXJyZzZ6NA%3D%3D",
+      },
+      
+      {
+        image:
           "https://res.cloudinary.com/dvxqb1wge/image/upload/v1774365339/648269821_18108577000763858_1056069114369062278_n_mgtzcz.jpg",
         instagram: "https://www.instagram.com/mohaaaannnn?igsh=eG5qdDdvOXBweDMz",
       },
