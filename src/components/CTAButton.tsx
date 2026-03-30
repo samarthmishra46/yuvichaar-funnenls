@@ -18,7 +18,7 @@ interface CTAButtonProps {
 export function CTAButton({
   href = 'https://rzp.io/rzp/SiDWLsca',
   title = 'Book A Call',
-  subtitle = 'Minimum ₹5 Lakhs Budget',
+  subtitle = '',
   className = '',
 }: CTAButtonProps) {
   return (
@@ -26,7 +26,7 @@ export function CTAButton({
       href={href}
       className={`block w-full px-2 py-1 rounded-2xl bg-gradient-to-b from-pink-500 via-fuchsia-500 to-purple-600 text-center hover:opacity-90 transition-opacity duration-200 ${className}`}
     >
-      <span className="block text-white font-bold text-sm uppercase tracking-wide">
+      <span className="block text-white font-bold text-md uppercase tracking-wide">
         {title}
       </span>
       <span className="block text-white/80 text-xs mt-1">
@@ -72,7 +72,7 @@ interface CTAWithIdealForProps {
 export function StickyCTA({
   href = 'https://rzp.io/rzp/SiDWLsca',
   title = 'Book A Call',
-  subtitle = 'Minimum ₹5 Lakhs Budget',
+  subtitle = '',
 }: {
   href?: string;
   title?: string;
@@ -104,7 +104,7 @@ export function StickyCTA({
       href={href}
       className={`block w-full px-2 py-1 rounded-2xl bg-gradient-to-b from-pink-500 via-fuchsia-500 to-purple-600 text-center hover:opacity-90 transition-opacity duration-200 `}
     >
-      <span className="block text-white font-bold text-sm uppercase tracking-wide">
+      <span className="block text-white font-bold text-md uppercase tracking-wide">
         {title}
       </span>
       <span className="block text-white/80 text-xs mt-1">
@@ -119,7 +119,7 @@ export function StickyCTA({
 export function CTAWithIdealFor({
   ctaHref = 'https://rzp.io/rzp/SiDWLsca',
   ctaTitle = 'Book A Call',
-  ctaSubtitle = 'Minimum ₹5 Lakhs Budget',
+  ctaSubtitle = '     ',
   className = '',
 }: CTAWithIdealForProps) {
   return (
