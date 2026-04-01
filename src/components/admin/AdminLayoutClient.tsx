@@ -38,8 +38,8 @@ export default function AdminLayoutClient({
       <style>{`
         .admin-layout {
           min-height: 100vh;
-          background: #0a0a0f;
-          color: #f8fafc;
+          background: #f8f9fa;
+          color: #0f172a;
         }
 
         .admin-layout__main {
@@ -53,6 +53,7 @@ export default function AdminLayoutClient({
         .admin-layout__content {
           flex: 1;
           padding: 2rem;
+          background: #ffffff;
         }
 
         @media (max-width: 768px) {

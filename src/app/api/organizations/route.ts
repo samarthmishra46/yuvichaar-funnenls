@@ -4,6 +4,8 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Organization from '@/models/Organization';
 import bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import { sendEmail, getOnboardingEmailTemplate } from '@/lib/email';
 
 // GET /api/organizations — list all orgs (admin only)
 export async function GET(request: NextRequest) {
@@ -53,9 +55,23 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Validate required fields
-    if (!body.name || !body.email || !body.password) {
+    if (!body.name || !body.email) {
       return NextResponse.json(
-        { error: 'Name, email, and password are required' },
+        { error: 'Name and email are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!body.mouUrl || !body.sowUrl) {
+      return NextResponse.json(
+        { error: 'MOU and SOW documents are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!body.totalAmount || !body.minimumPayment) {
+      return NextResponse.json(
+        { error: 'Total amount and minimum payment are required' },
         { status: 400 }
       );
     }
@@ -69,8 +85,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(body.password, 12);
+    // Generate temporary password and onboarding token
+    const tempPassword = uuidv4();
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
+    const onboardingToken = uuidv4();
 
     const org = await Organization.create({
       name: body.name,
@@ -82,7 +100,32 @@ export async function POST(request: NextRequest) {
       logo: body.logo || '',
       industry: body.industry || '',
       accountManager: body.accountManager || '',
-      status: body.status || 'onboarding',
+      status: 'onboarding',
+      payment: {
+        totalAmount: parseFloat(body.totalAmount),
+        minimumPayment: parseFloat(body.minimumPayment),
+        payments: [],
+      },
+      onboarding: {
+        token: onboardingToken,
+        mouUrl: body.mouUrl,
+        sowUrl: body.sowUrl,
+        minimumPaymentPaid: false,
+        passwordSetup: false,
+      },
+    });
+
+    // Send onboarding email
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const onboardingLink = `${baseUrl}/onboarding/${onboardingToken}`;
+    
+    await sendEmail({
+      to: body.email,
+      subject: 'Welcome to Yuvichaar - Complete Your Onboarding',
+      html: getOnboardingEmailTemplate({
+        organizationName: body.name,
+        onboardingLink,
+      }),
     });
 
     // Return without password

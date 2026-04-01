@@ -12,6 +12,7 @@ import {
   Globe,
   CreditCard,
   Layers,
+  MapPin,
 } from 'lucide-react';
 
 interface CustomSection {
@@ -23,6 +24,7 @@ interface CustomSection {
 const staticNavItems = [
   { name: 'Dashboard', href: '/client', icon: LayoutDashboard },
   { name: 'Brand Info', href: '/client/brand', icon: Building2 },
+  { name: 'Roadmap', href: '/client/roadmap', icon: MapPin },
   { name: 'Research', href: '/client/research', icon: FileText },
   { name: 'Videos', href: '/client/videos', icon: Video },
   { name: 'Landing Page', href: '/client/landing-page', icon: Globe },
@@ -51,174 +53,67 @@ export default function ClientSidebar() {
   };
 
   return (
-    <>
-      <aside className="client-sidebar">
-        {/* Logo */}
-        <div className="client-sidebar__logo">
-          <div className="client-sidebar__logo-icon">
-            <span className="client-sidebar__logo-letter">Y</span>
-          </div>
-          <span className="client-sidebar__logo-text">
-            <span className="font-bold text-gray-900">Yuvi</span>
-            <span className="font-bold text-pink-500">chaar</span>
-          </span>
+    <aside className="fixed top-0 left-0 bottom-0 w-[260px] max-md:w-[72px] bg-white border-r border-[#e2e8f0] flex flex-col py-5 px-3 z-40 overflow-y-auto">
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-2 mb-8">
+        <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[#e91e8c] to-[#9333ea] flex items-center justify-center shrink-0">
+          <span className="text-white font-extrabold text-lg">Y</span>
         </div>
+        <span className="text-lg whitespace-nowrap max-md:hidden">
+          <span className="font-bold text-gray-900">Yuvi</span>
+          <span className="font-bold text-pink-500">chaar</span>
+        </span>
+      </div>
 
-        {/* Nav */}
-        <nav className="client-sidebar__nav">
-          {staticNavItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`client-sidebar__link ${active ? 'client-sidebar__link--active' : ''}`}
-              >
-                <Icon className="w-5 h-5 shrink-0" />
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
+      {/* Nav */}
+      <nav className="flex flex-col gap-1 flex-1">
+        {staticNavItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-medium transition-all no-underline whitespace-nowrap ${
+                active
+                  ? 'text-[#e91e8c] bg-[#fdf2f8] hover:bg-[rgba(233,30,140,0.1)]'
+                  : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8f9fa]'
+              }`}
+            >
+              <Icon className="w-5 h-5 shrink-0" />
+              <span className="max-md:hidden">{item.name}</span>
+            </Link>
+          );
+        })}
 
-          {/* Dynamic custom sections */}
-          {sections.length > 0 && (
-            <>
-              <div className="client-sidebar__divider" />
-              <span className="client-sidebar__section-label">Custom Sections</span>
-              {sections.map((section) => {
-                const href = `/client/sections/${section.id}`;
-                const active = pathname === href;
-                return (
-                  <Link
-                    key={section.id}
-                    href={href}
-                    className={`client-sidebar__link ${active ? 'client-sidebar__link--active' : ''}`}
-                  >
-                    <Layers className="w-5 h-5 shrink-0" />
-                    <span>{section.title}</span>
-                  </Link>
-                );
-              })}
-            </>
-          )}
-        </nav>
-      </aside>
-
-      <style jsx>{`
-        .client-sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          width: 260px;
-          background: #ffffff;
-          border-right: 1px solid #e2e8f0;
-          display: flex;
-          flex-direction: column;
-          padding: 1.25rem 0.75rem;
-          z-index: 40;
-          overflow-y: auto;
-        }
-
-        .client-sidebar__logo {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0 0.5rem;
-          margin-bottom: 2rem;
-        }
-
-        .client-sidebar__logo-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #e91e8c, #9333ea);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .client-sidebar__logo-letter {
-          color: white;
-          font-weight: 800;
-          font-size: 1.125rem;
-        }
-
-        .client-sidebar__logo-text {
-          font-size: 1.125rem;
-          white-space: nowrap;
-        }
-
-        .client-sidebar__nav {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          flex: 1;
-        }
-
-        .client-sidebar__link {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.625rem 0.75rem;
-          border-radius: 12px;
-          color: #64748b;
-          font-size: 0.875rem;
-          font-weight: 500;
-          transition: all 0.2s ease;
-          text-decoration: none;
-          white-space: nowrap;
-        }
-
-        .client-sidebar__link:hover {
-          color: #0f172a;
-          background: #f8f9fa;
-        }
-
-        .client-sidebar__link--active {
-          color: #e91e8c;
-          background: #fdf2f8;
-        }
-
-        .client-sidebar__link--active:hover {
-          color: #e91e8c;
-          background: rgba(233, 30, 140, 0.1);
-        }
-
-        .client-sidebar__divider {
-          height: 1px;
-          background: #e2e8f0;
-          margin: 0.75rem 0.5rem;
-        }
-
-        .client-sidebar__section-label {
-          font-size: 0.6875rem;
-          font-weight: 600;
-          color: #94a3b8;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          padding: 0 0.75rem;
-          margin-bottom: 0.25rem;
-        }
-
-        @media (max-width: 768px) {
-          .client-sidebar {
-            width: 72px;
-          }
-
-          .client-sidebar__logo-text,
-          .client-sidebar__link span,
-          .client-sidebar__section-label {
-            display: none;
-          }
-
-          .client-sidebar__divider {
-            margin: 0.5rem 0.25rem;
-          }
-        }
-      `}</style>
-    </>
+        {/* Dynamic custom sections */}
+        {sections.length > 0 && (
+          <>
+            <div className="h-px bg-[#e2e8f0] my-3 mx-2 max-md:mx-1" />
+            <span className="text-[0.6875rem] font-semibold text-[#94a3b8] uppercase tracking-wider px-3 mb-1 max-md:hidden">
+              Custom Sections
+            </span>
+            {sections.map((section) => {
+              const href = `/client/sections/${section.id}`;
+              const active = pathname === href;
+              return (
+                <Link
+                  key={section.id}
+                  href={href}
+                  className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-medium transition-all no-underline whitespace-nowrap ${
+                    active
+                      ? 'text-[#e91e8c] bg-[#fdf2f8] hover:bg-[rgba(233,30,140,0.1)]'
+                      : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8f9fa]'
+                  }`}
+                >
+                  <Layers className="w-5 h-5 shrink-0" />
+                  <span className="max-md:hidden">{section.title}</span>
+                </Link>
+              );
+            })}
+          </>
+        )}
+      </nav>
+    </aside>
   );
 }

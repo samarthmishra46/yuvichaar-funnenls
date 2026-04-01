@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import dbConnect from '@/lib/mongodb';
+import Staff from '@/models/Staff';
+import bcrypt from 'bcryptjs';
+
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  await dbConnect();
+
+  try {
+    const staff = await Staff.find().sort({ createdAt: -1 }).lean();
+    return NextResponse.json({ staff });
+  } catch (error) {
+    console.error('Get staff error:', error);
+    return NextResponse.json({ error: 'Failed to fetch staff' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  await dbConnect();
+
+  try {
+    const { email, name, password, role } = await request.json();
+
+    if (!email || !name || !password) {
+      return NextResponse.json(
+        { error: 'Email, name, and password are required' },
+        { status: 400 }
+      );
+    }
+
+    const existing = await Staff.findOne({ email });
+    if (existing) {
+      return NextResponse.json(
+        { error: 'Staff member with this email already exists' },
+        { status: 400 }
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const staff = await Staff.create({
+      email,
+      name,
+      password: hashedPassword,
+      role: role || '',
+    });
+
+    const { password: _pw, ...staffWithoutPassword } = staff.toObject();
+
+    return NextResponse.json({ staff: staffWithoutPassword }, { status: 201 });
+  } catch (error) {
+    console.error('Create staff error:', error);
+    return NextResponse.json({ error: 'Failed to create staff member' }, { status: 500 });
+  }
+}

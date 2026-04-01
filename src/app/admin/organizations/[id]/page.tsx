@@ -13,6 +13,7 @@ import AdVideosTab from '@/components/admin/tabs/AdVideosTab';
 import LandingPageTab from '@/components/admin/tabs/LandingPageTab';
 import PaymentsTab from '@/components/admin/tabs/PaymentsTab';
 import CustomSectionsTab from '@/components/admin/tabs/CustomSectionsTab';
+import RoadmapTab from '@/components/admin/tabs/RoadmapTab';
 
 interface Organization {
   _id: string;
@@ -134,6 +135,7 @@ export default function OrganizationDetailPage() {
           <TabsTrigger value="research" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Research</TabsTrigger>
           <TabsTrigger value="videos" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Ad Videos</TabsTrigger>
           <TabsTrigger value="landing-page" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Landing Page</TabsTrigger>
+          <TabsTrigger value="roadmap" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Roadmap</TabsTrigger>
           <TabsTrigger value="payments" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Payments</TabsTrigger>
           <TabsTrigger value="custom-sections" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Custom Sections</TabsTrigger>
         </TabsList>
@@ -149,6 +151,9 @@ export default function OrganizationDetailPage() {
         </TabsContent>
         <TabsContent value="landing-page">
           <LandingPageTab org={org} onUpdate={fetchOrg} />
+        </TabsContent>
+        <TabsContent value="roadmap">
+          <RoadmapTab orgId={orgId} />
         </TabsContent>
         <TabsContent value="payments">
           <PaymentsTab org={org} onUpdate={fetchOrg} />

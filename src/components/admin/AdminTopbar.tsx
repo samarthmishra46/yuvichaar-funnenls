@@ -46,9 +46,10 @@ export default function AdminTopbar() {
           justify-content: space-between;
           padding: 0 2rem;
           height: 64px;
-          background: rgba(13, 13, 20, 0.8);
+          background: rgba(255, 255, 255, 0.95);
           backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid #e2e8f0;
+          box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
         }
 
         .admin-topbar__left {
@@ -59,7 +60,7 @@ export default function AdminTopbar() {
         .admin-topbar__title {
           font-size: 1rem;
           font-weight: 600;
-          color: #f8fafc;
+          color: #0f172a;
         }
 
         .admin-topbar__right {
@@ -92,7 +93,7 @@ export default function AdminTopbar() {
         .admin-topbar__name {
           font-size: 0.8125rem;
           font-weight: 600;
-          color: #f8fafc;
+          color: #0f172a;
           line-height: 1.2;
         }
 
@@ -109,17 +110,17 @@ export default function AdminTopbar() {
           width: 36px;
           height: 36px;
           border-radius: 10px;
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #94a3b8;
+          background: #f8f9fa;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
           cursor: pointer;
           transition: all 0.2s ease;
         }
 
         .admin-topbar__logout:hover {
-          background: rgba(239, 68, 68, 0.1);
-          border-color: rgba(239, 68, 68, 0.3);
-          color: #f87171;
+          background: #fee2e2;
+          border-color: #fecaca;
+          color: #ef4444;
         }
 
         @media (max-width: 768px) {

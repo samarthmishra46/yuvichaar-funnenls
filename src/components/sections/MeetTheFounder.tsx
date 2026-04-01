@@ -269,13 +269,13 @@ export default function MeetTheFounder() {
               ))}
             </div>
             {/* Education Badge */}
-            <div className="mt-4 inline-flex items-center space-x-2 bg-card-bg rounded-full px-4 py-2 border object-contain w-full h-[25px] border-border">
+            <div className="mt-4 inline-flex items-center space-x-3 bg-card-bg/50 backdrop-blur-sm rounded-full px-4 py-2 border border-border w-fit shadow-sm">
               <img
                 src="https://res.cloudinary.com/dvxqb1wge/image/upload/v1773402272/download_kgusuc.jpg"
                 alt="University logo"
-                className="h-10 w-10 shrink-0 object-contain"
+                className="h-6 w-6 rounded-full shrink-0 object-contain"
               />
-              <span className="text-sm text-text-secondary">
+              <span className="text-xs sm:text-sm font-medium text-text-secondary">
                 MSc International Business — University of Birmingham, UK
               </span>
             </div>

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Building2,
+  Users,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -13,6 +14,7 @@ import { useState } from 'react';
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Organizations', href: '/admin/organizations', icon: Building2 },
+  { name: 'Staff', href: '/admin/staff', icon: Users },
 ];
 
 export default function AdminSidebar() {
@@ -82,13 +84,14 @@ export default function AdminSidebar() {
           left: 0;
           bottom: 0;
           width: 260px;
-          background: #0d0d14;
-          border-right: 1px solid rgba(255, 255, 255, 0.06);
+          background: #ffffff;
+          border-right: 1px solid #e2e8f0;
           display: flex;
           flex-direction: column;
           padding: 1.25rem 0.75rem;
           z-index: 40;
           transition: width 0.25s ease;
+          box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
         }
 
         .admin-sidebar--collapsed {
@@ -138,7 +141,7 @@ export default function AdminSidebar() {
           gap: 0.75rem;
           padding: 0.625rem 0.75rem;
           border-radius: 12px;
-          color: #94a3b8;
+          color: #64748b;
           font-size: 0.875rem;
           font-weight: 500;
           transition: all 0.2s ease;
@@ -147,18 +150,18 @@ export default function AdminSidebar() {
         }
 
         .admin-sidebar__link:hover {
-          color: #f8fafc;
-          background: rgba(255, 255, 255, 0.05);
+          color: #0f172a;
+          background: #f8f9fa;
         }
 
         .admin-sidebar__link--active {
-          color: #f472b6;
-          background: rgba(244, 114, 182, 0.1);
+          color: #e91e8c;
+          background: #fdf2f8;
         }
 
         .admin-sidebar__link--active:hover {
-          color: #f472b6;
-          background: rgba(244, 114, 182, 0.15);
+          color: #e91e8c;
+          background: #fce7f3;
         }
 
         .admin-sidebar__toggle {
@@ -168,17 +171,17 @@ export default function AdminSidebar() {
           width: 32px;
           height: 32px;
           border-radius: 8px;
-          background: rgba(255, 255, 255, 0.05);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #94a3b8;
+          background: #f8f9fa;
+          border: 1px solid #e2e8f0;
+          color: #64748b;
           cursor: pointer;
           margin: 0 auto;
           transition: all 0.2s ease;
         }
 
         .admin-sidebar__toggle:hover {
-          background: rgba(255, 255, 255, 0.1);
-          color: #f8fafc;
+          background: #f1f3f5;
+          color: #0f172a;
         }
 
         @media (max-width: 768px) {

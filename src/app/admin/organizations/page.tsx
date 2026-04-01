@@ -58,7 +58,7 @@ export default function OrganizationsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Organizations</h1>
+          <h1 className="text-2xl font-bold text-[#0f172a]">Organizations</h1>
           <p className="text-sm text-[#64748b] mt-1">
             Manage your client organizations
           </p>
@@ -80,14 +80,14 @@ export default function OrganizationsPage() {
             placeholder="Search by name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-xl text-white text-sm placeholder:text-[#475569] outline-none focus:border-[#9333ea] focus:ring-2 focus:ring-[rgba(147,51,234,0.15)] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm placeholder:text-[#94a3b8] outline-none focus:border-[#e91e8c] focus:ring-2 focus:ring-[rgba(233,30,140,0.1)] transition-all"
           />
         </div>
 
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2.5 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-xl text-white text-sm outline-none focus:border-[#9333ea] cursor-pointer appearance-none min-w-[140px]"
+          className="px-4 py-2.5 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c] cursor-pointer appearance-none min-w-[140px]"
         >
           <option value="all">All Statuses</option>
           <option value="onboarding">Onboarding</option>
@@ -101,23 +101,23 @@ export default function OrganizationsPage() {
       {loading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-16 w-full !bg-[rgba(255,255,255,0.04)]" />
+            <Skeleton key={i} className="h-16 w-full !bg-[#f8f9fa]" />
           ))}
         </div>
       ) : orgs.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-[#64748b] text-sm">No organizations found</p>
           <Link href="/admin/organizations/new" className="inline-block mt-4">
-            <Button variant="outline" className="!border-[rgba(255,255,255,0.1)] !text-[#94a3b8]">
+            <Button variant="outline" className="!border-[#e2e8f0] !text-[#64748b]">
               <Plus className="w-4 h-4" />
               Create your first organization
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[rgba(255,255,255,0.06)]">
+        <div className="overflow-x-auto rounded-xl border border-[#e2e8f0] shadow-sm bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-[rgba(255,255,255,0.03)]">
+            <thead className="bg-[#f8f9fa]">
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">
                   Organization
@@ -136,16 +136,16 @@ export default function OrganizationsPage() {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+            <tbody className="divide-y divide-[#f1f5f9]">
               {orgs.map((org) => (
                 <tr
                   key={org._id}
                   onClick={() => router.push(`/admin/organizations/${org._id}`)}
-                  className="cursor-pointer hover:bg-[rgba(255,255,255,0.03)] transition-colors"
+                  className="cursor-pointer hover:bg-[#f8f9fa] transition-colors"
                 >
                   <td className="px-4 py-3.5">
                     <div>
-                      <p className="font-semibold text-white">{org.name}</p>
+                      <p className="font-semibold text-[#0f172a]">{org.name}</p>
                       <p className="text-xs text-[#64748b] mt-0.5">{org.email}</p>
                     </div>
                   </td>

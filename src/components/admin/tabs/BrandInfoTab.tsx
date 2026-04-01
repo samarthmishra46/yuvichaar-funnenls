@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Upload, Key, Trash2, AlertTriangle } from 'lucide-react';
+import { Loader2, Upload, Key, Trash2, AlertTriangle, Copy, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,11 @@ interface Organization {
   industry?: string;
   accountManager?: string;
   status: string;
+  onboarding?: {
+    token?: string;
+    minimumPaymentPaid?: boolean;
+    passwordSetup?: boolean;
+  };
 }
 
 interface BrandInfoTabProps {
@@ -175,25 +180,96 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
     }
   };
 
+  const copyOnboardingLink = () => {
+    if (!org.onboarding?.token) return;
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    const link = `${baseUrl}/onboarding/${org.onboarding.token}`;
+    navigator.clipboard.writeText(link);
+    toast.success('Onboarding link copied to clipboard!');
+  };
+
   return (
     <div className="space-y-6">
+      {/* ── Onboarding Link Card ── */}
+      {org.onboarding?.token && !org.onboarding?.passwordSetup && (
+        <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2 rounded-lg bg-[#fdf2f8]">
+                <LinkIcon className="w-5 h-5 text-[#e91e8c]" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-[#0f172a] mb-1">Client Onboarding Link</h4>
+                <p className="text-xs text-[#64748b]">
+                  Share this link with the client to complete document signing and minimum payment
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-3 bg-[#f8f9fa] border border-[#e2e8f0] rounded-xl">
+              <code className="flex-1 text-sm text-[#0f172a] font-mono truncate">
+                {typeof window !== 'undefined' ? window.location.origin : ''}/onboarding/{org.onboarding.token}
+              </code>
+              <Button
+                onClick={copyOnboardingLink}
+                size="sm"
+                variant="outline"
+                className="!border-[#e2e8f0] !text-[#64748b] shrink-0"
+              >
+                <Copy className="w-4 h-4" />
+                Copy
+              </Button>
+            </div>
+
+            <div className="mt-3 flex items-center gap-4 text-xs">
+              <div className="flex items-center gap-1.5">
+                {org.onboarding.minimumPaymentPaid ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-[#22c55e]" />
+                    <span className="text-[#22c55e]">Payment completed</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-[#e2e8f0]" />
+                    <span className="text-[#64748b]">Payment pending</span>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5">
+                {org.onboarding.passwordSetup ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4 text-[#22c55e]" />
+                    <span className="text-[#22c55e]">Password set</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-4 h-4 rounded-full border-2 border-[#e2e8f0]" />
+                    <span className="text-[#64748b]">Password not set</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* ── Brand Info Card ── */}
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="space-y-5 pt-6">
           {/* Logo */}
-          <div className="flex items-center gap-4 pb-4 border-b border-[rgba(255,255,255,0.06)]">
+          <div className="flex items-center gap-4 pb-4 border-b border-[#e2e8f0]">
             {form.logo ? (
               <img
                 src={form.logo}
                 alt="Logo"
-                className="w-16 h-16 rounded-xl object-contain bg-white/5 border border-white/10 p-1"
+                className="w-16 h-16 rounded-xl object-contain bg-[#f8f9fa] border border-[#e2e8f0] p-1"
               />
             ) : (
-              <div className="w-16 h-16 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#64748b] text-xl font-bold">
+              <div className="w-16 h-16 rounded-xl bg-[#f8f9fa] border border-[#e2e8f0] flex items-center justify-center text-[#64748b] text-xl font-bold">
                 {form.name.charAt(0)}
               </div>
             )}
-            <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm font-medium cursor-pointer hover:bg-[rgba(255,255,255,0.08)] transition-colors">
+            <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-[#e2e8f0] text-[#64748b] text-sm font-medium cursor-pointer hover:bg-[#f8f9fa] transition-colors">
               {logoUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
               {logoUploading ? 'Uploading…' : 'Change Logo'}
               <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" disabled={logoUploading} />
@@ -202,25 +278,25 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
 
           {/* Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input id="bi-name" label="Name" value={form.name} onChange={(e) => updateField('name', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Input id="bi-email" label="Email" type="email" value={form.email} onChange={(e) => updateField('email', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+            <Input id="bi-name" label="Name" value={form.name} onChange={(e) => updateField('name', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="bi-email" label="Email" type="email" value={form.email} onChange={(e) => updateField('email', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input id="bi-phone" label="Phone" value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Input id="bi-website" label="Website" value={form.website} onChange={(e) => updateField('website', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+            <Input id="bi-phone" label="Phone" value={form.phone} onChange={(e) => updateField('phone', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="bi-website" label="Website" value={form.website} onChange={(e) => updateField('website', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
           </div>
 
-          <Input id="bi-address" label="Address" value={form.address} onChange={(e) => updateField('address', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+          <Input id="bi-address" label="Address" value={form.address} onChange={(e) => updateField('address', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input id="bi-industry" label="Industry" value={form.industry} onChange={(e) => updateField('industry', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Input id="bi-manager" label="Account Manager" value={form.accountManager} onChange={(e) => updateField('accountManager', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+            <Input id="bi-industry" label="Industry" value={form.industry} onChange={(e) => updateField('industry', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="bi-manager" label="Account Manager" value={form.accountManager} onChange={(e) => updateField('accountManager', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
           </div>
 
-          <Select id="bi-status" label="Status" options={statusOptions} value={form.status} onChange={(e) => updateField('status', e.target.value)} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+          <Select id="bi-status" label="Status" options={statusOptions} value={form.status} onChange={(e) => updateField('status', e.target.value)} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
 
-          <div className="flex justify-end pt-4 border-t border-[rgba(255,255,255,0.06)]">
+          <div className="flex justify-end pt-4 border-t border-[#e2e8f0]">
             <Button onClick={handleSave} disabled={saving}>
               {saving ? (
                 <>
@@ -236,10 +312,10 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
       </Card>
 
       {/* ── Change Password Card ── */}
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <Key className="w-4 h-4 text-[#f472b6]" />
+          <h4 className="font-semibold text-[#0f172a] mb-4 flex items-center gap-2">
+            <Key className="w-4 h-4 text-[#ef4444]" />
             Change Client Password
           </h4>
           <p className="text-xs text-[#64748b] mb-4">
@@ -253,7 +329,7 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
               placeholder="Min 6 characters"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+              className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
             />
             <Input
               id="confirm-password"
@@ -262,7 +338,7 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
               placeholder="Re-enter new password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+              className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
             />
           </div>
           <div className="flex justify-end mt-4">
@@ -284,15 +360,15 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
       </Card>
 
       {/* ── Danger Zone - Delete Org ── */}
-      <Card className="!bg-[rgba(239,68,68,0.04)] !border-[rgba(239,68,68,0.2)]">
+      <Card className="!bg-[#fee2e2] !border-[#fecaca]">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-[#f87171] mb-2 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" />
+          <h4 className="font-semibold text-[#ef4444] mb-2 flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-[#ef4444] shrink-0 mt-0.5" />
             Danger Zone
           </h4>
           <p className="text-sm text-[#94a3b8] mb-4">
             Permanently delete this organization and all its data (videos, research, custom sections).
-            This action <strong className="text-[#f87171]">cannot be undone</strong>.
+            This action <strong className="text-[#ef4444]">cannot be undone</strong>.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 items-end">
             <div className="flex-1">
@@ -302,14 +378,14 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
                 placeholder={org.name}
                 value={deleteConfirm}
                 onChange={(e) => setDeleteConfirm(e.target.value)}
-                className="!bg-[rgba(239,68,68,0.06)] !border-[rgba(239,68,68,0.2)] !text-white placeholder:!text-[#64748b]"
+                className="!bg-[#fee2e2] !border-[#fecaca] !text-[#ef4444] placeholder:!text-[#64748b]"
               />
             </div>
             <Button
               onClick={handleDelete}
               disabled={deleting || deleteConfirm !== org.name}
               variant="outline"
-              className="!border-[rgba(239,68,68,0.4)] !text-[#f87171] hover:!bg-[rgba(239,68,68,0.1)] disabled:!opacity-40"
+              className="!border-[#fecaca] !text-[#ef4444] hover:!bg-[#fee2e2] disabled:!opacity-40"
             >
               {deleting ? (
                 <>

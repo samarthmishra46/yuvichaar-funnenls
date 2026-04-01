@@ -79,6 +79,45 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
+
+    CredentialsProvider({
+      id: 'staff-login',
+      name: 'Staff Login',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required');
+        }
+
+        await dbConnect();
+
+        const Staff = (await import('@/models/Staff')).default;
+        const staff = await Staff.findOne({ email: credentials.email });
+
+        if (!staff) {
+          throw new Error('No staff account found with this email');
+        }
+
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          staff.password
+        );
+
+        if (!isValid) {
+          throw new Error('Invalid password');
+        }
+
+        return {
+          id: staff._id.toString(),
+          name: staff.name,
+          email: staff.email,
+          role: 'staff' as const,
+        };
+      },
+    }),
   ],
 
   callbacks: {

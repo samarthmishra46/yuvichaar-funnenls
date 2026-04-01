@@ -41,9 +41,19 @@ export interface IOrganization extends Document {
   landingPageNotes?: string;
   payment: {
     totalAmount: number;
+    minimumPayment: number;
     payments: IPaymentRecord[];
   };
   customSections: ICustomSection[];
+  onboarding: {
+    token?: string;
+    mouUrl?: string;
+    sowUrl?: string;
+    signedAt?: Date;
+    signatureUrl?: string;
+    minimumPaymentPaid: boolean;
+    passwordSetup: boolean;
+  };
   createdAt: Date;
 }
 
@@ -103,9 +113,19 @@ const OrganizationSchema = new Schema<IOrganization>(
     landingPageNotes: { type: String },
     payment: {
       totalAmount: { type: Number, default: 0 },
+      minimumPayment: { type: Number, default: 0 },
       payments: { type: [PaymentRecordSchema], default: [] },
     },
     customSections: { type: [CustomSectionSchema], default: [] },
+    onboarding: {
+      token: { type: String },
+      mouUrl: { type: String },
+      sowUrl: { type: String },
+      signedAt: { type: Date },
+      signatureUrl: { type: String },
+      minimumPaymentPaid: { type: Boolean, default: false },
+      passwordSetup: { type: Boolean, default: false },
+    },
     createdAt: { type: Date, default: Date.now },
   },
   {
