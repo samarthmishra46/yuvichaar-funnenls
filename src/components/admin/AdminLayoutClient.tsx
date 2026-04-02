@@ -26,46 +26,14 @@ export default function AdminLayoutClient({
 
   return (
     <SessionProvider>
-      <div className="admin-layout">
+      <div className="min-h-screen bg-[#f8f9fa] text-[#0f172a]">
         <AdminSidebar />
-        <div className="admin-layout__main">
+        <div className="ml-[260px] md:ml-[260px] max-md:ml-[72px] min-h-screen flex flex-col transition-[margin-left] duration-[250ms] ease-in-out">
           <AdminTopbar />
-          <main className="admin-layout__content">{children}</main>
+          <main className="flex-1 p-8 max-md:p-4 bg-white">{children}</main>
         </div>
         <Toaster />
       </div>
-
-      <style>{`
-        .admin-layout {
-          min-height: 100vh;
-          background: #f8f9fa;
-          color: #0f172a;
-        }
-
-        .admin-layout__main {
-          margin-left: 260px;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          transition: margin-left 0.25s ease;
-        }
-
-        .admin-layout__content {
-          flex: 1;
-          padding: 2rem;
-          background: #ffffff;
-        }
-
-        @media (max-width: 768px) {
-          .admin-layout__main {
-            margin-left: 72px;
-          }
-
-          .admin-layout__content {
-            padding: 1rem;
-          }
-        }
-      `}</style>
     </SessionProvider>
   );
 }

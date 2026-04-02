@@ -218,7 +218,7 @@ export default function NewOrganizationPage() {
               placeholder="123 Business St, City"
               value={form.address}
               onChange={(e) => updateField('address', e.target.value)}
-              className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+              className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
             />
 
             {/* Industry & Account Manager */}

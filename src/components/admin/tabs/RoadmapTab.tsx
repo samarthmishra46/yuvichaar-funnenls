@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Calendar, CheckCircle2, Clock, Loader2, User } from 'lucide-react';
+import { Plus, Calendar, CheckCircle2, Clock, Loader2, User, ChevronDown, ChevronRight, Star, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface Task {
   _id: string;
@@ -13,13 +14,8 @@ interface Task {
   title: string;
   description?: string;
   assignedTo?: string;
-  status: 'pending' | 'in_progress' | 'completed';
+  status: 'pending' | 'in_progress' | 'completed' | 'waiting_on_client';
   completedAt?: string;
-  proofOfWork?: {
-    type: 'text' | 'image' | 'file';
-    content?: string;
-    fileUrl?: string;
-  };
 }
 
 interface Roadmap {
@@ -31,6 +27,19 @@ interface Roadmap {
   totalDays: number;
 }
 
+interface Phase {
+  id: number;
+  name: string;
+  startDay: number;
+  endDay: number;
+  color: string;
+}
+
+interface DayTitle {
+  title: string;
+  milestone?: boolean;
+}
+
 interface Staff {
   _id: string;
   email: string;
@@ -40,11 +49,15 @@ interface Staff {
 export default function RoadmapTab({ orgId }: { orgId: string }) {
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [phases, setPhases] = useState<Phase[]>([]);
+  const [dayTitles, setDayTitles] = useState<Record<number, DayTitle>>({});
   const [staff, setStaff] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
-  const [showCreateTask, setShowCreateTask] = useState(false);
-  const [selectedDay, setSelectedDay] = useState(1);
+  const [expandedPhases, setExpandedPhases] = useState<Set<number>>(new Set([1]));
+  const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
+  const [editingTask, setEditingTask] = useState<string | null>(null);
+  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
 
   const [taskForm, setTaskForm] = useState({
     dayNumber: 1,
@@ -63,9 +76,11 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
       const res = await fetch(`/api/roadmaps/${orgId}`);
       const data = await res.json();
 
-      if (res.ok && data.roadmap) {
+      if (res.ok) {
         setRoadmap(data.roadmap);
         setTasks(data.tasks || []);
+        setPhases(data.phases || []);
+        setDayTitles(data.dayTitles || {});
       }
     } catch (error) {
       console.error('Fetch roadmap error:', error);
@@ -89,14 +104,10 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
   const handleCreateRoadmap = async () => {
     setCreating(true);
     try {
-      const res = await fetch('/api/roadmaps', {
+      const res = await fetch(`/api/roadmaps/${orgId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orgId,
-          title: '60-Day Roadmap',
-          totalDays: 60,
-        }),
+        body: JSON.stringify({ startDate }),
       });
 
       const data = await res.json();
@@ -106,8 +117,11 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
         return;
       }
 
-      toast.success('Roadmap created successfully');
-      await fetchRoadmapData();
+      toast.success('60-Day Growth Marathon initialized!');
+      setRoadmap(data.roadmap);
+      setTasks(data.tasks || []);
+      setPhases(data.phases || []);
+      setDayTitles(data.dayTitles || {});
     } catch (error) {
       console.error('Create roadmap error:', error);
       toast.error('Failed to create roadmap');
@@ -142,7 +156,6 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
 
       toast.success('Task created successfully');
       setTaskForm({ dayNumber: 1, title: '', description: '', assignedTo: '' });
-      setShowCreateTask(false);
       await fetchRoadmapData();
     } catch (error) {
       console.error('Create task error:', error);
@@ -150,238 +163,350 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
     }
   };
 
-  const getTasksForDay = (day: number) => {
-    return tasks.filter((t) => t.dayNumber === day);
+  const handleUpdateTaskAssignment = async (taskId: string, assignedTo: string) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignedTo }),
+      });
+
+      if (!res.ok) {
+        toast.error('Failed to update task');
+        return;
+      }
+
+      toast.success('Task updated');
+      setEditingTask(null);
+      await fetchRoadmapData();
+    } catch (error) {
+      toast.error('Failed to update task');
+    }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'success';
-      case 'in_progress':
-        return 'warning';
-      default:
-        return 'default';
+  const getTasksForDay = (day: number) => tasks.filter((t) => t.dayNumber === day);
+
+  const getPhaseProgress = (phase: Phase) => {
+    const phaseTasks = tasks.filter((t) => t.dayNumber >= phase.startDay && t.dayNumber <= phase.endDay);
+    if (phaseTasks.length === 0) return 0;
+    const completed = phaseTasks.filter((t) => t.status === 'completed').length;
+    return Math.round((completed / phaseTasks.length) * 100);
+  };
+
+  const getDayStatus = (day: number) => {
+    const dayTasks = getTasksForDay(day);
+    if (dayTasks.length === 0) return 'empty';
+    if (dayTasks.every((t) => t.status === 'completed')) return 'completed';
+    if (dayTasks.some((t) => t.status === 'waiting_on_client')) return 'waiting';
+    if (dayTasks.some((t) => t.status === 'in_progress')) return 'in_progress';
+    return 'pending';
+  };
+
+  const togglePhase = (phaseId: number) => {
+    setExpandedPhases((prev) => {
+      const next = new Set(prev);
+      if (next.has(phaseId)) next.delete(phaseId);
+      else next.add(phaseId);
+      return next;
+    });
+  };
+
+  const toggleDay = (day: number) => {
+    setExpandedDays((prev) => {
+      const next = new Set(prev);
+      if (next.has(day)) next.delete(day);
+      else next.add(day);
+      return next;
+    });
+  };
+
+  const getDaysWithTasks = (phase: Phase) => {
+    const days: number[] = [];
+    for (let d = phase.startDay; d <= phase.endDay; d++) {
+      if (dayTitles[d] || getTasksForDay(d).length > 0) {
+        days.push(d);
+      }
     }
+    return days;
+  };
+
+  const getCompletionPercentage = () => {
+    if (tasks.length === 0) return 0;
+    return Math.round((tasks.filter((t) => t.status === 'completed').length / tasks.length) * 100);
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-[#f472b6]" />
+        <Loader2 className="w-6 h-6 animate-spin text-[#e91e8c]" />
       </div>
     );
   }
 
   if (!roadmap) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-12 bg-white rounded-2xl border border-[#e2e8f0]">
         <Calendar className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
-        <p className="text-[#64748b] mb-4">No roadmap created yet</p>
-        <Button onClick={handleCreateRoadmap} disabled={creating}>
-          {creating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Creating...
-            </>
-          ) : (
-            <>
-              <Plus className="w-4 h-4" />
-              Create 60-Day Roadmap
-            </>
-          )}
-        </Button>
+        <h3 className="text-lg font-semibold text-[#0f172a] mb-2">Start 60-Day Growth Marathon</h3>
+        <p className="text-sm text-[#64748b] mb-6 max-w-md mx-auto">
+          Initialize the roadmap with all phases and tasks from the template. Tasks will be created automatically.
+        </p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-[#64748b]">Start Date:</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+            />
+          </div>
+          <Button onClick={handleCreateRoadmap} disabled={creating}>
+            {creating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                Initializing...
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Initialize 60-Day Marathon
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Roadmap Header */}
-      <div className="bg-[rgba(28, 1, 80, 0.04)] rounded-xl p-4 border border-[rgba(255,255,255,0.1)]">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-lg font-semibold text-white">{roadmap.title}</h3>
-          <Badge variant="purple">{roadmap.totalDays} Days</Badge>
-        </div>
-        <div className="flex items-center gap-4 text-sm text-[#94a3b8]">
-          <span>
-            Start: {new Date(roadmap.startDate).toLocaleDateString()}
-          </span>
-          <span>•</span>
-          <span>
-            End: {new Date(roadmap.endDate).toLocaleDateString()}
-          </span>
-        </div>
-      </div>
-
-      {/* Add Task Button */}
-      <div className="flex justify-between items-center">
-        <h3 className="text-sm font-semibold text-white">Tasks by Day</h3>
-        <Button onClick={() => setShowCreateTask(!showCreateTask)} size="sm">
-          <Plus className="w-4 h-4" />
-          Add Task
-        </Button>
-      </div>
-
-      {/* Create Task Form */}
-      {showCreateTask && (
-        <div className="bg-[rgba(255,255,255,0.04)] rounded-xl p-4 border border-[rgba(255,255,255,0.1)] space-y-4">
-          <h4 className="text-sm font-semibold text-white">Create New Task</h4>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              id="task-day"
-              label="Day Number"
-              type="number"
-              min="1"
-              max={roadmap.totalDays}
-              value={taskForm.dayNumber}
-              onChange={(e) =>
-                setTaskForm({ ...taskForm, dayNumber: parseInt(e.target.value) || 1 })
-              }
-              className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-black"
-            />
-
-            <div className="flex flex-col gap-1.5">
-              <label className="text-[0.8125rem] font-semibold text-[#cbd5e1] tracking-wide">
-                Assign To
-              </label>
-              <select
-                value={taskForm.assignedTo}
-                onChange={(e) => setTaskForm({ ...taskForm, assignedTo: e.target.value })}
-                className="px-3 py-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-xl text-black text-sm outline-none focus:border-[#9333ea]"
-              >
-                <option value="">Unassigned</option>
-                {staff.map((s) => (
-                  <option key={s._id} value={s.email}>
-                    {s.name} ({s.email})
-                  </option>
-                ))}
-              </select>
-            </div>
+      {/* Progress Overview */}
+      <div className="bg-white rounded-xl p-4 border border-[#e2e8f0] shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h3 className="text-lg font-semibold text-[#0f172a]">60-Day Growth Marathon</h3>
+            <p className="text-sm text-[#64748b]">
+              {new Date(roadmap.startDate).toLocaleDateString()} — {new Date(roadmap.endDate).toLocaleDateString()}
+            </p>
           </div>
-
-          <Input
-            id="task-title"
-            label="Task Title *"
-            placeholder="Enter task title"
-            value={taskForm.title}
-            onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
-            className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-black"
+          <div className="text-right">
+            <p className="text-2xl font-bold text-[#0f172a]">{getCompletionPercentage()}%</p>
+            <p className="text-xs text-[#64748b]">Complete</p>
+          </div>
+        </div>
+        <div className="w-full h-3 bg-[#f1f5f9] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-[#8b5cf6] via-[#e91e8c] to-[#f59e0b] transition-all duration-500"
+            style={{ width: `${getCompletionPercentage()}%` }}
           />
-
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[0.8125rem] font-semibold text-[#cbd5e1] tracking-wide">
-              Description
-            </label>
-            <textarea
-              value={taskForm.description}
-              onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-              placeholder="Enter task description"
-              rows={3}
-              className="px-3 py-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-xl text-white text-sm outline-none focus:border-[#9333ea] resize-none"
-            />
-          </div>
-
-          <div className="flex gap-2 justify-end">
-            <Button
-              variant="ghost"
-              onClick={() => setShowCreateTask(false)}
-              className="!text-[#94a3b8]"
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleCreateTask}>Create Task</Button>
-          </div>
         </div>
-      )}
-
-      {/* Day Selector */}
-      <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold text-white">Select Day</label>
-        <select
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(parseInt(e.target.value))}
-          className="px-3 py-2 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-xl text-white text-sm outline-none focus:border-[#9333ea] max-w-xs"
-        >
-          {Array.from({ length: roadmap.totalDays }, (_, i) => i + 1).map((day) => (
-            <option key={day} value={day}>
-              Day {day} {getTasksForDay(day).length > 0 ? `(${getTasksForDay(day).length} tasks)` : ''}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-4 mt-3 text-xs text-[#64748b]">
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#22c55e]"></span>
+            {tasks.filter((t) => t.status === 'completed').length} completed
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#f59e0b]"></span>
+            {tasks.filter((t) => t.status === 'in_progress').length} in progress
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-[#94a3b8]"></span>
+            {tasks.filter((t) => t.status === 'pending').length} pending
+          </span>
+        </div>
       </div>
 
-      {/* Tasks for Selected Day */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-semibold text-white">Day {selectedDay} Tasks</h4>
+      {/* Phases */}
+      <div className="space-y-4">
+        {phases.map((phase) => {
+          const isExpanded = expandedPhases.has(phase.id);
+          const phaseProgress = getPhaseProgress(phase);
+          const daysWithTasks = getDaysWithTasks(phase);
 
-        {getTasksForDay(selectedDay).length === 0 ? (
-          <div className="text-center py-8 bg-[rgba(255,255,255,0.02)] rounded-xl border border-[rgba(255,255,255,0.06)]">
-            <Clock className="w-8 h-8 text-[#64748b] mx-auto mb-2" />
-            <p className="text-sm text-[#64748b]">No tasks for this day</p>
-          </div>
-        ) : (
-          getTasksForDay(selectedDay).map((task) => (
-            <div
-              key={task._id}
-              className="bg-[rgba(255,255,255,0.04)] rounded-xl p-4 border border-[rgba(255,255,255,0.1)]"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex-1">
-                  <h5 className="text-white font-medium mb-1">{task.title}</h5>
-                  {task.description && (
-                    <p className="text-sm text-[#94a3b8] mb-2">{task.description}</p>
+          return (
+            <Card key={phase.id} className="!border-[#e2e8f0] shadow-sm overflow-hidden">
+              {/* Phase Header */}
+              <button
+                onClick={() => togglePhase(phase.id)}
+                className="w-full p-4 flex items-center justify-between hover:bg-[#f8f9fa] transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm"
+                    style={{ backgroundColor: phase.color }}
+                  >
+                    {phase.id}
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-semibold text-[#0f172a]">{phase.name}</h3>
+                    <p className="text-xs text-[#64748b]">Days {phase.startDay}–{phase.endDay}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-[#0f172a]">{phaseProgress}%</p>
+                    <div className="w-24 h-1.5 bg-[#f1f5f9] rounded-full overflow-hidden">
+                      <div
+                        className="h-full transition-all duration-300"
+                        style={{ width: `${phaseProgress}%`, backgroundColor: phase.color }}
+                      />
+                    </div>
+                  </div>
+                  {isExpanded ? (
+                    <ChevronDown className="w-5 h-5 text-[#64748b]" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-[#64748b]" />
                   )}
                 </div>
-                <Badge variant={getStatusColor(task.status) as any}>
-                  {task.status.replace('_', ' ')}
-                </Badge>
-              </div>
+              </button>
 
-              <div className="flex items-center gap-4 text-xs text-[#64748b]">
-                {task.assignedTo && (
-                  <div className="flex items-center gap-1">
-                    <User className="w-3 h-3" />
-                    <span>{task.assignedTo}</span>
-                  </div>
-                )}
-                {task.completedAt && (
-                  <div className="flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Completed {new Date(task.completedAt).toLocaleDateString()}</span>
-                  </div>
-                )}
-              </div>
+              {/* Phase Content - Days */}
+              {isExpanded && (
+                <div className="border-t border-[#e2e8f0] bg-[#f8f9fa]">
+                  {daysWithTasks.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-[#64748b]">
+                      No scheduled activities in this phase yet
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-[#e2e8f0]">
+                      {daysWithTasks.map((day) => {
+                        const dayInfo = dayTitles[day];
+                        const dayTasks = getTasksForDay(day);
+                        const dayStatus = getDayStatus(day);
+                        const isDayExpanded = expandedDays.has(day);
 
-              {task.proofOfWork && (
-                <div className="mt-3 pt-3 border-t border-[rgba(255,255,255,0.06)]">
-                  <p className="text-xs font-semibold text-[#cbd5e1] mb-1">Proof of Work:</p>
-                  {task.proofOfWork.type === 'text' && (
-                    <p className="text-sm text-[#94a3b8]">{task.proofOfWork.content}</p>
-                  )}
-                  {task.proofOfWork.type === 'image' && task.proofOfWork.fileUrl && (
-                    <img
-                      src={task.proofOfWork.fileUrl}
-                      alt="Proof"
-                      className="max-w-xs rounded-lg mt-2"
-                    />
-                  )}
-                  {task.proofOfWork.type === 'file' && task.proofOfWork.fileUrl && (
-                    <a
-                      href={task.proofOfWork.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-[#f472b6] hover:underline"
-                    >
-                      View File
-                    </a>
+                        return (
+                          <div key={day} className="bg-white">
+                            {/* Day Header */}
+                            <button
+                              onClick={() => toggleDay(day)}
+                              className="w-full p-3 pl-6 flex items-center justify-between hover:bg-[#f8f9fa] transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${
+                                    dayStatus === 'completed'
+                                      ? 'bg-[#dcfce7] text-[#22c55e]'
+                                      : dayStatus === 'in_progress'
+                                      ? 'bg-[#fef3c7] text-[#f59e0b]'
+                                      : dayStatus === 'waiting'
+                                      ? 'bg-[#dbeafe] text-[#3b82f6]'
+                                      : 'bg-[#f1f5f9] text-[#64748b]'
+                                  }`}
+                                >
+                                  {dayStatus === 'completed' ? <CheckCircle2 className="w-4 h-4" /> : day}
+                                </div>
+                                <div className="text-left">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-medium text-[#0f172a]">
+                                      Day {day}{dayInfo ? ` — ${dayInfo.title}` : ''}
+                                    </span>
+                                    {dayInfo?.milestone && (
+                                      <Star className="w-4 h-4 text-[#f59e0b] fill-[#f59e0b]" />
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-[#64748b]">
+                                    {dayTasks.filter((t) => t.status === 'completed').length}/{dayTasks.length} tasks
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={
+                                    dayStatus === 'completed' ? 'success' : dayStatus === 'in_progress' ? 'warning' : 'default'
+                                  }
+                                >
+                                  {dayStatus === 'waiting' ? 'Waiting on client' : dayStatus.replace('_', ' ')}
+                                </Badge>
+                                {isDayExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-[#64748b]" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-[#64748b]" />
+                                )}
+                              </div>
+                            </button>
+
+                            {/* Day Tasks */}
+                            {isDayExpanded && dayTasks.length > 0 && (
+                              <div className="pl-14 pr-4 pb-3 space-y-2">
+                                {dayTasks.map((task) => (
+                                  <div
+                                    key={task._id}
+                                    className={`flex items-center gap-3 p-3 rounded-lg border ${
+                                      task.status === 'completed'
+                                        ? 'bg-[#f0fdf4] border-[#bbf7d0]'
+                                        : task.status === 'waiting_on_client'
+                                        ? 'bg-[#eff6ff] border-[#bfdbfe]'
+                                        : task.status === 'in_progress'
+                                        ? 'bg-[#fffbeb] border-[#fde68a]'
+                                        : 'bg-white border-[#e2e8f0]'
+                                    }`}
+                                  >
+                                    <div
+                                      className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                        task.status === 'completed'
+                                          ? 'bg-[#22c55e] text-white'
+                                          : task.status === 'waiting_on_client'
+                                          ? 'bg-[#3b82f6] text-white'
+                                          : task.status === 'in_progress'
+                                          ? 'bg-[#f59e0b] text-white'
+                                          : 'bg-[#e2e8f0]'
+                                      }`}
+                                    >
+                                      {task.status === 'completed' && <CheckCircle2 className="w-3 h-3" />}
+                                      {task.status === 'in_progress' && <Clock className="w-3 h-3" />}
+                                      {task.status === 'waiting_on_client' && <AlertCircle className="w-3 h-3" />}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <span
+                                        className={`text-sm ${
+                                          task.status === 'completed' ? 'text-[#64748b] line-through' : 'text-[#0f172a]'
+                                        }`}
+                                      >
+                                        {task.title}
+                                      </span>
+                                      {task.assignedTo && (
+                                        <p className="text-xs text-[#94a3b8] flex items-center gap-1 mt-0.5">
+                                          <User className="w-3 h-3" /> {task.assignedTo}
+                                        </p>
+                                      )}
+                                    </div>
+                                    {editingTask === task._id ? (
+                                      <select
+                                        value={task.assignedTo || ''}
+                                        onChange={(e) => handleUpdateTaskAssignment(task._id, e.target.value)}
+                                        onBlur={() => setEditingTask(null)}
+                                        autoFocus
+                                        className="px-2 py-1 text-xs bg-white border border-[#e2e8f0] rounded-lg outline-none focus:border-[#e91e8c]"
+                                      >
+                                        <option value="">Unassigned</option>
+                                        {staff.map((s) => (
+                                          <option key={s._id} value={s.email}>{s.name}</option>
+                                        ))}
+                                      </select>
+                                    ) : (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); setEditingTask(task._id); }}
+                                        className="text-xs text-[#e91e8c] hover:underline"
+                                      >
+                                        {task.assignedTo ? 'Reassign' : 'Assign'}
+                                      </button>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               )}
-            </div>
-          ))
-        )}
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

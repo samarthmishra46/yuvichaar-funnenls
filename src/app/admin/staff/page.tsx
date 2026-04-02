@@ -184,7 +184,7 @@ export default function StaffManagementPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Staff Management</h1>
+          <h1 className="text-2xl font-bold text-[#0f172a]">Staff Management</h1>
           <p className="text-sm text-[#64748b] mt-1">Manage your team members</p>
         </div>
         <Button onClick={() => setShowAddForm(!showAddForm)}>
@@ -195,9 +195,9 @@ export default function StaffManagementPage() {
 
       {/* Add Staff Form */}
       {showAddForm && (
-        <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)] mb-6">
+        <Card className="!bg-white !border-[#e2e8f0] shadow-sm mb-6">
           <CardHeader>
-            <CardTitle className="!text-white">Add New Staff Member</CardTitle>
+            <CardTitle className="!text-[#0f172a]">Add New Staff Member</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,7 +207,7 @@ export default function StaffManagementPage() {
                 placeholder="John Doe"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
               />
               <Input
                 id="staff-email"
@@ -216,7 +216,7 @@ export default function StaffManagementPage() {
                 placeholder="john@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
               />
             </div>
 
@@ -228,7 +228,7 @@ export default function StaffManagementPage() {
                 placeholder="Enter password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
               />
               <Input
                 id="staff-role"
@@ -236,7 +236,7 @@ export default function StaffManagementPage() {
                 placeholder="Developer, Designer, etc."
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
               />
             </div>
 
@@ -268,7 +268,7 @@ export default function StaffManagementPage() {
         <div className="text-center py-16">
           <User className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
           <p className="text-[#64748b] mb-4">No staff members yet</p>
-          <Button onClick={() => setShowAddForm(true)} variant="outline" className="!border-[rgba(255,255,255,0.1)] !text-[#94a3b8]">
+          <Button onClick={() => setShowAddForm(true)} variant="outline" className="!border-[#e2e8f0] !text-[#64748b]">
             <Plus className="w-4 h-4" />
             Add your first staff member
           </Button>
@@ -276,7 +276,7 @@ export default function StaffManagementPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {staff.map((member) => (
-            <Card key={member._id} className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+            <Card key={member._id} className="!bg-white !border-[#e2e8f0] shadow-sm">
               <CardContent className="p-5">
                 {editingId === member._id ? (
                   <div className="space-y-3">
@@ -285,7 +285,7 @@ export default function StaffManagementPage() {
                       label="Name"
                       value={editForm.name}
                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                      className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                      className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
                     />
                     <Input
                       id={`edit-email-${member._id}`}
@@ -293,14 +293,14 @@ export default function StaffManagementPage() {
                       type="email"
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                      className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
                     />
                     <Input
                       id={`edit-role-${member._id}`}
                       label="Role"
                       value={editForm.role}
                       onChange={(e) => setEditForm({ ...editForm, role: e.target.value })}
-                      className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                      className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
                     />
                     <Input
                       id={`edit-password-${member._id}`}
@@ -309,7 +309,7 @@ export default function StaffManagementPage() {
                       placeholder="Leave blank to keep current"
                       value={editForm.password}
                       onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                      className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white placeholder:!text-[#475569]"
+                      className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
                     />
                     <div className="flex gap-2 pt-2">
                       <Button
@@ -333,7 +333,7 @@ export default function StaffManagementPage() {
                   </div>
                 ) : deletingId === member._id ? (
                   <div className="space-y-3">
-                    <p className="text-white text-sm">Delete {member.name}?</p>
+                    <p className="text-[#0f172a] text-sm">Delete {member.name}?</p>
                     <p className="text-[#94a3b8] text-xs">This action cannot be undone.</p>
                     <div className="flex gap-2 pt-2">
                       <Button
@@ -363,7 +363,7 @@ export default function StaffManagementPage() {
                         {member.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-white font-semibold truncate">{member.name}</h3>
+                        <h3 className="text-[#0f172a] font-semibold truncate">{member.name}</h3>
                         <p className="text-sm text-[#64748b] truncate">{member.email}</p>
                         {member.role && (
                           <p className="text-xs text-[#94a3b8] mt-1">{member.role}</p>

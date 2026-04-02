@@ -134,15 +134,15 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
     <div className="space-y-6">
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-[#111118] border border-[rgba(255,255,255,0.06)] rounded-2xl p-5">
+        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Total Contract</p>
-          <p className="text-2xl font-bold text-white">₹{totalAmount.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-[#0f172a]">₹{totalAmount.toLocaleString()}</p>
         </div>
-        <div className="bg-[#111118] border border-[rgba(255,255,255,0.06)] rounded-2xl p-5">
+        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Total Paid</p>
-          <p className="text-2xl font-bold text-[#4ade80]">₹{totalPaid.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-[#22c55e]">₹{totalPaid.toLocaleString()}</p>
         </div>
-        <div className="bg-[#111118] border border-[rgba(255,255,255,0.06)] rounded-2xl p-5">
+        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Amount Due</p>
           <p className={`text-2xl font-bold ${amountDue > 0 ? 'text-[#f87171]' : 'text-[#4ade80]'}`}>
             ₹{Math.max(0, amountDue).toLocaleString()}
@@ -151,10 +151,10 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
       </div>
 
       {/* Total Amount Setting */}
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-[#f472b6]" />
+          <h4 className="font-semibold text-[#0f172a] mb-4 flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-[#e91e8c]" />
             Contract Amount
           </h4>
           <div className="flex gap-3 items-end">
@@ -165,7 +165,7 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
                 placeholder="100000"
                 value={totalAmount || ''}
                 onChange={(e) => setTotalAmount(Number(e.target.value))}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
               />
             </div>
             <Button onClick={handleSaveTotal} disabled={savingTotal}>
@@ -176,16 +176,16 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
       </Card>
 
       {/* Log Payment */}
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#f472b6]" />
+          <h4 className="font-semibold text-[#0f172a] mb-4 flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-[#e91e8c]" />
             Log a Payment
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input id="pay-amount" label="Amount (₹)" type="number" placeholder="25000" value={paymentForm.amount} onChange={(e) => setPaymentForm((p) => ({ ...p, amount: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Input id="pay-date" label="Date" type="date" value={paymentForm.date} onChange={(e) => setPaymentForm((p) => ({ ...p, date: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Input id="pay-note" label="Note" placeholder="Optional note" value={paymentForm.note} onChange={(e) => setPaymentForm((p) => ({ ...p, note: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+            <Input id="pay-amount" label="Amount (₹)" type="number" placeholder="25000" value={paymentForm.amount} onChange={(e) => setPaymentForm((p) => ({ ...p, amount: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="pay-date" label="Date" type="date" value={paymentForm.date} onChange={(e) => setPaymentForm((p) => ({ ...p, date: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="pay-note" label="Note" placeholder="Optional note" value={paymentForm.note} onChange={(e) => setPaymentForm((p) => ({ ...p, note: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
           </div>
           <div className="flex justify-end mt-4">
             <Button onClick={handleLogPayment} disabled={loggingPayment}>
@@ -196,15 +196,15 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
       </Card>
 
       {/* Payment History */}
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="pt-6">
-          <h4 className="font-semibold text-white mb-4">Payment History</h4>
+          <h4 className="font-semibold text-[#0f172a] mb-4">Payment History</h4>
           {(org.payment?.payments || []).length === 0 ? (
             <p className="text-sm text-[#64748b] text-center py-8">No payments recorded yet</p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-[rgba(255,255,255,0.06)]">
+            <div className="overflow-x-auto rounded-xl border border-[#e2e8f0]">
               <table className="w-full text-sm">
-                <thead className="bg-[rgba(255,255,255,0.03)]">
+                <thead className="bg-[#f8f9fa]">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Date</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Amount</th>
@@ -213,7 +213,7 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
                     <th className="px-4 py-3 text-right text-xs font-semibold text-[#64748b] uppercase tracking-wider">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[rgba(255,255,255,0.04)]">
+                <tbody className="divide-y divide-[#f1f5f9]">
                   {[...(org.payment?.payments || [])].map((payment, idx) => {
                     // We map over the original order so that idx matches the actual array index for deletion
                     const originalIdx = idx;

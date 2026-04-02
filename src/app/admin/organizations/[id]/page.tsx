@@ -14,6 +14,7 @@ import LandingPageTab from '@/components/admin/tabs/LandingPageTab';
 import PaymentsTab from '@/components/admin/tabs/PaymentsTab';
 import CustomSectionsTab from '@/components/admin/tabs/CustomSectionsTab';
 import RoadmapTab from '@/components/admin/tabs/RoadmapTab';
+import ClientTasksTab from '@/components/admin/tabs/ClientTasksTab';
 
 interface Organization {
   _id: string;
@@ -82,9 +83,9 @@ export default function OrganizationDetailPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-10 w-64 !bg-[rgba(255,255,255,0.04)]" />
-        <Skeleton className="h-6 w-48 !bg-[rgba(255,255,255,0.04)]" />
-        <Skeleton className="h-96 w-full !bg-[rgba(255,255,255,0.04)]" />
+        <Skeleton className="h-10 w-64 !bg-[#f8f9fa]" />
+        <Skeleton className="h-6 w-48 !bg-[#f8f9fa]" />
+        <Skeleton className="h-96 w-full !bg-[#f8f9fa]" />
       </div>
     );
   }
@@ -106,7 +107,7 @@ export default function OrganizationDetailPage() {
       <div className="flex items-start gap-4 mb-8">
         <Link
           href="/admin/organizations"
-          className="p-2 rounded-xl hover:bg-white/5 transition-colors text-[#94a3b8] mt-1"
+          className="p-2 rounded-xl hover:bg-[#f8f9fa] transition-colors text-[#64748b] mt-1"
         >
           <ArrowLeft className="w-5 h-5" />
         </Link>
@@ -116,10 +117,10 @@ export default function OrganizationDetailPage() {
               <img
                 src={org.logo}
                 alt={org.name}
-                className="w-10 h-10 rounded-xl object-contain bg-white/5 border border-white/10 p-1"
+                className="w-10 h-10 rounded-xl object-contain bg-[#f8f9fa] border border-[#e2e8f0] p-1"
               />
             )}
-            <h1 className="text-2xl font-bold text-white">{org.name}</h1>
+            <h1 className="text-2xl font-bold text-[#0f172a]">{org.name}</h1>
             <Badge variant={statusBadgeVariant[org.status] || 'default'}>
               {org.status}
             </Badge>
@@ -137,6 +138,7 @@ export default function OrganizationDetailPage() {
           <TabsTrigger value="landing-page" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Landing Page</TabsTrigger>
           <TabsTrigger value="roadmap" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Roadmap</TabsTrigger>
           <TabsTrigger value="payments" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Payments</TabsTrigger>
+          <TabsTrigger value="client-tasks" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Client Tasks</TabsTrigger>
           <TabsTrigger value="custom-sections" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Custom Sections</TabsTrigger>
         </TabsList>
 
@@ -157,6 +159,9 @@ export default function OrganizationDetailPage() {
         </TabsContent>
         <TabsContent value="payments">
           <PaymentsTab org={org} onUpdate={fetchOrg} />
+        </TabsContent>
+        <TabsContent value="client-tasks">
+          <ClientTasksTab orgId={orgId} orgName={org.name} />
         </TabsContent>
         <TabsContent value="custom-sections">
           <CustomSectionsTab orgId={orgId} sections={org.customSections || []} onUpdate={fetchOrg} />

@@ -132,7 +132,7 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
     return (
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 w-full !bg-[rgba(255,255,255,0.04)]" />
+          <Skeleton key={i} className="h-20 w-full !bg-[#f8f9fa]" />
         ))}
       </div>
     );
@@ -142,7 +142,7 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
     <div className="space-y-6">
       {/* Add button */}
       <div className="flex justify-end">
-        <Button onClick={() => setShowForm(!showForm)} variant={showForm ? 'outline' : 'default'} className={showForm ? '!border-[rgba(255,255,255,0.1)] !text-[#94a3b8]' : ''}>
+        <Button onClick={() => setShowForm(!showForm)} variant={showForm ? 'outline' : 'default'} className={showForm ? '!border-[#e2e8f0] !text-[#64748b]' : ''}>
           <Plus className="w-4 h-4" />
           {showForm ? 'Cancel' : 'Add Entry'}
         </Button>
@@ -150,17 +150,17 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
 
       {/* Add form */}
       {showForm && (
-        <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+        <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
           <CardContent className="space-y-4 pt-6">
-            <Input id="re-title" label="Title" placeholder="Research document title" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+            <Input id="re-title" label="Title" placeholder="Research document title" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">Type</label>
+              <label className="text-[0.8125rem] font-semibold text-[#475569]">Type</label>
               <div className="flex gap-3">
-                <button onClick={() => setForm((p) => ({ ...p, type: 'pdf' }))} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${form.type === 'pdf' ? 'bg-[rgba(244,114,182,0.1)] text-[#f472b6] border border-[rgba(244,114,182,0.3)]' : 'bg-[rgba(255,255,255,0.04)] text-[#94a3b8] border border-[rgba(255,255,255,0.1)]'}`}>
+                <button onClick={() => setForm((p) => ({ ...p, type: 'pdf' }))} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${form.type === 'pdf' ? 'bg-[#fdf2f8] text-[#e91e8c] border border-[#fbcfe8]' : 'bg-[#f8f9fa] text-[#64748b] border border-[#e2e8f0]'}`}>
                   PDF Upload
                 </button>
-                <button onClick={() => setForm((p) => ({ ...p, type: 'googledoc' }))} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${form.type === 'googledoc' ? 'bg-[rgba(244,114,182,0.1)] text-[#f472b6] border border-[rgba(244,114,182,0.3)]' : 'bg-[rgba(255,255,255,0.04)] text-[#94a3b8] border border-[rgba(255,255,255,0.1)]'}`}>
+                <button onClick={() => setForm((p) => ({ ...p, type: 'googledoc' }))} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer ${form.type === 'googledoc' ? 'bg-[#fdf2f8] text-[#e91e8c] border border-[#fbcfe8]' : 'bg-[#f8f9fa] text-[#64748b] border border-[#e2e8f0]'}`}>
                   Google Doc
                 </button>
               </div>
@@ -168,8 +168,8 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
 
             {form.type === 'pdf' ? (
               <div className="flex flex-col gap-1.5">
-                <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">PDF File</label>
-                <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm cursor-pointer hover:bg-[rgba(255,255,255,0.08)] transition-colors w-fit">
+                <label className="text-[0.8125rem] font-semibold text-[#475569]">PDF File</label>
+                <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#e2e8f0] text-[#64748b] text-sm cursor-pointer hover:bg-[#f8f9fa] transition-colors w-fit">
                   {uploadingPdf ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                   {uploadingPdf ? 'Uploading…' : form.fileUrl ? 'Change PDF' : 'Upload PDF'}
                   <input type="file" accept=".pdf" onChange={handlePdfUpload} className="hidden" />
@@ -177,10 +177,10 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
                 {form.fileUrl && <p className="text-xs text-[#4ade80]">✓ PDF uploaded</p>}
               </div>
             ) : (
-              <Input id="re-doclink" label="Google Doc Link" placeholder="https://docs.google.com/..." value={form.docLink} onChange={(e) => setForm((p) => ({ ...p, docLink: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+              <Input id="re-doclink" label="Google Doc Link" placeholder="https://docs.google.com/..." value={form.docLink} onChange={(e) => setForm((p) => ({ ...p, docLink: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
             )}
 
-            <Textarea id="re-desc" label="Description" placeholder="Optional description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white !min-h-[80px]" />
+            <Textarea id="re-desc" label="Description" placeholder="Optional description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a] !min-h-[80px]" />
 
             <div className="flex justify-end">
               <Button onClick={handleSubmit} disabled={submitting}>
@@ -200,11 +200,11 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
       ) : (
         <div className="space-y-3">
           {entries.map((entry) => (
-            <Card key={entry._id} className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+            <Card key={entry._id} className="!bg-white !border-[#e2e8f0] shadow-sm">
               <CardContent className="flex items-center justify-between py-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-semibold text-white truncate">{entry.title}</h4>
+                    <h4 className="font-semibold text-[#0f172a] truncate">{entry.title}</h4>
                     <Badge variant={entry.type === 'pdf' ? 'pink' : 'purple'}>
                       {entry.type === 'pdf' ? 'PDF' : 'Google Doc'}
                     </Badge>
@@ -219,12 +219,12 @@ export default function BrandResearchTab({ orgId }: { orgId: string }) {
 
                 <div className="flex items-center gap-2 ml-4">
                   {entry.type === 'pdf' && entry.fileUrl && (
-                    <a href={entry.fileUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-white/5 text-[#94a3b8] hover:text-white transition-colors">
+                    <a href={entry.fileUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-[#f8f9fa] text-[#64748b] hover:text-[#0f172a] transition-colors">
                       <Download className="w-4 h-4" />
                     </a>
                   )}
                   {entry.type === 'googledoc' && entry.docLink && (
-                    <a href={entry.docLink} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-white/5 text-[#94a3b8] hover:text-white transition-colors">
+                    <a href={entry.docLink} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg hover:bg-[#f8f9fa] text-[#64748b] hover:text-[#0f172a] transition-colors">
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   )}

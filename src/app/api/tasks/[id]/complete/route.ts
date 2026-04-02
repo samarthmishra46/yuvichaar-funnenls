@@ -5,6 +5,7 @@ import dbConnect from '@/lib/mongodb';
 import { Task } from '@/models/Roadmap';
 import Organization from '@/models/Organization';
 import Staff from '@/models/Staff';
+import AdminMessage from '@/models/AdminInbox';
 import { sendEmail, getTaskCompletionEmailTemplate } from '@/lib/email';
 
 export async function POST(
@@ -93,6 +94,27 @@ export async function POST(
           }),
         });
       }
+
+      // Create admin inbox message
+      await AdminMessage.create({
+        type: 'task_completed',
+        title: `Task Completed: Day ${task.dayNumber} - ${org.name}`,
+        message: `${staffName || 'Staff'} has completed "${task.title}" for ${org.name}. Proof: ${proofText}`,
+        fromType: 'staff',
+        fromId: task.assignedTo,
+        fromName: staffName || 'Staff',
+        fromEmail: task.assignedTo,
+        orgId: task.orgId,
+        orgName: org.name,
+        relatedId: task._id.toString(),
+        metadata: {
+          taskTitle: task.title,
+          dayNumber: task.dayNumber,
+          proofOfWorkType: proofOfWork.type,
+          proofOfWorkUrl: proofOfWork.fileUrl,
+        },
+        isRead: false,
+      });
     }
 
     return NextResponse.json({ task });

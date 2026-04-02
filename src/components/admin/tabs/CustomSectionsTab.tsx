@@ -194,14 +194,14 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
           {sections.map((section) => {
             const Icon = contentTypeIcons[section.contentType] || Layers;
             return (
-              <Card key={section.id} className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+              <Card key={section.id} className="!bg-white !border-[#e2e8f0] shadow-sm">
                 <CardContent className="flex items-center justify-between py-4">
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="p-2 rounded-lg bg-[rgba(244,114,182,0.1)]">
-                      <Icon className="w-4 h-4 text-[#f472b6]" />
+                    <div className="p-2 rounded-lg bg-[#fdf2f8]">
+                      <Icon className="w-4 h-4 text-[#e91e8c]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-white truncate">{section.title}</h4>
+                      <h4 className="font-semibold text-[#0f172a] truncate">{section.title}</h4>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="purple">{contentTypeLabels[section.contentType]}</Badge>
                         <span className="text-xs text-[#475569]">
@@ -211,7 +211,7 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
                     </div>
                   </div>
                   <div className="flex items-center gap-1 ml-4">
-                    <button onClick={() => openEditDialog(section)} className="p-2 rounded-lg hover:bg-white/5 text-[#94a3b8] hover:text-white transition-colors cursor-pointer">
+                    <button onClick={() => openEditDialog(section)} className="p-2 rounded-lg hover:bg-[#f8f9fa] text-[#64748b] hover:text-[#0f172a] transition-colors cursor-pointer">
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button onClick={() => handleDelete(section.id)} className="p-2 rounded-lg hover:bg-[rgba(239,68,68,0.1)] text-[#64748b] hover:text-[#f87171] transition-colors cursor-pointer">
@@ -227,9 +227,9 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="!bg-[#111118] !border-[rgba(255,255,255,0.08)]">
+        <DialogContent className="!bg-white !border-[#e2e8f0]">
           <DialogHeader>
-            <DialogTitle className="!text-white">
+            <DialogTitle className="!text-[#0f172a]">
               {editingSection ? 'Edit Section' : 'Add New Section'}
             </DialogTitle>
           </DialogHeader>
@@ -241,11 +241,11 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
               placeholder="e.g. Brand Guidelines"
               value={form.title}
               onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
-              className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+              className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
             />
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">Content Type</label>
+              <label className="text-[0.8125rem] font-semibold text-[#475569]">Content Type</label>
               <div className="grid grid-cols-2 gap-2">
                 {(['richtext', 'file', 'link', 'video'] as const).map((type) => {
                   const Icon = contentTypeIcons[type];
@@ -255,8 +255,8 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
                       onClick={() => setForm((p) => ({ ...p, contentType: type }))}
                       className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                         form.contentType === type
-                          ? 'bg-[rgba(244,114,182,0.1)] text-[#f472b6] border border-[rgba(244,114,182,0.3)]'
-                          : 'bg-[rgba(255,255,255,0.04)] text-[#94a3b8] border border-[rgba(255,255,255,0.1)]'
+                          ? 'bg-[#fdf2f8] text-[#e91e8c] border border-[#fbcfe8]'
+                          : 'bg-[#f8f9fa] text-[#64748b] border border-[#e2e8f0]'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
@@ -275,14 +275,14 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
                 placeholder="Enter your text content..."
                 value={form.content}
                 onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white !min-h-[120px]"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a] !min-h-[120px]"
               />
             )}
 
             {form.contentType === 'file' && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">Upload File</label>
-                <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] text-[#94a3b8] text-sm cursor-pointer hover:bg-[rgba(255,255,255,0.08)] transition-colors w-fit">
+                <label className="text-[0.8125rem] font-semibold text-[#475569]">Upload File</label>
+                <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#e2e8f0] text-[#64748b] text-sm cursor-pointer hover:bg-[#f8f9fa] transition-colors w-fit">
                   {uploadingFile ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                   {uploadingFile ? 'Uploading…' : form.fileUrl ? 'Change File' : 'Upload File'}
                   <input type="file" onChange={handleFileUpload} className="hidden" />
@@ -298,13 +298,13 @@ export default function CustomSectionsTab({ orgId, sections, onUpdate }: CustomS
                 placeholder="https://example.com"
                 value={form.content}
                 onChange={(e) => setForm((p) => ({ ...p, content: e.target.value }))}
-                className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+                className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
               />
             )}
 
             {form.contentType === 'video' && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">Upload Video</label>
+                <label className="text-[0.8125rem] font-semibold text-[#475569]">Upload Video</label>
                 <VideoUploader onUploadComplete={handleVideoUpload} />
                 {form.bunnyVideoId && <p className="text-xs text-[#4ade80]">✓ Video uploaded</p>}
               </div>

@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Video, FileText, CreditCard, User, MapPin, Scale, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Video, FileText, CreditCard, User, MapPin, Scale, ArrowRight, CheckCircle2, MessageSquare, Send, Loader2, Upload } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
@@ -38,6 +40,19 @@ interface Task {
   status: string;
 }
 
+interface ClientTask {
+  _id: string;
+  title: string;
+  description: string;
+  taskType: 'credentials' | 'document' | 'information' | 'access' | 'other';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'pending' | 'in_progress' | 'completed';
+  createdBy: string;
+  createdByRole: string;
+  clientResponse?: string;
+  createdAt: string;
+}
+
 const statusBadgeVariant: Record<string, 'success' | 'warning' | 'error' | 'purple'> = {
   active: 'success',
   onboarding: 'purple',
@@ -54,6 +69,11 @@ export default function ClientDashboard() {
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState(0);
+  const [clientTasks, setClientTasks] = useState<ClientTask[]>([]);
+  const [pendingTaskCount, setPendingTaskCount] = useState(0);
+  const [selectedTask, setSelectedTask] = useState<ClientTask | null>(null);
+  const [taskResponse, setTaskResponse] = useState('');
+  const [submittingResponse, setSubmittingResponse] = useState(false);
 
   useEffect(() => {
     if (session?.user?.orgId) {
@@ -62,8 +82,9 @@ export default function ClientDashboard() {
         fetch(`/api/organizations/${session.user.orgId}/videos`).then((r) => r.json()),
         fetch(`/api/organizations/${session.user.orgId}/research`).then((r) => r.json()),
         fetch(`/api/roadmaps/${session.user.orgId}`).then((r) => r.json()).catch(() => ({ roadmap: null, tasks: [] })),
+        fetch('/api/client-tasks').then((r) => r.json()).catch(() => ({ tasks: [], pendingCount: 0 })),
       ])
-        .then(([orgData, videosData, researchData, roadmapData]) => {
+        .then(([orgData, videosData, researchData, roadmapData, clientTasksData]) => {
           setOrg(orgData.organization);
           setVideoCount(videosData.videos?.length || 0);
           setResearchCount(researchData.entries?.length || 0);
@@ -72,11 +93,46 @@ export default function ClientDashboard() {
             setTasks(roadmapData.tasks || []);
             setCompletedTasks(roadmapData.tasks?.filter((t: Task) => t.status === 'completed').length || 0);
           }
+          setClientTasks(clientTasksData.tasks || []);
+          setPendingTaskCount(clientTasksData.pendingCount || 0);
         })
         .catch(() => {})
         .finally(() => setLoading(false));
     }
   }, [session?.user?.orgId]);
+
+  const handleTaskResponse = async (taskId: string) => {
+    if (!taskResponse.trim()) {
+      toast.error('Please provide a response');
+      return;
+    }
+
+    setSubmittingResponse(true);
+    try {
+      const res = await fetch(`/api/client-tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientResponse: taskResponse }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to submit response');
+        return;
+      }
+
+      toast.success('Response submitted successfully');
+      setSelectedTask(null);
+      setTaskResponse('');
+      setClientTasks((prev) => prev.map((t) => (t._id === taskId ? data.task : t)));
+      setPendingTaskCount((prev) => Math.max(0, prev - 1));
+    } catch (error) {
+      toast.error('Failed to submit response');
+    } finally {
+      setSubmittingResponse(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -286,6 +342,154 @@ export default function ClientDashboard() {
           </Card>
         )}
       </div>
+
+      {/* What We Need From You Section */}
+      <Card className={`!border-[#e2e8f0] shadow-sm ${pendingTaskCount > 0 ? '!bg-gradient-to-r from-[#fef3c7] to-[#fef9c3] !border-[#fde68a]' : '!bg-white'}`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="!text-[#0f172a] flex items-center gap-2">
+              <Upload className="w-5 h-5 text-[#d97706]" />
+              What We Need From You
+              {pendingTaskCount > 0 && (
+                <Badge variant="warning" className="ml-2">
+                  {pendingTaskCount} pending
+                </Badge>
+              )}
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {clientTasks.filter((t) => t.status !== 'completed').length === 0 ? (
+            <div className="text-center py-6">
+              <CheckCircle2 className="w-10 h-10 text-[#22c55e] mx-auto mb-2" />
+              <p className="text-sm text-[#64748b]">All caught up! No pending requests from our team.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {clientTasks.filter((t) => t.status !== 'completed').map((task) => (
+                <div
+                  key={task._id}
+                  className="p-4 bg-white rounded-xl border border-[#e2e8f0] hover:border-[#e91e8c] transition-colors cursor-pointer"
+                  onClick={() => { setSelectedTask(task); setTaskResponse(task.clientResponse || ''); }}
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge
+                          variant={task.priority === 'urgent' ? 'error' : task.priority === 'high' ? 'warning' : 'default'}
+                          className="text-xs"
+                        >
+                          {task.priority}
+                        </Badge>
+                        <Badge variant="purple" className="text-xs">
+                          {task.taskType}
+                        </Badge>
+                      </div>
+                      <p className="font-semibold text-[#0f172a]">{task.title}</p>
+                      <p className="text-sm text-[#64748b] line-clamp-2">{task.description}</p>
+                    </div>
+                    <Badge variant={task.status === 'in_progress' ? 'warning' : 'default'}>
+                      {task.status === 'in_progress' ? 'Responded' : 'Pending'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">
+                    Requested by {task.createdBy} • {new Date(task.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Completed Tasks */}
+          {clientTasks.filter((t) => t.status === 'completed').length > 0 && (
+            <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
+              <p className="text-xs font-semibold text-[#475569] mb-2">Recently Completed:</p>
+              {clientTasks.filter((t) => t.status === 'completed').slice(0, 3).map((task) => (
+                <div
+                  key={task._id}
+                  className="flex items-center justify-between p-2 text-sm"
+                >
+                  <span className="text-[#64748b] line-through">{task.title}</span>
+                  <CheckCircle2 className="w-4 h-4 text-[#22c55e]" />
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Task Response Modal */}
+      {selectedTask && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="!bg-white !border-[#e2e8f0] shadow-xl max-w-lg w-full">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant={selectedTask.priority === 'urgent' ? 'error' : selectedTask.priority === 'high' ? 'warning' : 'default'}>
+                      {selectedTask.priority}
+                    </Badge>
+                    <Badge variant="purple">{selectedTask.taskType}</Badge>
+                  </div>
+                  <h2 className="text-lg font-bold text-[#0f172a]">{selectedTask.title}</h2>
+                </div>
+                <button
+                  onClick={() => { setSelectedTask(null); setTaskResponse(''); }}
+                  className="p-2 rounded-lg hover:bg-[#f8f9fa] text-[#64748b]"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="bg-[#f8f9fa] rounded-xl p-4 mb-4">
+                <p className="text-[#0f172a]">{selectedTask.description}</p>
+              </div>
+
+              <p className="text-xs text-[#94a3b8] mb-4">
+                Requested by {selectedTask.createdBy} on {new Date(selectedTask.createdAt).toLocaleDateString()}
+              </p>
+
+              <div className="space-y-3">
+                <label className="text-sm font-semibold text-[#475569] block">
+                  Your Response
+                </label>
+                <textarea
+                  value={taskResponse}
+                  onChange={(e) => setTaskResponse(e.target.value)}
+                  placeholder="Provide the requested information here (e.g., password, document link, etc.)..."
+                  rows={4}
+                  className="w-full px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c] resize-none"
+                />
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="ghost"
+                    onClick={() => { setSelectedTask(null); setTaskResponse(''); }}
+                    className="!text-[#64748b]"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => handleTaskResponse(selectedTask._id)}
+                    disabled={submittingResponse}
+                  >
+                    {submittingResponse ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Submit Response
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

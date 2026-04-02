@@ -154,7 +154,7 @@ export default function AdVideosTab({ orgId }: { orgId: string }) {
     return (
       <div className="space-y-4">
         {Array.from({ length: 2 }).map((_, i) => (
-          <Skeleton key={i} className="h-48 w-full !bg-[rgba(255,255,255,0.04)]" />
+          <Skeleton key={i} className="h-48 w-full !bg-[#f8f9fa]" />
         ))}
       </div>
     );
@@ -163,25 +163,25 @@ export default function AdVideosTab({ orgId }: { orgId: string }) {
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
-        <Button onClick={() => setShowForm(!showForm)} variant={showForm ? 'outline' : 'default'} className={showForm ? '!border-[rgba(255,255,255,0.1)] !text-[#94a3b8]' : ''}>
+        <Button onClick={() => setShowForm(!showForm)} variant={showForm ? 'outline' : 'default'} className={showForm ? '!border-[#e2e8f0] !text-[#64748b]' : ''}>
           <Plus className="w-4 h-4" />
           {showForm ? 'Cancel' : 'Upload Video'}
         </Button>
       </div>
 
       {showForm && (
-        <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+        <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
           <CardContent className="space-y-4 pt-6">
-            <Input id="av-title" label="Title" placeholder="Video title" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-            <Textarea id="av-desc" label="Description" placeholder="Optional description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white !min-h-[60px]" />
+            <Input id="av-title" label="Title" placeholder="Video title" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Textarea id="av-desc" label="Description" placeholder="Optional description" value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a] !min-h-[60px]" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select id="av-platform" label="Platform" options={platformOptions} value={form.platform} onChange={(e) => setForm((p) => ({ ...p, platform: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
-              <Select id="av-status" label="Status" options={statusOptions} value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))} className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white" />
+              <Select id="av-platform" label="Platform" options={platformOptions} value={form.platform} onChange={(e) => setForm((p) => ({ ...p, platform: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+              <Select id="av-status" label="Status" options={statusOptions} value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-[0.8125rem] font-semibold text-[#cbd5e1]">Video File</label>
+              <label className="text-[0.8125rem] font-semibold text-[#475569]">Video File</label>
               <VideoUploader onUploadComplete={handleUploadComplete} />
             </div>
 
@@ -206,12 +206,12 @@ export default function AdVideosTab({ orgId }: { orgId: string }) {
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {videos.map((video) => (
-            <Card key={video._id} className="!bg-[#111118] !border-[rgba(255,255,255,0.06)] overflow-hidden">
+            <Card key={video._id} className="!bg-white !border-[#e2e8f0] shadow-sm overflow-hidden">
               <BunnyPlayer videoId={video.bunnyVideoId} streamUrl={video.bunnyStreamUrl} className="!rounded-none" />
               <CardContent className="pt-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-white truncate">{video.title}</h4>
+                    <h4 className="font-semibold text-[#0f172a] truncate">{video.title}</h4>
                     {video.description && (
                       <p className="text-xs text-[#64748b] mt-1 line-clamp-2">{video.description}</p>
                     )}
@@ -224,7 +224,7 @@ export default function AdVideosTab({ orgId }: { orgId: string }) {
                     <select
                       value={video.status}
                       onChange={(e) => handleStatusChange(video._id, e.target.value)}
-                      className="text-xs px-2 py-1 rounded-lg bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] text-[#94a3b8] outline-none cursor-pointer"
+                      className="text-xs px-2 py-1 rounded-lg bg-white border border-[#e2e8f0] text-[#64748b] outline-none cursor-pointer"
                     >
                       {statusOptions.map((opt) => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>

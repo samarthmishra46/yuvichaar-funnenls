@@ -50,7 +50,7 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
         <CardContent className="space-y-5 pt-6">
           <Input
             id="lp-url"
@@ -61,7 +61,7 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
               setUrl(e.target.value);
               setIframeError(false);
             }}
-            className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white"
+            className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
           />
 
           <Textarea
@@ -70,7 +70,7 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
             placeholder="Any notes about the landing page..."
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="!bg-[rgba(255,255,255,0.04)] !border-[rgba(255,255,255,0.1)] !text-white !min-h-[80px]"
+            className="!bg-white !border-[#e2e8f0] !text-[#0f172a] !min-h-[80px]"
           />
 
           <div className="flex justify-end">
@@ -90,11 +90,11 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
 
       {/* Preview */}
       {url && (
-        <Card className="!bg-[#111118] !border-[rgba(255,255,255,0.06)]">
+        <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold text-white flex items-center gap-2">
-                <Globe className="w-4 h-4 text-[#f472b6]" />
+              <h4 className="font-semibold text-[#0f172a] flex items-center gap-2">
+                <Globe className="w-4 h-4 text-[#e91e8c]" />
                 Page Preview
               </h4>
               <a
@@ -109,7 +109,7 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
             </div>
 
             {!iframeError ? (
-              <div className="relative w-full rounded-xl overflow-hidden border border-[rgba(255,255,255,0.06)]" style={{ paddingTop: '56.25%' }}>
+              <div className="relative w-full rounded-xl overflow-hidden border border-[#e2e8f0]" style={{ paddingTop: '56.25%' }}>
                 <iframe
                   src={url}
                   className="absolute inset-0 w-full h-full border-0"
@@ -118,7 +118,7 @@ export default function LandingPageTab({ org, onUpdate }: LandingPageTabProps) {
                 />
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-dashed border-[rgba(255,255,255,0.1)] text-center">
+              <div className="flex flex-col items-center justify-center py-12 rounded-xl border border-dashed border-[#e2e8f0] text-center">
                 <Globe className="w-8 h-8 text-[#475569] mb-3" />
                 <p className="text-sm text-[#64748b]">
                   This page cannot be embedded in an iframe.

@@ -6,13 +6,15 @@ import {
   LayoutDashboard,
   Building2,
   Users,
+  Inbox,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Inbox', href: '/admin/inbox', icon: Inbox, showBadge: true },
   { name: 'Organizations', href: '/admin/organizations', icon: Building2 },
   { name: 'Staff', href: '/admin/staff', icon: Users },
 ];
@@ -20,6 +22,26 @@ const navItems = [
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await fetch('/api/admin/inbox?limit=1');
+        const data = await res.json();
+        if (data.unreadCount !== undefined) {
+          setUnreadCount(data.unreadCount);
+        }
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const isActive = (href: string) => {
     if (href === '/admin') return pathname === '/admin';
@@ -27,178 +49,74 @@ export default function AdminSidebar() {
   };
 
   return (
-    <>
-      <aside
-        className={`admin-sidebar ${collapsed ? 'admin-sidebar--collapsed' : ''}`}
-      >
-        {/* Logo */}
-        <div className="admin-sidebar__logo">
-          <div className="admin-sidebar__logo-icon">
-            <span className="admin-sidebar__logo-gradient">Y</span>
-          </div>
-          {!collapsed && (
-            <span className="admin-sidebar__logo-text">
-              <span className="text-white font-bold">Yuvi</span>
-              <span className="text-pink-400 font-bold">chaar</span>
-            </span>
-          )}
+    <aside
+      className={`fixed top-0 left-0 bottom-0 bg-white border-r border-[#e2e8f0] flex flex-col py-5 px-3 z-40 transition-[width] duration-[250ms] ease-in-out shadow-[0_1px_3px_0_rgb(0_0_0/0.05)] ${
+        collapsed ? 'w-[72px]' : 'w-[260px]'
+      } max-md:w-[72px]`}
+    >
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-2 mb-8">
+        <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[#9333ea] to-[#e91e8c] flex items-center justify-center shrink-0">
+          <span className="text-white font-extrabold text-lg">Y</span>
         </div>
+        {!collapsed && (
+          <span className="text-lg whitespace-nowrap max-md:hidden">
+            <span className="text-[#0f172a] font-bold">Yuvi</span>
+            <span className="text-pink-400 font-bold">chaar</span>
+          </span>
+        )}
+      </div>
 
-        {/* Nav */}
-        <nav className="admin-sidebar__nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`admin-sidebar__link ${active ? 'admin-sidebar__link--active' : ''}`}
-                title={collapsed ? item.name : undefined}
-              >
+      {/* Nav */}
+      <nav className="flex flex-col gap-1 flex-1">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const active = isActive(item.href);
+          const showBadge = (item as any).showBadge && unreadCount > 0;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center gap-3 py-2.5 px-3 rounded-xl text-sm font-medium transition-all duration-200 no-underline whitespace-nowrap relative ${
+                active
+                  ? 'text-[#e91e8c] bg-[#fdf2f8] hover:bg-[#fce7f3]'
+                  : 'text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8f9fa]'
+              }`}
+              title={collapsed ? item.name : undefined}
+            >
+              <div className="relative">
                 <Icon className="w-5 h-5 shrink-0" />
-                {!collapsed && <span>{item.name}</span>}
-              </Link>
-            );
-          })}
-        </nav>
+                {showBadge && collapsed && (
+                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#e91e8c] rounded-full" />
+                )}
+              </div>
+              {!collapsed && (
+                <span className="max-md:hidden flex-1 flex items-center justify-between">
+                  {item.name}
+                  {showBadge && (
+                    <span className="ml-2 px-1.5 py-0.5 text-xs font-bold bg-[#e91e8c] text-white rounded-full min-w-[20px] text-center">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
 
-        {/* Collapse toggle */}
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="admin-sidebar__toggle"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {collapsed ? (
-            <ChevronRight className="w-4 h-4" />
-          ) : (
-            <ChevronLeft className="w-4 h-4" />
-          )}
-        </button>
-      </aside>
-
-      <style jsx>{`
-        .admin-sidebar {
-          position: fixed;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          width: 260px;
-          background: #ffffff;
-          border-right: 1px solid #e2e8f0;
-          display: flex;
-          flex-direction: column;
-          padding: 1.25rem 0.75rem;
-          z-index: 40;
-          transition: width 0.25s ease;
-          box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
-        }
-
-        .admin-sidebar--collapsed {
-          width: 72px;
-        }
-
-        .admin-sidebar__logo {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0 0.5rem;
-          margin-bottom: 2rem;
-        }
-
-        .admin-sidebar__logo-icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #9333ea, #e91e8c);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        .admin-sidebar__logo-gradient {
-          color: white;
-          font-weight: 800;
-          font-size: 1.125rem;
-        }
-
-        .admin-sidebar__logo-text {
-          font-size: 1.125rem;
-          white-space: nowrap;
-        }
-
-        .admin-sidebar__nav {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-          flex: 1;
-        }
-
-        .admin-sidebar__link {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.625rem 0.75rem;
-          border-radius: 12px;
-          color: #64748b;
-          font-size: 0.875rem;
-          font-weight: 500;
-          transition: all 0.2s ease;
-          text-decoration: none;
-          white-space: nowrap;
-        }
-
-        .admin-sidebar__link:hover {
-          color: #0f172a;
-          background: #f8f9fa;
-        }
-
-        .admin-sidebar__link--active {
-          color: #e91e8c;
-          background: #fdf2f8;
-        }
-
-        .admin-sidebar__link--active:hover {
-          color: #e91e8c;
-          background: #fce7f3;
-        }
-
-        .admin-sidebar__toggle {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
-          background: #f8f9fa;
-          border: 1px solid #e2e8f0;
-          color: #64748b;
-          cursor: pointer;
-          margin: 0 auto;
-          transition: all 0.2s ease;
-        }
-
-        .admin-sidebar__toggle:hover {
-          background: #f1f3f5;
-          color: #0f172a;
-        }
-
-        @media (max-width: 768px) {
-          .admin-sidebar {
-            width: 72px;
-          }
-
-          .admin-sidebar__logo-text,
-          .admin-sidebar__link span {
-            display: none;
-          }
-
-          .admin-sidebar__toggle {
-            display: none;
-          }
-        }
-      `}</style>
-    </>
+      {/* Collapse toggle */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#f8f9fa] border border-[#e2e8f0] text-[#64748b] cursor-pointer mx-auto transition-all duration-200 hover:bg-[#f1f3f5] hover:text-[#0f172a] max-md:hidden"
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {collapsed ? (
+          <ChevronRight className="w-4 h-4" />
+        ) : (
+          <ChevronLeft className="w-4 h-4" />
+        )}
+      </button>
+    </aside>
   );
 }
