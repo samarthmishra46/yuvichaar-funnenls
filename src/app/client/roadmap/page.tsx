@@ -253,9 +253,9 @@ export default function ClientRoadmapPage() {
           const isCurrentPhase = currentDay >= phase.startDay && currentDay <= phase.endDay;
 
           return (
-            <Card
+            <div
               key={phase.id}
-              className={`!border-[#e2e8f0] shadow-sm overflow-hidden ${isCurrentPhase ? '!border-l-4' : ''}`}
+              className={`rounded-xl border bg-white shadow-sm overflow-hidden ${isCurrentPhase ? 'border-l-4' : 'border-[#e2e8f0]'}`}
               style={{ borderLeftColor: isCurrentPhase ? phase.color : undefined }}
             >
               {/* Phase Header */}
@@ -427,7 +427,7 @@ export default function ClientRoadmapPage() {
                   )}
                 </div>
               )}
-            </Card>
+            </div>
           );
         })}
       </div>
