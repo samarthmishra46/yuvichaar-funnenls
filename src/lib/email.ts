@@ -56,7 +56,7 @@ export function getOnboardingEmailTemplate({
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
       </head>
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+        <div style="background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
           <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to Yuvichaar!</h1>
         </div>
         
@@ -64,19 +64,19 @@ export function getOnboardingEmailTemplate({
           <p style="font-size: 16px; margin-bottom: 20px;">Hello <strong>${organizationName}</strong>,</p>
           
           <p style="font-size: 16px; margin-bottom: 20px;">
-            We're excited to have you on board! To complete your onboarding, please follow these steps:
+            We're excited to partner with you on your growth journey! Please review and accept our proposal to get started.
           </p>
           
           <ol style="font-size: 16px; margin-bottom: 25px; padding-left: 20px;">
-            <li style="margin-bottom: 10px;">Review the Statement of Work (SOW) and Memorandum of Understanding (MOU)</li>
-            <li style="margin-bottom: 10px;">Sign the documents electronically</li>
-            <li style="margin-bottom: 10px;">Complete the minimum payment</li>
-            <li style="margin-bottom: 10px;">Set up your account password</li>
+            <li style="margin-bottom: 10px;">Review the proposal and deliverables</li>
+            <li style="margin-bottom: 10px;">Accept the pricing and sign the agreement</li>
+            <li style="margin-bottom: 10px;">Complete the advance payment</li>
+            <li style="margin-bottom: 10px;">Set up your dashboard password</li>
           </ol>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${onboardingLink}" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
-              Complete Onboarding
+            <a href="${onboardingLink}" style="display: inline-block; background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+              View Proposal
             </a>
           </div>
           

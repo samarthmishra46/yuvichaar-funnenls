@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Proposal — 60 Day Growth Marathon</title>
+
+<style>
+:root {
+  --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+  --display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  --black: #090909;
+  --ink: #161616;
+  --body: #3a3a3a;
+  --sub: #6b6b6b;
+  --muted: #9b9b9b;
+  --line: #e4e4e4;
+  --bg: #f8f8f7;
+  --white: #ffffff;
+  --purple: #6d28d9;
+  --purple-light: #ede9fe;
+  --green: #15803d;
+  --green-bg: #f0fdf4;
+  --amber: #b45309;
+  --amber-bg: #fffbeb;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: none; }
+body {
+  font-family: var(--sans);
+  background: var(--white);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; flex-direction: column; min-height: 100svh; }
+.screen.on { display: flex; }
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 90;
+  background: rgba(255,255,255,0.93);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand { display: flex; align-items: center; gap: 7px; }
+.brand svg { width: 16px; height: 16px; }
+.brand-name { font-family: var(--display); font-size: 13px; font-weight: 700; color: var(--black); letter-spacing: -0.2px; }
+.help-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--bg); border: 1px solid var(--line);
+  border-radius: 100px; padding: 6px 13px;
+  font-family: var(--sans); font-size: 12px; font-weight: 500;
+  color: var(--body); cursor: pointer; transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.help-btn:active { opacity: 0.7; }
+
+/* ── STEP NAV ── */
+.stepnav {
+  display: flex; border-bottom: 1px solid var(--line);
+  overflow-x: auto; scrollbar-width: none;
+}
+.stepnav::-webkit-scrollbar { display: none; }
+.stp {
+  flex: 1; min-width: 60px; padding: 9px 4px;
+  text-align: center; font-size: 10px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--muted); border-bottom: 2px solid transparent;
+  white-space: nowrap; transition: all 0.15s;
+}
+.stp.cur { color: var(--black); border-bottom-color: var(--black); }
+.stp.done { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── SCROLL BODY ── */
+.body {
+  flex: 1; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(88px + var(--safe-b));
+}
+
+/* ── FOOTER ── */
+.footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  padding: 12px 20px calc(10px + var(--safe-b));
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--line); z-index: 89;
+}
+.cta {
+  width: 100%; background: var(--black); color: var(--white);
+  border: none; border-radius: 12px; padding: 16px 20px;
+  font-family: var(--display); font-size: 15px; font-weight: 700;
+  letter-spacing: -0.3px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.15s;
+  box-shadow: 0 2px 16px rgba(9,9,9,0.18);
+}
+.cta:active { transform: scale(0.98); box-shadow: 0 1px 8px rgba(9,9,9,0.15); }
+.cta:disabled { background: var(--line); color: var(--muted); box-shadow: none; cursor: not-allowed; }
+.cta-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* ═══════════════════════════
+   PROPOSAL — SCREEN 1
+═══════════════════════════ */
+
+/* HERO */
+.hero {
+  padding: 36px 20px 28px;
+  border-bottom: 1px solid var(--line);
+  animation: up 0.45s ease both;
+}
+.hero-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--purple); margin-bottom: 12px;
+}
+.hero-title {
+  font-family: var(--display); font-size: 36px; font-weight: 800;
+  letter-spacing: -1.5px; line-height: 1.05; color: var(--black);
+  margin-bottom: 12px;
+}
+.hero-for { font-size: 13px; color: var(--sub); }
+.hero-for strong { color: var(--ink); font-weight: 600; }
+
+/* GOAL BLOCK */
+.goalblock {
+  padding: 24px 20px; border-bottom: 1px solid var(--line);
+  animation: up 0.45s 0.07s ease both;
+}
+.gl { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.gi-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 7px;
+}
+.gi-val {
+  font-family: var(--display); font-size: 16px; font-weight: 700;
+  color: var(--black); line-height: 1.3; letter-spacing: -0.3px;
+}
+
+/* ── FUNNEL DIAGRAM ── */
+.funnel-wrap {
+  padding: 28px 20px 0;
+  animation: up 0.45s 0.1s ease both;
+}
+.funnel-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.funnel-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* Funnel diagram container */
+.fd {
+  background: var(--black);
+  border-radius: 16px;
+  padding: 24px 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Funnel top note */
+.fd-topnote {
+  text-align: center; margin-bottom: 20px;
+}
+.fd-topnote-text {
+  display: inline-block; background: rgba(109,40,217,0.25);
+  border: 1px solid rgba(109,40,217,0.5);
+  border-radius: 100px; padding: 5px 14px;
+  font-size: 11px; font-weight: 600; color: #c4b5fd;
+  letter-spacing: 0.2px;
+}
+
+/* Flow column */
+.fd-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; margin-bottom: 20px;
+}
+.fd-node {
+  width: 100%; max-width: 260px;
+  padding: 10px 14px; border-radius: 8px;
+  text-align: center;
+  position: relative;
+}
+.fd-node-label {
+  font-size: 12px; font-weight: 600; color: var(--white);
+  letter-spacing: -0.1px;
+}
+.fd-node-sub {
+  font-size: 10px; color: rgba(255,255,255,0.5);
+  margin-top: 2px; line-height: 1.3;
+}
+.fd-arrow {
+  width: 1px; height: 16px; background: rgba(255,255,255,0.15);
+  margin: 0 auto;
+}
+.fd-arrow-head {
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid rgba(255,255,255,0.15);
+  margin: 0 auto;
+}
+
+/* Node colours */
+.nd-purple { background: rgba(109,40,217,0.4); border: 1px solid rgba(109,40,217,0.6); }
+.nd-blue   { background: rgba(37,99,235,0.3); border: 1px solid rgba(37,99,235,0.5); }
+.nd-teal   { background: rgba(15,118,110,0.3); border: 1px solid rgba(15,118,110,0.5); }
+.nd-green  { background: rgba(22,163,74,0.3); border: 1px solid rgba(22,163,74,0.5); }
+.nd-orange { background: rgba(234,88,12,0.25); border: 1px solid rgba(234,88,12,0.4); }
+
+/* Split section */
+.fd-split {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  margin-top: 0;
+}
+.fd-branch {
+  border-radius: 10px; padding: 12px 10px;
+}
+.fd-branch.buy { background: rgba(22,163,74,0.15); border: 1px solid rgba(22,163,74,0.3); }
+.fd-branch.nobuy { background: rgba(234,88,12,0.12); border: 1px solid rgba(234,88,12,0.3); }
+.fd-branch-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.fd-branch.buy .fd-branch-title { color: #4ade80; }
+.fd-branch.nobuy .fd-branch-title { color: #fb923c; }
+.fd-branch-item {
+  font-size: 10px; color: rgba(255,255,255,0.55);
+  padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.06);
+  line-height: 1.3; display: flex; gap: 5px; align-items: flex-start;
+}
+.fd-branch-item:last-child { border-bottom: none; }
+.fd-branch-dot { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.fd-branch.buy .fd-branch-dot { background: #4ade80; }
+.fd-branch.nobuy .fd-branch-dot { background: #fb923c; }
+
+/* Profit row */
+.fd-profit {
+  margin-top: 14px; padding: 12px 14px;
+  background: rgba(109,40,217,0.25); border: 1px solid rgba(109,40,217,0.4);
+  border-radius: 10px; text-align: center;
+}
+.fd-profit-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: #c4b5fd; margin-bottom: 4px;
+}
+.fd-profit-text {
+  font-family: var(--display); font-size: 16px; font-weight: 800;
+  color: var(--white); letter-spacing: -0.5px;
+}
+
+/* ── DELIVERABLES TABLE ── */
+.del-wrap {
+  padding: 28px 20px 0;
+  animation: up 0.45s 0.13s ease both;
+}
+.del-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.del-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.del-table { width: 100%; border-collapse: collapse; }
+.del-table tr { border-bottom: 1px solid var(--line); }
+.del-table tr:last-child { border-bottom: none; }
+.del-table td { padding: 13px 0; vertical-align: top; }
+.dt-num {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  padding-right: 12px; white-space: nowrap; width: 26px;
+  padding-top: 2px; font-variant-numeric: tabular-nums;
+}
+.dt-name {
+  font-size: 14px; font-weight: 600; color: var(--black);
+  letter-spacing: -0.2px; line-height: 1.25;
+}
+.dt-desc {
+  font-size: 12px; color: var(--sub); line-height: 1.45;
+  margin-top: 3px; letter-spacing: -0.1px;
+}
+.dt-qty {
+  font-size: 11px; font-weight: 600; color: var(--sub);
+  white-space: nowrap; padding-left: 10px; padding-top: 2px; text-align: right;
+}
+
+/* ── TIMELINE ── */
+.tl-wrap {
+  padding: 28px 20px 0;
+  animation: up 0.45s 0.16s ease both;
+}
+.tl-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.tl-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.tl-table { width: 100%; border-collapse: collapse; }
+.tl-table tr { border-bottom: 1px solid var(--line); }
+.tl-table tr:last-child { border-bottom: none; }
+.tl-table td { padding: 14px 0; vertical-align: top; }
+.tt-week {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--muted); padding-right: 14px;
+  white-space: nowrap; min-width: 60px; padding-top: 2px;
+}
+.tt-phase {
+  font-size: 14px; font-weight: 600; color: var(--black);
+  letter-spacing: -0.2px; margin-bottom: 2px;
+}
+.tt-desc { font-size: 12px; color: var(--sub); line-height: 1.45; letter-spacing: -0.1px; }
+
+/* Launch row */
+.tl-launch-row td { background: var(--black); padding: 14px 14px; }
+.tl-launch-row:first-child td:first-child { border-radius: 10px 0 0 10px; }
+.tl-launch-row td:first-child { border-radius: 10px 0 0 10px; }
+.tl-launch-row td:last-child { border-radius: 0 10px 10px 0; }
+.tl-table .tl-launch-row { border-bottom: none; margin: 4px 0; }
+.tl-launch-week { color: rgba(255,255,255,0.35) !important; }
+.tl-launch-phase { color: var(--white) !important; }
+.tl-launch-desc { color: rgba(255,255,255,0.5) !important; }
+.tl-note { font-size: 12px; color: var(--sub); padding: 16px 0 28px; letter-spacing: -0.1px; }
+
+/* ── PROOF ── */
+.proof-wrap {
+  padding: 28px 20px 0;
+  animation: up 0.45s 0.18s ease both;
+}
+.proof-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.proof-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.proof-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+}
+.pc {
+  padding: 18px 16px; border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.pc:nth-child(2n) { border-right: none; }
+.pc:nth-last-child(-n+2) { border-bottom: none; }
+.pc-num {
+  font-family: var(--display); font-size: 32px; font-weight: 800;
+  letter-spacing: -1.5px; color: var(--black); line-height: 1; margin-bottom: 5px;
+}
+.pc-lbl { font-size: 11px; color: var(--sub); line-height: 1.4; }
+
+/* PORTFOLIO */
+.port-wrap { padding: 24px 20px 0; }
+.port-card {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px; background: var(--black); border-radius: 14px;
+  text-decoration: none; margin-bottom: 32px;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s;
+}
+.port-card:active { opacity: 0.85; }
+.port-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+.port-title { font-size: 14px; font-weight: 600; color: var(--white); letter-spacing: -0.1px; }
+.port-icon { width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ═══════════════════════════
+   PRICING — SCREEN 2
+═══════════════════════════ */
+.price-hero {
+  padding: 36px 20px 28px; border-bottom: 1px solid var(--line);
+  animation: up 0.4s ease both;
+}
+.price-eyebrow {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+}
+.price-headline {
+  font-family: var(--display); font-size: 30px; font-weight: 800;
+  letter-spacing: -1.2px; color: var(--black); line-height: 1.1; margin-bottom: 6px;
+}
+.price-sub { font-size: 13px; color: var(--sub); line-height: 1.5; }
+
+/* Fee breakdown */
+.fee-block { padding: 24px 20px; border-bottom: 1px solid var(--line); }
+.fee-section-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.fee-section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+.fee-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 13px 0; border-bottom: 1px solid var(--line); gap: 12px;
+}
+.fee-row:last-child { border-bottom: none; }
+.fee-name { font-size: 14px; font-weight: 600; color: var(--black); letter-spacing: -0.2px; flex: 1; }
+.fee-desc { font-size: 12px; color: var(--sub); margin-top: 2px; line-height: 1.4; }
+.fee-amount { font-size: 14px; font-weight: 600; color: var(--black); white-space: nowrap; text-align: right; }
+.fee-note { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+.fee-total-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 16px; background: var(--bg); border-radius: 10px;
+  margin-top: 14px; border: 1px solid var(--line);
+}
+.fee-total-label { font-size: 12px; font-weight: 600; color: var(--sub); }
+.fee-total-amount { font-family: var(--display); font-size: 20px; font-weight: 800; letter-spacing: -0.8px; color: var(--black); }
+
+/* Payment timeline */
+.paytl-block { padding: 24px 20px; border-bottom: 1px solid var(--line); }
+.paytl-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.paytl-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+/* Timeline track */
+.track { position: relative; padding-left: 28px; }
+.track::before {
+  content: ''; position: absolute; left: 6px; top: 8px;
+  bottom: 8px; width: 1px; background: var(--line);
+}
+.track-item { position: relative; margin-bottom: 0; }
+.track-item + .track-item { margin-top: 0; }
+.track-dot {
+  position: absolute; left: -22px; top: 16px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--white); border: 2px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1;
+}
+.track-dot.active { background: var(--black); border-color: var(--black); }
+.track-dot.perf { background: var(--white); border-color: var(--purple); }
+.track-dot-inner { width: 5px; height: 5px; border-radius: 50%; background: var(--white); }
+
+.track-card {
+  padding: 16px; border: 1px solid var(--line); border-radius: 12px;
+  margin-bottom: 10px; background: var(--white);
+}
+.track-card.featured { background: var(--black); border-color: var(--black); }
+.track-card.perf-card { background: var(--purple-light); border-color: #ddd6fe; }
+
+.tc-when {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.track-card .tc-when { color: var(--muted); }
+.track-card.featured .tc-when { color: rgba(255,255,255,0.4); }
+.track-card.perf-card .tc-when { color: var(--purple); }
+
+.tc-title {
+  font-size: 15px; font-weight: 700; color: var(--black);
+  letter-spacing: -0.3px; margin-bottom: 4px;
+}
+.track-card.featured .tc-title { color: var(--white); }
+.track-card.perf-card .tc-title { color: var(--purple); }
+
+.tc-amount {
+  font-family: var(--display); font-size: 22px; font-weight: 800;
+  letter-spacing: -0.8px; color: var(--black); margin-bottom: 3px;
+}
+.track-card.featured .tc-amount { color: var(--white); }
+.track-card.perf-card .tc-amount { color: var(--purple); }
+
+.tc-note { font-size: 11px; color: var(--sub); line-height: 1.4; }
+.track-card.featured .tc-note { color: rgba(255,255,255,0.45); }
+.track-card.perf-card .tc-note { color: #7c3aed; opacity: 0.7; }
+
+.tc-trigger {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 8px; padding: 4px 10px;
+  background: rgba(109,40,217,0.12); border-radius: 100px;
+  font-size: 11px; font-weight: 600; color: var(--purple);
+}
+
+/* Notices */
+.notice { padding: 14px 16px; border-radius: 10px; margin-bottom: 10px; }
+.notice.gray { background: var(--bg); border: 1px solid var(--line); }
+.notice-title { font-size: 12px; font-weight: 700; color: var(--black); margin-bottom: 4px; }
+.notice-body { font-size: 12px; color: var(--sub); line-height: 1.55; }
+
+/* Accept */
+.accept-wrap { padding: 24px 20px; }
+.accept-row { display: flex; align-items: flex-start; gap: 12px; }
+.acb { width: 20px; height: 20px; border-radius: 5px; accent-color: var(--black); cursor: pointer; flex-shrink: 0; margin-top: 1px; }
+.aclbl { font-size: 14px; color: var(--body); line-height: 1.55; cursor: pointer; letter-spacing: -0.1px; }
+
+/* ═══════════════════════════
+   AGREEMENT — SCREEN 3
+═══════════════════════════ */
+.mou-hero {
+  padding: 36px 20px 24px; border-bottom: 1px solid var(--line);
+  animation: up 0.4s ease both;
+}
+.mou-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.mou-title { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; color: var(--black); margin-bottom: 12px; }
+.mou-intro { font-size: 13px; color: var(--sub); line-height: 1.65; }
+
+.parties { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 20px; border-bottom: 1px solid var(--line); }
+.party { padding: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+.party-label { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.party-name { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 2px; }
+.party-sub { font-size: 11px; color: var(--sub); line-height: 1.4; }
+
+.meta-block { padding: 0 20px; border-bottom: 1px solid var(--line); }
+.meta-row { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--line); gap: 16px; }
+.meta-row:last-child { border-bottom: none; }
+.mk { font-size: 12px; color: var(--sub); }
+.mv { font-size: 13px; font-weight: 600; color: var(--black); text-align: right; }
+
+.clauses { padding: 0 20px; }
+.cg-title { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); padding: 24px 0 10px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 10px; }
+.cg-title:first-child { border-top: none; }
+.cg-title::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.clause { padding: 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; }
+.clause:last-child { margin-bottom: 0; }
+.cl-num { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.cl-title { font-size: 13px; font-weight: 700; color: var(--black); margin-bottom: 7px; }
+.cl-body { font-size: 12px; color: var(--body); line-height: 1.7; }
+.cl-body .hl { color: var(--black); font-weight: 600; }
+.cl-list { list-style: none; margin-top: 7px; }
+.cl-list li { display: flex; gap: 8px; font-size: 12px; color: var(--body); line-height: 1.5; padding: 4px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+.cl-list li:last-child { border-bottom: none; }
+.cl-list li::before { content: '—'; color: var(--line); flex-shrink: 0; }
+
+.confirms-wrap { padding: 24px 20px 0; }
+.confirms-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.confirms-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.ci { display: flex; align-items: flex-start; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.ci:last-child { border-bottom: none; }
+.cicb { width: 18px; height: 18px; border-radius: 4px; accent-color: var(--black); cursor: pointer; flex-shrink: 0; margin-top: 1px; }
+.cilbl { font-size: 13px; color: var(--body); line-height: 1.5; cursor: pointer; }
+
+.sig-wrap { padding: 24px 20px; }
+.sig-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.sig-field { width: 100%; font-family: var(--sans); font-size: 17px; color: var(--black); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; outline: none; -webkit-appearance: none; transition: border-color 0.15s, background 0.15s; }
+.sig-field:focus { border-color: var(--black); background: var(--white); }
+.sig-field::placeholder { color: var(--line); }
+.sig-preview { margin-top: 10px; min-height: 68px; border: 1px dashed var(--line); border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 12px 16px; transition: border-color 0.2s; }
+.sig-preview.live { border-color: var(--black); border-style: solid; }
+.sig-text { font-family: "Snell Roundhand","Apple Chancery","Palatino Linotype",cursive; font-size: 26px; color: var(--black); }
+.sig-empty { font-size: 12px; color: var(--muted); }
+.sig-note { font-size: 11px; color: var(--muted); text-align: center; margin-top: 8px; }
+
+/* ═══════════════════════════
+   PAYMENT — SCREEN 4
+═══════════════════════════ */
+.pay-hero { padding: 36px 20px 28px; border-bottom: 1px solid var(--line); text-align: center; animation: up 0.4s ease both; }
+.pay-eyebrow { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.pay-amount { font-family: var(--display); font-size: 52px; font-weight: 800; letter-spacing: -2.5px; color: var(--black); line-height: 1; margin-bottom: 5px; }
+.pay-breakdown { font-size: 13px; color: var(--sub); }
+
+.unlock-block { padding: 24px 20px; border-bottom: 1px solid var(--line); }
+.unlock-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.unlock-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.ul-item { display: flex; align-items: center; gap: 11px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink); }
+.ul-item:last-child { border-bottom: none; }
+.ul-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+.pm-block { padding: 24px 20px; }
+.pm-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.pm-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.popt { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; cursor: pointer; background: var(--white); transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+.popt.sel { background: var(--black); border-color: var(--black); }
+.popt:last-of-type { margin-bottom: 0; }
+.pm-icon { font-size: 20px; flex-shrink: 0; }
+.pm-body { flex: 1; }
+.pm-name { font-size: 14px; font-weight: 600; color: var(--black); letter-spacing: -0.2px; transition: color 0.15s; }
+.popt.sel .pm-name { color: var(--white); }
+.pm-desc { font-size: 12px; color: var(--sub); transition: color 0.15s; }
+.popt.sel .pm-desc { color: rgba(255,255,255,0.45); }
+.pm-radio { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.popt.sel .pm-radio { border-color: var(--white); background: var(--white); }
+.pm-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--black); opacity: 0; transition: opacity 0.15s; }
+.popt.sel .pm-dot { opacity: 1; }
+
+.bank-box { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin-top: 8px; display: none; }
+.bank-box.on { display: block; }
+.brow { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.brow:last-child { border-bottom: none; }
+.bk { font-size: 12px; color: var(--sub); }
+.bv { font-size: 12px; font-weight: 600; color: var(--black); font-variant-numeric: tabular-nums; }
+.bank-note { font-size: 11px; color: var(--sub); margin-top: 10px; line-height: 1.5; }
+
+.proof-box { background: var(--bg); border: 1px dashed var(--line); border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; display: none; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
+.proof-box.on { display: block; }
+.proof-box input { display: none; }
+.proof-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 3px; }
+.proof-hint { font-size: 12px; color: var(--sub); }
+.secure-note { text-align: center; font-size: 11px; color: var(--muted); margin-top: 18px; }
+
+/* ═══════════════════════════
+   SUCCESS — SCREEN 5
+═══════════════════════════ */
+.success-body { padding: 56px 20px 48px; animation: up 0.4s ease both; }
+.s-icon { font-size: 52px; display: block; margin-bottom: 20px; }
+.s-title { font-family: var(--display); font-size: 32px; font-weight: 800; letter-spacing: -1px; color: var(--black); margin-bottom: 8px; }
+.s-sub { font-size: 14px; color: var(--sub); line-height: 1.6; margin-bottom: 32px; max-width: 300px; }
+.auto-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+.auto-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.ai { display: flex; align-items: center; gap: 11px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink); }
+.ai:last-child { border-bottom: none; }
+.a-chk { width: 20px; height: 20px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.next-box { margin-top: 24px; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+.next-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.next-text { font-size: 14px; color: var(--ink); line-height: 1.55; }
+.portal-cta { display: block; width: 100%; background: var(--black); color: var(--white); border: none; border-radius: 12px; padding: 16px; font-family: var(--display); font-size: 15px; font-weight: 700; text-align: center; text-decoration: none; margin-top: 14px; -webkit-tap-highlight-color: transparent; }
+
+/* ═══════════════════════════
+   HELP SHEET
+═══════════════════════════ */
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.backdrop.on { opacity: 1; pointer-events: all; }
+.sheet { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-radius: 20px 20px 0 0; padding: 0 20px calc(32px + var(--safe-b)); z-index: 201; transform: translateY(100%); transition: transform 0.28s cubic-bezier(0.32,0.72,0,1); max-height: 90svh; overflow-y: auto; }
+.sheet.on { transform: translateY(0); }
+.sh-handle { width: 36px; height: 4px; background: var(--line); border-radius: 2px; margin: 12px auto 20px; }
+.sh-title { font-family: var(--display); font-size: 22px; font-weight: 800; letter-spacing: -0.5px; color: var(--black); margin-bottom: 4px; }
+.sh-sub { font-size: 13px; color: var(--sub); margin-bottom: 20px; line-height: 1.4; }
+.wa-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; background: #22C55E; color: white; border: none; border-radius: 12px; font-family: var(--display); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; margin-bottom: 8px; -webkit-tap-highlight-color: transparent; }
+.call-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; background: var(--bg); color: var(--black); border: 1px solid var(--line); border-radius: 12px; font-family: var(--display); font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; margin-bottom: 24px; -webkit-tap-highlight-color: transparent; }
+.faq-lbl { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.fq { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; font-size: 14px; font-weight: 600; color: var(--black); border-bottom: 1px solid var(--line); cursor: pointer; letter-spacing: -0.1px; -webkit-tap-highlight-color: transparent; }
+.fq:last-of-type { border-bottom: none; }
+.fa-ar { font-size: 13px; color: var(--muted); transition: transform 0.15s; flex-shrink: 0; }
+.fq.open .fa-ar { transform: rotate(90deg); }
+.fa { font-size: 13px; color: var(--sub); line-height: 1.6; padding: 0 0 12px; display: none; }
+.fq.open + .fa { display: block; }
+.dismiss-btn { display: block; width: 100%; text-align: center; font-size: 13px; font-weight: 500; color: var(--sub); background: none; border: none; font-family: var(--sans); padding: 16px 0 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* ── BACK BTN ── */
+.back-btn { background: none; border: none; font-family: var(--sans); font-size: 14px; font-weight: 500; color: #2563EB; cursor: pointer; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* ── ANIMATIONS ── */
+@keyframes up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     S1 — PROPOSAL
+══════════════════════════════ -->
+<div class="screen on" id="s1">
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 16 16"><polygon points="8,1 15,15 1,15" fill="#6d28d9"/></svg>
+      <span class="brand-name">Yuvichaar Funnels</span>
+    </div>
+    <button class="help-btn" onclick="openHelp()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 11V10M8 8.5A1.75 1.75 0 106.25 6.75" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11.5" r=".4" fill="currentColor"/></svg>
+      Help
+    </button>
+  </div>
+  <div class="stepnav">
+    <div class="stp cur">Proposal</div>
+    <div class="stp">Pricing</div>
+    <div class="stp">Agreement</div>
+    <div class="stp">Payment</div>
+  </div>
+  <div class="body">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-eyebrow">Proposal</div>
+      <div class="hero-title">60 Day Growth<br>Marathon</div>
+      <div class="hero-for">Prepared for <strong id="p-co">your company</strong> &nbsp;·&nbsp; Yuvraj Singh Rajawat</div>
+    </div>
+
+    <!-- GOAL -->
+    <div class="goalblock">
+      <div class="gl">
+        <div>
+          <div class="gi-label">Engagement goal</div>
+          <div class="gi-val" id="p-goal">Build an end-to-end D2C funnel</div>
+        </div>
+        <div>
+          <div class="gi-label">Target milestone</div>
+          <div class="gi-val" id="p-target">1,000 paying customers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FUNNEL DIAGRAM ── -->
+    <div class="funnel-wrap">
+      <div class="funnel-label">Your complete funnel — how it works</div>
+
+      <div class="fd">
+        <div class="fd-topnote">
+          <span class="fd-topnote-text">People scrolling Instagram &amp; Facebook</span>
+        </div>
+
+        <!-- TRAFFIC LAYER -->
+        <div class="fd-flow">
+          <div class="fd-node nd-purple">
+            <div class="fd-node-label">🎬 They see your ads</div>
+            <div class="fd-node-sub">15 video ads · Netflix-grade cameras · multiple angles</div>
+          </div>
+          <div class="fd-arrow"></div><div class="fd-arrow-head"></div>
+
+          <div class="fd-node nd-blue">
+            <div class="fd-node-label">📱 They check your social media</div>
+            <div class="fd-node-sub">Optimised profile · 12 trust-building videos · blue tick</div>
+          </div>
+          <div class="fd-arrow"></div><div class="fd-arrow-head"></div>
+
+          <div class="fd-node nd-teal">
+            <div class="fd-node-label">🏠 They land on your funnel page</div>
+            <div class="fd-node-sub">VSL · social proof · urgency · single-click checkout</div>
+          </div>
+          <div class="fd-arrow"></div><div class="fd-arrow-head"></div>
+        </div>
+
+        <!-- SPLIT -->
+        <div class="fd-split">
+          <div class="fd-branch buy">
+            <div class="fd-branch-title">They buy ✓</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Added to WhatsApp community</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Repeat purchase sequences fire</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Cross-sell + upsell video flows</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Close to zero CAC on repeat</div>
+          </div>
+          <div class="fd-branch nobuy">
+            <div class="fd-branch-title">They don't buy</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Retargeted with new ads</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>WhatsApp video sequences fire</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>Email cart abandonment</div>
+            <div class="fd-branch-item"><div class="fd-branch-dot"></div>AI calling for high-intent visitors</div>
+          </div>
+        </div>
+
+        <div class="fd-profit">
+          <div class="fd-profit-label">The outcome</div>
+          <div class="fd-profit-text">Predictable customers · Lower CAC · Higher LTV</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DELIVERABLES ── -->
+    <div class="del-wrap">
+      <div class="del-label">Exact deliverables</div>
+      <table class="del-table">
+        <tr>
+          <td class="dt-num">01</td>
+          <td>
+            <div class="dt-name">Performance video ads</div>
+            <div class="dt-desc">Scripted, shot on Netflix-approved cameras, edited · UGC + founder + comparison formats · 9:16 Meta-ready</div>
+          </td>
+          <td class="dt-qty" id="dq-ads">15 ads</td>
+        </tr>
+        <tr>
+          <td class="dt-num">02</td>
+          <td>
+            <div class="dt-name">Social media content + profile</div>
+            <div class="dt-desc">Instagram Reels · bio rewrite · highlights · blue tick · curated feed ready to launch</div>
+          </td>
+          <td class="dt-qty" id="dq-social">12 videos</td>
+        </tr>
+        <tr id="lp-del">
+          <td class="dt-num">03</td>
+          <td>
+            <div class="dt-name">High-converting landing page(s)</div>
+            <div class="dt-desc">VSL · hero · social proof · objection handling · urgency · dark psychology · mobile-first</div>
+          </td>
+          <td class="dt-qty" id="dq-lp">1 page</td>
+        </tr>
+        <tr>
+          <td class="dt-num">04</td>
+          <td>
+            <div class="dt-name">Checkout experience</div>
+            <div class="dt-desc">Single-click checkout · order bumps · copy optimisation · payment gateway</div>
+          </td>
+          <td class="dt-qty">Full setup</td>
+        </tr>
+        <tr>
+          <td class="dt-num">05</td>
+          <td>
+            <div class="dt-name">WATI WhatsApp automations</div>
+            <div class="dt-desc">Cart abandonment video + text sequences · repeat purchase · cross-sell + upsell video + text · 2 months subscription covered</div>
+          </td>
+          <td class="dt-qty">Full suite</td>
+        </tr>
+        <tr>
+          <td class="dt-num">06</td>
+          <td>
+            <div class="dt-name">Email automations</div>
+            <div class="dt-desc">Cart abandonment sequences · post-purchase flows · retention nudges</div>
+          </td>
+          <td class="dt-qty">Full suite</td>
+        </tr>
+        <tr>
+          <td class="dt-num">07</td>
+          <td>
+            <div class="dt-name">ManyChat Instagram automations</div>
+            <div class="dt-desc">Comment triggers · DM flows · lead capture · WhatsApp opt-in</div>
+          </td>
+          <td class="dt-qty">Full setup</td>
+        </tr>
+        <tr>
+          <td class="dt-num">08</td>
+          <td>
+            <div class="dt-name">AI calling integration</div>
+            <div class="dt-desc">Automated reminder calls for high-intent visitors who didn't convert</div>
+          </td>
+          <td class="dt-qty">Integrated</td>
+        </tr>
+        <tr>
+          <td class="dt-num">09</td>
+          <td>
+            <div class="dt-name">Performance marketing</div>
+            <div class="dt-desc">Meta Ads setup · creative + audience testing · weekly optimisation · scaling · ₹25K test budget from us</div>
+          </td>
+          <td class="dt-qty">60 days</td>
+        </tr>
+        <tr id="custom-del-row" style="display:none;">
+          <td class="dt-num" style="color:var(--purple);">✦</td>
+          <td>
+            <div class="dt-name" id="cdel-name" style="color:var(--purple);">Custom</div>
+            <div class="dt-desc" id="cdel-desc"></div>
+          </td>
+          <td class="dt-qty"></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ── TIMELINE ── -->
+    <div class="tl-wrap">
+      <div class="tl-label">Exact 60-day timeline</div>
+      <table class="tl-table">
+        <tr>
+          <td class="tt-week">Week 1</td>
+          <td>
+            <div class="tt-phase">Strategy</div>
+            <div class="tt-desc">Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="tt-week">Wk 2–3</td>
+          <td>
+            <div class="tt-phase">Creative production</div>
+            <div class="tt-desc">Scripts · storyboards · shoot days · editing · social media content</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="tt-week">Wk 3–4</td>
+          <td>
+            <div class="tt-phase">Funnel build</div>
+            <div class="tt-desc">Landing pages · checkout · profile optimised · all automations built and tested</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="tt-week">Wk 4–5</td>
+          <td>
+            <div class="tt-phase">Approvals + QA</div>
+            <div class="tt-desc">Ads reviewed · feedback incorporated · full funnel tested end to end</div>
+          </td>
+        </tr>
+        <tr class="tl-launch-row">
+          <td class="tt-week tl-launch-week">Day 21</td>
+          <td>
+            <div class="tt-phase tl-launch-phase">🚀 Campaigns go live</div>
+            <div class="tt-desc tl-launch-desc">Ads live · automations active · landing page live · marathon officially running</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="tt-week">Wk 5–8</td>
+          <td>
+            <div class="tt-phase">Optimise + scale</div>
+            <div class="tt-desc">Weekly reviews · scale winners · creative refresh · final push Days 50–60</div>
+          </td>
+        </tr>
+        <tr>
+          <td class="tt-week">Day 60</td>
+          <td>
+            <div class="tt-phase">Wrap + handover</div>
+            <div class="tt-desc">60-day results report · wrap call · all assets and logins handed over</div>
+          </td>
+        </tr>
+      </table>
+      <div class="tl-note">Marathon starts on <strong id="p-start" style="color:var(--ink);">your confirmed kickoff date</strong>. Campaigns go live by Day 21.</div>
+    </div>
+
+    <!-- PROOF -->
+    <div class="proof-wrap">
+      <div class="proof-label">Why Yuvichaar Funnels</div>
+      <div class="proof-grid">
+        <div class="pc"><div class="pc-num">75+</div><div class="pc-lbl">D2C brands trust us with their growth</div></div>
+        <div class="pc"><div class="pc-num">6×</div><div class="pc-lbl">Peak ROAS achieved for clients</div></div>
+        <div class="pc"><div class="pc-num">27%</div><div class="pc-lbl">Average landing page conversion rate</div></div>
+        <div class="pc"><div class="pc-num">60</div><div class="pc-lbl">Days fixed. Full funnel built and live.</div></div>
+      </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="port-wrap" id="port-sec">
+      <a class="port-card" id="port-link" href="#" target="_blank">
+        <div>
+          <div class="port-label">Our previous work</div>
+          <div class="port-title">See the funnels we've built for brands like yours →</div>
+        </div>
+        <div class="port-icon">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2.5 11.5L11.5 2.5M11.5 2.5H5M11.5 2.5V9" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </a>
+    </div>
+
+  </div>
+  <div class="footer">
+    <button class="cta" onclick="go(2)">See pricing &amp; payment plan →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     S2 — PRICING
+══════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="topbar">
+    <button class="back-btn" onclick="go(1)">← Back</button>
+    <div class="brand"><svg viewBox="0 0 16 16" style="width:16px;height:16px;"><polygon points="8,1 15,15 1,15" fill="#6d28d9"/></svg></div>
+    <button class="help-btn" onclick="openHelp()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 11V10M8 8.5A1.75 1.75 0 106.25 6.75" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11.5" r=".4" fill="currentColor"/></svg>
+      Help
+    </button>
+  </div>
+  <div class="stepnav">
+    <div class="stp done">Proposal</div>
+    <div class="stp cur">Pricing</div>
+    <div class="stp">Agreement</div>
+    <div class="stp">Payment</div>
+  </div>
+  <div class="body">
+
+    <div class="price-hero">
+      <div class="price-eyebrow">Investment</div>
+      <div class="price-headline">Transparent pricing.<br>Milestone-based payments.</div>
+      <div class="price-sub">You pay in stages — not all upfront. The first payment unlocks everything. The second comes on Day 30, after you've seen 30 days of work.</div>
+    </div>
+
+    <!-- FEE BREAKDOWN -->
+    <div class="fee-block">
+      <div class="fee-section-label">Fee structure</div>
+
+      <div class="fee-row">
+        <div>
+          <div class="fee-name">Fixed fee</div>
+          <div class="fee-desc">Covers everything in the scope — creative production, funnel build, automations, performance marketing for 60 days</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fee-amount" id="f-fixed">₹4,49,000</div>
+          <div class="fee-note">+ GST</div>
+        </div>
+      </div>
+
+      <div class="fee-row">
+        <div>
+          <div class="fee-name">Performance fee</div>
+          <div class="fee-desc">Only paid when you hit revenue milestones. Our incentive is aligned with yours.</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="fee-amount" id="f-perf">₹2,00,000</div>
+          <div class="fee-note">+ GST</div>
+        </div>
+      </div>
+
+      <div class="fee-total-row">
+        <div class="fee-total-label">Total engagement value</div>
+        <div class="fee-total-amount" id="f-total">₹6,49,000 + GST</div>
+      </div>
+    </div>
+
+    <!-- PAYMENT TIMELINE -->
+    <div class="paytl-block">
+      <div class="paytl-label">Payment schedule</div>
+
+      <div class="track">
+
+        <!-- PAYMENT 1 -->
+        <div class="track-item">
+          <div class="track-dot active"><div class="track-dot-inner"></div></div>
+          <div class="track-card featured">
+            <div class="tc-when">On signing — due today</div>
+            <div class="tc-title">Advance payment</div>
+            <div class="tc-amount" id="tc-p1">₹2,64,910</div>
+            <div class="tc-note">50% of fixed fee (₹2,24,500) + 18% GST<br>This unlocks your portal and starts the marathon</div>
+          </div>
+        </div>
+
+        <!-- PAYMENT 2 -->
+        <div class="track-item">
+          <div class="track-dot"><div class="track-dot-inner"></div></div>
+          <div class="track-card">
+            <div class="tc-when">Day 30</div>
+            <div class="tc-title">Balance payment</div>
+            <div class="tc-amount" id="tc-p2">₹2,64,910</div>
+            <div class="tc-note">Remaining 50% of fixed fee (₹2,24,500) + 18% GST<br>Due after 30 days of delivered work</div>
+          </div>
+        </div>
+
+        <!-- PERF BONUS 1 -->
+        <div class="track-item" id="perf1-item">
+          <div class="track-dot perf"></div>
+          <div class="track-card perf-card">
+            <div class="tc-when">Performance milestone 1</div>
+            <div class="tc-title">Revenue bonus</div>
+            <div class="tc-amount" id="tc-b1a">₹1,00,000</div>
+            <div class="tc-note">+ 18% GST</div>
+            <div class="tc-trigger">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Triggered on <span id="tc-b1t">₹25,00,000</span> in revenue
+            </div>
+          </div>
+        </div>
+
+        <!-- PERF BONUS 2 -->
+        <div class="track-item" id="perf2-item">
+          <div class="track-dot perf"></div>
+          <div class="track-card perf-card">
+            <div class="tc-when">Performance milestone 2</div>
+            <div class="tc-title">Revenue bonus</div>
+            <div class="tc-amount" id="tc-b2a">₹1,00,000</div>
+            <div class="tc-note">+ 18% GST</div>
+            <div class="tc-trigger">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              Triggered on <span id="tc-b2t">₹50,00,000</span> in revenue
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NOTICES -->
+    <div style="padding: 0 20px;">
+      <div class="notice gray">
+        <div class="notice-title">Ad spend is not included in the fee</div>
+        <div class="notice-body">We cover campaign management. Ad spend on Meta is separate. We start with our own ₹25,000 test budget to find what works — then you fund the scale.</div>
+      </div>
+
+      <div class="notice gray" style="margin-top:10px;">
+        <div class="notice-title">On revenue outcomes</div>
+        <div class="notice-body">We build and run the system. Revenue outcomes depend on market, pricing, and platform conditions outside our control. We don't guarantee revenue numbers — we guarantee the best possible funnel and campaigns.</div>
+      </div>
+    </div>
+
+    <div class="accept-wrap">
+      <div class="accept-row">
+        <input type="checkbox" class="acb" id="sCb" onchange="document.getElementById('sCta').disabled=!this.checked">
+        <label class="aclbl" for="sCb">I have read and understood the fee structure and payment schedule above.</label>
+      </div>
+    </div>
+  </div>
+  <div class="footer">
+    <button class="cta" id="sCta" disabled onclick="go(3)">Accept and proceed to agreement →</button>
+    <div class="cta-note">Agreement shown next — no payment until after signing</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     S3 — AGREEMENT
+══════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="topbar">
+    <button class="back-btn" onclick="go(2)">← Back</button>
+    <div class="brand"><svg viewBox="0 0 16 16" style="width:16px;height:16px;"><polygon points="8,1 15,15 1,15" fill="#6d28d9"/></svg></div>
+    <button class="help-btn" onclick="openHelp()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 11V10M8 8.5A1.75 1.75 0 106.25 6.75" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11.5" r=".4" fill="currentColor"/></svg>
+      Help
+    </button>
+  </div>
+  <div class="stepnav">
+    <div class="stp done">Proposal</div>
+    <div class="stp done">Pricing</div>
+    <div class="stp cur">Agreement</div>
+    <div class="stp">Payment</div>
+  </div>
+  <div class="body">
+
+    <div class="mou-hero">
+      <div class="mou-eyebrow">Legal document · MoU</div>
+      <div class="mou-title">Service Agreement</div>
+      <div class="mou-intro">This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.</div>
+    </div>
+
+    <div class="parties">
+      <div class="party">
+        <div class="party-label">Service provider</div>
+        <div class="party-name">Yuvichaar Funnels</div>
+        <div class="party-sub">Yuvichaar Edtech Pvt Ltd<br>GSTIN: 08AABCY8310R1ZP</div>
+      </div>
+      <div class="party">
+        <div class="party-label">Client</div>
+        <div class="party-name" id="m-co">—</div>
+        <div class="party-sub" id="m-co-sub">—</div>
+      </div>
+    </div>
+
+    <div class="meta-block">
+      <div class="meta-row"><span class="mk">Engagement</span><span class="mv">60-Day Growth Marathon</span></div>
+      <div class="meta-row"><span class="mk">Start date</span><span class="mv" id="m-start">To be confirmed at kickoff</span></div>
+      <div class="meta-row"><span class="mk">Fixed fee</span><span class="mv" id="m-fixed">₹4,49,000 + GST</span></div>
+      <div class="meta-row"><span class="mk">Advance (50% — on signing)</span><span class="mv" id="m-adv">₹2,64,910 incl. GST</span></div>
+      <div class="meta-row"><span class="mk">Balance (50% — Day 30)</span><span class="mv" id="m-bal">₹2,64,910 incl. GST</span></div>
+    </div>
+
+    <div class="clauses">
+      <div class="cg-title">Section A — Scope of Work</div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 1</div>
+        <div class="cl-title">Services to be delivered</div>
+        <div class="cl-body">Yuvichaar Funnels ("the Agency") agrees to design and execute the 60-Day Growth Marathon for <span class="hl" id="m-co2">the Client</span>, commencing <span class="hl" id="m-date">the agreed start date</span>:
+          <ul class="cl-list">
+            <li><span id="m-ads">15</span> performance video ads — scripted, shot, edited, Meta-ready</li>
+            <li><span id="m-social">12</span> social media videos + full Instagram profile optimisation</li>
+            <li><span id="m-lp">1</span> high-converting landing page(s) including Video Sales Letter</li>
+            <li>Checkout experience — single-click checkout, order bumps, copy optimisation</li>
+            <li>WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)</li>
+            <li>Email automations — cart abandonment + post-purchase sequences</li>
+            <li>ManyChat Instagram DM automations</li>
+            <li>AI calling integration for high-intent visitors</li>
+            <li>60-day Meta campaign management</li>
+            <li id="m-custom-cl" style="display:none;"><span id="m-cn">Custom deliverable</span> — as separately agreed</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 2</div>
+        <div class="cl-title">Production and quality standards</div>
+        <div class="cl-body">All video content will be shot on professional Netflix-approved cameras. All deliverables meet Meta advertising specifications. Landing pages will be mobile-first, load under 3 seconds, and meet the conversion standards in the proposal. All automation sequences will be fully tested before launch.</div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 3</div>
+        <div class="cl-title">Timeline</div>
+        <div class="cl-body">The engagement runs for 60 days from the confirmed start date. Campaigns go live by Day 21. Some phases run in parallel. If the Client delays feedback, access, or approvals, the Agency will notify the Client of the timeline impact and agree a revised schedule.</div>
+      </div>
+
+      <div class="cg-title">Section B — Payment Terms</div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 4</div>
+        <div class="cl-title">Fee structure and payment schedule</div>
+        <div class="cl-body">The fixed fee for this engagement is <span class="hl" id="m-fixed2">₹4,49,000</span> excluding GST at 18%. Payment is in two equal instalments:
+          <ul class="cl-list">
+            <li>Advance: <span class="hl" id="m-adv2">₹2,24,500 + GST (₹2,64,910 total)</span> — due on signing. This activates the engagement.</li>
+            <li>Balance: <span class="hl" id="m-bal2">₹2,24,500 + GST (₹2,64,910 total)</span> — due on Day 30, regardless of delivery status unless there is a material breach by the Agency.</li>
+          </ul>
+          All fixed fee payments are non-refundable once the corresponding phase of work has commenced.
+        </div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 5</div>
+        <div class="cl-title">Performance bonuses</div>
+        <div class="cl-body">A performance fee of <span class="hl">₹2,00,000 + GST</span> is payable in two tranches only upon confirmed achievement of revenue milestones:
+          <ul class="cl-list">
+            <li>₹1,00,000 + GST — upon hitting <span id="m-b1t">₹25,00,000</span> in attributed revenue</li>
+            <li>₹1,00,000 + GST — upon hitting <span id="m-b2t">₹50,00,000</span> in attributed revenue</li>
+          </ul>
+          Performance bonuses are not due unless the stated revenue milestones are met and verified. If milestones are not reached, no performance fee is payable.
+        </div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 6</div>
+        <div class="cl-title">Ad spend budget</div>
+        <div class="cl-body">The fees above cover campaign management only. Meta ad spend is not included. The Agency will fund up to ₹25,000 in initial test spend. Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.</div>
+      </div>
+
+      <div class="cg-title">Section C — Mutual Responsibilities</div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 7</div>
+        <div class="cl-title">Agency commitments</div>
+        <div class="cl-body">
+          <ul class="cl-list">
+            <li>Deliver every item in Clause 1 within the agreed timeline</li>
+            <li>Assign a dedicated POC who sends the Client a daily update</li>
+            <li>Provide real-time visibility via the Client's dedicated portal</li>
+            <li>Cover automation tool subscription costs for the first 2 months</li>
+            <li>Fund ₹25,000 in initial Meta test spend</li>
+            <li>Share weekly performance reports during the campaign period</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 8</div>
+        <div class="cl-title">Client responsibilities</div>
+        <div class="cl-body">
+          <ul class="cl-list">
+            <li>Provide feedback on all deliverables within 48 hours. Delays impact launch timing.</li>
+            <li>Grant platform access (Meta BM, website, WhatsApp API, Instagram) by end of Week 1</li>
+            <li>Designate one decision-maker with authority to approve scripts, creatives, and copy</li>
+            <li>Fund ad spend budget as agreed at kickoff</li>
+            <li>Provide brand assets, product imagery, and testimonials as requested</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cg-title">Section D — Revisions, Reshoots, Scope</div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 9</div>
+        <div class="cl-title">Revision policy</div>
+        <div class="cl-body">Included at no cost: minor script adjustments before production, subtitle/text corrections, minor editing changes aligned with approved concept. Not included: complete concept changes after production, additional creatives beyond the agreed quantity, new deliverables not in this agreement.</div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 10</div>
+        <div class="cl-title">Reshoot policy</div>
+        <div class="cl-body">Reshoots at no cost only when the Agency deviates from the approved script (missed lines, wrong wording, technical equipment failure). Not provided for subjective dissatisfaction including acting preferences or creative direction changes formed after production.</div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 11</div>
+        <div class="cl-title">Scope limitations</div>
+        <div class="cl-body">Outside scope unless separately agreed in writing:
+          <ul class="cl-list">
+            <li>Additional video ads or landing pages beyond the quantity in Clause 1</li>
+            <li>Website development outside the funnel landing page</li>
+            <li>Additional automation systems beyond those in Clause 1</li>
+            <li>Customer service handling on behalf of the Client</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cg-title">Section E — Outcomes and Liability</div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 12</div>
+        <div class="cl-title">No guarantee of revenue outcomes</div>
+        <div class="cl-body">The Agency installs the infrastructure and manages campaigns. Revenue outcomes are not guaranteed — they depend on market demand, pricing, competition, and platform dynamics outside the Agency's control. The Agency commits to delivering the best possible system and campaigns.</div>
+      </div>
+
+      <div class="clause">
+        <div class="cl-num">Clause 13</div>
+        <div class="cl-title">Automation subscriptions after 2 months</div>
+        <div class="cl-body">The Agency covers WATI, email, and ManyChat subscription costs for the first 2 months. After that, all renewals are the Client's responsibility. The Agency provides all credentials and documentation required to manage subscriptions independently.</div>
+      </div>
+
+      <div class="clause" style="margin-bottom:0;">
+        <div class="cl-num">Clause 14</div>
+        <div class="cl-title">Governing law</div>
+        <div class="cl-body">This agreement is governed by the laws of India. Disputes are subject to the jurisdiction of the courts of Jaipur, Rajasthan. Both parties agree to attempt amicable resolution before pursuing legal remedies.</div>
+      </div>
+    </div>
+
+    <!-- CONFIRMATIONS -->
+    <div class="confirms-wrap">
+      <div class="confirms-label">Before signing — confirm you have read</div>
+      <div class="ci"><input type="checkbox" class="cicb" id="cb1" onchange="chkSign()"><label class="cilbl" for="cb1">The exact deliverables and quantities in Clause 1</label></div>
+      <div class="ci"><input type="checkbox" class="cicb" id="cb2" onchange="chkSign()"><label class="cilbl" for="cb2">The payment schedule — advance on signing, balance on Day 30 (Clause 4)</label></div>
+      <div class="ci"><input type="checkbox" class="cicb" id="cb3" onchange="chkSign()"><label class="cilbl" for="cb3">Performance bonuses are only triggered on revenue milestones (Clause 5)</label></div>
+      <div class="ci"><input type="checkbox" class="cicb" id="cb4" onchange="chkSign()"><label class="cilbl" for="cb4">Revenue outcomes are not guaranteed (Clause 12)</label></div>
+      <div class="ci"><input type="checkbox" class="cicb" id="cb5" onchange="chkSign()"><label class="cilbl" for="cb5">My 48-hour feedback responsibility and scope limitations (Clauses 8 &amp; 11)</label></div>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="sig-wrap">
+      <div class="sig-label">Your e-signature</div>
+      <input class="sig-field" id="sigIn" type="text" placeholder="Type your full legal name" oninput="handleSig(this.value)" autocomplete="name" autocorrect="off" autocapitalize="words">
+      <div class="sig-preview" id="sigPrev"><span class="sig-empty">Your signature will appear here</span></div>
+      <div class="sig-note">Legally valid under IT Act, 2000 · Signed PDF sent to your email immediately</div>
+    </div>
+
+  </div>
+  <div class="footer">
+    <button class="cta" id="signCta" disabled onclick="go(4)">Sign and proceed to payment →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     S4 — PAYMENT
+══════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="topbar">
+    <button class="back-btn" onclick="go(3)">← Back</button>
+    <div class="brand"><svg viewBox="0 0 16 16" style="width:16px;height:16px;"><polygon points="8,1 15,15 1,15" fill="#6d28d9"/></svg></div>
+    <button class="help-btn" onclick="openHelp()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3"/><path d="M8 11V10M8 8.5A1.75 1.75 0 106.25 6.75" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="11.5" r=".4" fill="currentColor"/></svg>
+      Help
+    </button>
+  </div>
+  <div class="stepnav">
+    <div class="stp done">Proposal</div>
+    <div class="stp done">Pricing</div>
+    <div class="stp done">Agreement</div>
+    <div class="stp cur">Payment</div>
+  </div>
+  <div class="body">
+
+    <div class="pay-hero">
+      <div class="pay-eyebrow">Advance payment — due now</div>
+      <div class="pay-amount" id="pay-big">₹2,64,910</div>
+      <div class="pay-breakdown" id="pay-sub">₹2,24,500 + 18% GST · 50% of fixed fee</div>
+    </div>
+
+    <div class="unlock-block">
+      <div class="unlock-label">Paying this activates</div>
+      <div class="ul-item"><div class="ul-dot"></div>Instant access to your client portal</div>
+      <div class="ul-item"><div class="ul-dot"></div>WhatsApp onboarding sequence starts immediately</div>
+      <div class="ul-item"><div class="ul-dot"></div>Kickoff call link sent automatically</div>
+      <div class="ul-item"><div class="ul-dot"></div>Brand question form sent on WhatsApp</div>
+      <div class="ul-item"><div class="ul-dot"></div>Signed MoU + receipt to your email</div>
+      <div class="ul-item"><div class="ul-dot"></div>60-Day Marathon officially begins</div>
+    </div>
+
+    <div class="pm-block">
+      <div class="pm-label">Choose payment method</div>
+
+      <div class="popt sel" id="po1" onclick="selPay(1)">
+        <span class="pm-icon">💳</span>
+        <div class="pm-body">
+          <div class="pm-name">Pay online</div>
+          <div class="pm-desc">Cards, UPI, netbanking — via Razorpay</div>
+        </div>
+        <div class="pm-radio"><div class="pm-dot"></div></div>
+      </div>
+
+      <div class="popt" id="po2" onclick="selPay(2)">
+        <span class="pm-icon">🏦</span>
+        <div class="pm-body">
+          <div class="pm-name">Bank transfer</div>
+          <div class="pm-desc">NEFT / IMPS / RTGS</div>
+        </div>
+        <div class="pm-radio"><div class="pm-dot"></div></div>
+      </div>
+
+      <div class="bank-box" id="bankBox">
+        <div class="brow"><span class="bk">Account name</span><span class="bv">Yuvichaar EdTech Pvt Ltd</span></div>
+        <div class="brow"><span class="bk">Bank</span><span class="bv">HDFC Bank</span></div>
+        <div class="brow"><span class="bk">Account number</span><span class="bv">50200104748061</span></div>
+        <div class="brow"><span class="bk">IFSC code</span><span class="bv">HDFC0007731</span></div>
+        <div class="brow"><span class="bk">Account type</span><span class="bv">Current</span></div>
+        <div class="brow"><span class="bk">Amount to transfer</span><span class="bv" id="bank-amt">₹2,64,910</span></div>
+        <div class="bank-note">After transferring, select "Already paid" below and upload your screenshot. We verify within 2 hours.</div>
+      </div>
+
+      <div class="popt" id="po3" onclick="selPay(3)">
+        <span class="pm-icon">📎</span>
+        <div class="pm-body">
+          <div class="pm-name">Already paid?</div>
+          <div class="pm-desc">Upload your transfer screenshot</div>
+        </div>
+        <div class="pm-radio"><div class="pm-dot"></div></div>
+      </div>
+
+      <div class="proof-box" id="proofBox" onclick="document.getElementById('pf').click()">
+        <input type="file" id="pf" accept="image/*,.pdf" onchange="if(this.files.length){document.querySelector('.proof-title').textContent='✓ '+this.files[0].name;}">
+        <div class="proof-title">Tap to upload screenshot</div>
+        <div class="proof-hint">JPG, PNG or PDF · max 10MB</div>
+      </div>
+
+      <div class="secure-note">🔒 256-bit SSL encryption · Razorpay secured</div>
+    </div>
+  </div>
+  <div class="footer">
+    <button class="cta" onclick="handlePay()">Pay ₹<span id="pay-btn">2,64,910</span> →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     S5 — SUCCESS
+══════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 16 16" style="width:16px;height:16px;"><polygon points="8,1 15,15 1,15" fill="#6d28d9"/></svg>
+      <span class="brand-name">Yuvichaar Funnels</span>
+    </div>
+  </div>
+  <div class="body">
+    <div class="success-body">
+      <span class="s-icon" id="sIcon">🎉</span>
+      <div class="s-title" id="sTitle">You're in.</div>
+      <div class="s-sub" id="sSub">Payment confirmed. Your 60-Day Growth Marathon starts now. Everything below happened automatically.</div>
+      <div class="auto-label">What just happened</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>Client portal is live and ready</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>Signed MoU + receipt sent to your email</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>WhatsApp group created with your team</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>Kickoff call link sent on WhatsApp</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>Brand question form sent on WhatsApp</div>
+      <div class="ai"><div class="a-chk"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="white" stroke-width="1.5"><polyline points="2,5 4.5,7.5 8.5,2.5"/></svg></div>Yuvraj's personal welcome video sent</div>
+      <div class="next-box">
+        <div class="next-label">Your next step</div>
+        <div class="next-text">Check your WhatsApp — Yuvraj sent a personal welcome message and your kickoff call link is there.</div>
+      </div>
+      <a class="portal-cta" id="portalBtn" href="#">Open my portal →</a>
+    </div>
+  </div>
+</div>
+
+<!-- HELP SHEET -->
+<div class="backdrop" id="bd" onclick="closeHelp()"></div>
+<div class="sheet" id="sh">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Need help?</div>
+  <div class="sh-sub">Questions about the proposal, pricing, or payment — talk to us directly.</div>
+  <a class="wa-btn" id="waLink" href="https://wa.me/919999900001" target="_blank">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a5.5 5.5 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.875 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2.003a9.996 9.996 0 00-8.591 15.077L2 22l5.093-1.336A9.996 9.996 0 1011.999 2.003z"/></svg>
+    WhatsApp Yuvraj directly
+  </a>
+  <a class="call-btn" href="tel:+919999900001">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+    Call directly
+  </a>
+  <div class="faq-lbl">Common questions</div>
+  <div class="fq" onclick="faq(this)">What is the 60-Day Growth Marathon? <span class="fa-ar">›</span></div>
+  <div class="fa">A fixed 60-day engagement where we build your complete D2C customer acquisition system — video ads, landing page, automations, live campaigns. By Day 60 you have a fully running funnel.</div>
+  <div class="fq" onclick="faq(this)">Why is the fee split? <span class="fa-ar">›</span></div>
+  <div class="fa">The fixed fee (₹4,49,000) is paid in two equal halves — 50% on signing, 50% on Day 30 after you've seen 30 days of work. The performance fee (₹2,00,000) is only paid when you hit the revenue milestones.</div>
+  <div class="fq" onclick="faq(this)">Is my payment secure? <span class="fa-ar">›</span></div>
+  <div class="fa">Yes. Online payments go through Razorpay with 256-bit SSL. Bank transfers go directly to our registered HDFC current account (Yuvichaar Edtech Pvt Ltd).</div>
+  <div class="fq" onclick="faq(this)">What happens after I pay? <span class="fa-ar">›</span></div>
+  <div class="fa">Everything activates automatically — your portal, a personal WhatsApp from Yuvraj, your kickoff call link, your brand question form, and your signed MoU + receipt by email.</div>
+  <button class="dismiss-btn" onclick="closeHelp()">Dismiss</button>
+</div>
+
+<script>
+// ── DEAL DATA ──
+const D = {
+  name:'there', company:'Your Company',
+  goal:'Build an end-to-end D2C marketing funnel',
+  target:'1,000 paying customers',
+  start:'',
+  ads:'15', social:'12', lp:'1',
+  // Fixed pricing structure
+  fixed:'4,49,000',
+  adv:'2,24,500', advGst:'2,64,910',
+  bal:'2,24,500', balGst:'2,64,910',
+  hasPerf:true,
+  b1t:'₹25,00,000', b1a:'₹1,00,000',
+  b2t:'₹50,00,000', b2a:'₹1,00,000',
+  custom:'', customDesc:'',
+  portfolio:'', rzp:'', wa:'919999900001', mode:'pay'
+};
+
+(function(){
+  const p = new URLSearchParams(location.search);
+  const m = {
+    client:'name', company:'company', goal:'goal', target:'target', start:'start',
+    ads:'ads', social:'social', lp:'lp',
+    fixed:'fixed', adv:'adv', advgst:'advGst', bal:'bal', balgst:'balGst',
+    perf:'hasPerf', b1t:'b1t', b1a:'b1a', b2t:'b2t', b2a:'b2a',
+    custom:'custom', customdesc:'customDesc',
+    portfolio:'portfolio', rzp:'rzp', wa:'wa', mode:'mode'
+  };
+  for(const [k,v] of p.entries()) {
+    if(m[k]) {
+      if(k==='perf') D.hasPerf = v !== 'false';
+      else D[m[k]] = v;
+    }
+  }
+})();
+
+function st(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function sh(id){const e=document.getElementById(id);if(e)e.style.display='';}
+function hd(id){const e=document.getElementById(id);if(e)e.style.display='none';}
+
+function populate(){
+  // S1
+  st('p-co', D.company);
+  st('p-goal', D.goal);
+  st('p-target', D.target);
+  if(D.start) st('p-start', D.start);
+  st('dq-ads', D.ads + ' ads');
+  st('dq-social', D.social + ' videos');
+  st('dq-lp', D.lp + (parseInt(D.lp)>1?' pages':' page'));
+  if(D.custom){sh('custom-del-row');st('cdel-name',D.custom);st('cdel-desc',D.customDesc);}
+  if(D.portfolio){document.getElementById('port-link').href=D.portfolio;}
+  else{hd('port-sec');}
+
+  // S2 pricing
+  st('f-fixed', '₹'+D.fixed);
+  st('f-total', '₹'+D.fixed+' + ₹2,00,000 + GST');
+  st('tc-p1', '₹'+D.advGst);
+  st('tc-p2', '₹'+D.balGst);
+  if(!D.hasPerf){hd('perf1-item');hd('perf2-item');}
+  else{st('tc-b1t',D.b1t);st('tc-b1a',D.b1a);st('tc-b2t',D.b2t);st('tc-b2a',D.b2a);}
+
+  // S3 MOU
+  st('m-co', D.company);
+  document.getElementById('m-co-sub').textContent = D.company;
+  st('m-co2', D.company);
+  st('m-date', D.start || 'the agreed start date');
+  st('m-start', D.start || 'To be confirmed at kickoff');
+  st('m-fixed', '₹'+D.fixed+' + GST');
+  st('m-adv', '₹'+D.advGst+' incl. GST');
+  st('m-bal', '₹'+D.balGst+' incl. GST');
+  st('m-fixed2', '₹'+D.fixed);
+  st('m-adv2', '₹'+D.adv+' + GST (₹'+D.advGst+' total)');
+  st('m-bal2', '₹'+D.bal+' + GST (₹'+D.balGst+' total)');
+  st('m-ads', D.ads);
+  st('m-social', D.social);
+  st('m-lp', D.lp);
+  if(D.b1t) st('m-b1t', D.b1t);
+  if(D.b2t) st('m-b2t', D.b2t);
+  if(D.custom){sh('m-custom-cl');st('m-cn',D.custom);}
+
+  // S4
+  st('pay-big', '₹'+D.advGst);
+  st('pay-sub', '₹'+D.adv+' + 18% GST · 50% of fixed fee');
+  st('bank-amt', '₹'+D.advGst);
+  st('pay-btn', D.advGst);
+
+  // Help WA
+  document.getElementById('waLink').href = 'https://wa.me/' + D.wa.replace(/\D/g,'');
+}
+
+// ── NAV ──
+let cur = 1;
+function go(n){
+  document.getElementById('s'+cur).classList.remove('on');
+  document.getElementById('s'+n).classList.add('on');
+  cur = n; window.scrollTo(0,0);
+}
+
+// ── SIGN ──
+let cbOk=false, sigOk=false;
+function chkSign(){
+  cbOk=['cb1','cb2','cb3','cb4','cb5'].every(id=>document.getElementById(id).checked);
+  document.getElementById('signCta').disabled=!(cbOk&&sigOk);
+}
+function handleSig(v){
+  const b=document.getElementById('sigPrev');
+  sigOk=v.trim().length>1;
+  b.innerHTML=sigOk?`<span class="sig-text">${v}</span>`:'<span class="sig-empty">Your signature will appear here</span>';
+  b.classList.toggle('live',sigOk);
+  chkSign();
+}
+
+// ── PAY ──
+let pm=1;
+function selPay(n){
+  pm=n;
+  [1,2,3].forEach(i=>document.getElementById('po'+i).classList.toggle('sel',i===n));
+  document.getElementById('bankBox').classList.toggle('on',n===2);
+  document.getElementById('proofBox').classList.toggle('on',n===3);
+}
+function handlePay(){
+  if(pm===1&&D.rzp){window.location.href=D.rzp;return;}
+  go(5);
+  if(pm===2||pm===3){
+    st('sIcon','⏳');st('sTitle','Payment submitted.');
+    st('sSub','We\'ll verify within 2 hours and activate everything. You\'ll receive a WhatsApp confirmation.');
+  }
+}
+
+// ── HELP ──
+function openHelp(){document.getElementById('bd').classList.add('on');document.getElementById('sh').classList.add('on');document.body.style.overflow='hidden';}
+function closeHelp(){document.getElementById('bd').classList.remove('on');document.getElementById('sh').classList.remove('on');document.body.style.overflow='';}
+function faq(el){const w=el.classList.contains('open');document.querySelectorAll('.fq').forEach(q=>q.classList.remove('open'));if(!w)el.classList.add('open');}
+
+populate();
+</script>
+</body>
+</html>

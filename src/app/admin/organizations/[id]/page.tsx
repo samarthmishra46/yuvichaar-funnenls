@@ -3,7 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +18,7 @@ import PaymentsTab from '@/components/admin/tabs/PaymentsTab';
 import CustomSectionsTab from '@/components/admin/tabs/CustomSectionsTab';
 import RoadmapTab from '@/components/admin/tabs/RoadmapTab';
 import ClientTasksTab from '@/components/admin/tabs/ClientTasksTab';
+import DealPageTab from '@/components/admin/tabs/DealPageTab';
 
 interface Organization {
   _id: string;
@@ -63,6 +67,8 @@ export default function OrganizationDetailPage() {
   const orgId = params.id as string;
   const [org, setOrg] = useState<Organization | null>(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   const fetchOrg = useCallback(async () => {
     try {
@@ -127,6 +133,35 @@ export default function OrganizationDetailPage() {
           </div>
           <p className="text-sm text-[#64748b] mt-1">{org.email}</p>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="!border-red-200 !text-red-600 hover:!bg-red-50"
+          disabled={deleting}
+          onClick={async () => {
+            if (!confirm(`Are you sure you want to delete "${org.name}"? This will permanently delete all data including videos, research, roadmaps, and payments. This action cannot be undone.`)) {
+              return;
+            }
+            setDeleting(true);
+            try {
+              const res = await fetch(`/api/organizations/${orgId}`, { method: 'DELETE' });
+              if (res.ok) {
+                toast.success('Organization deleted');
+                router.push('/admin/organizations');
+              } else {
+                const err = await res.json();
+                toast.error(err.error || 'Failed to delete');
+              }
+            } catch {
+              toast.error('Failed to delete organization');
+            } finally {
+              setDeleting(false);
+            }
+          }}
+        >
+          <Trash2 className="w-4 h-4 mr-1" />
+          {deleting ? 'Deleting...' : 'Delete'}
+        </Button>
       </div>
 
       {/* Tabs */}
@@ -139,6 +174,7 @@ export default function OrganizationDetailPage() {
           <TabsTrigger value="roadmap" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Roadmap</TabsTrigger>
           <TabsTrigger value="payments" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Payments</TabsTrigger>
           <TabsTrigger value="client-tasks" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Client Tasks</TabsTrigger>
+          <TabsTrigger value="deal-page" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Deal Page</TabsTrigger>
           <TabsTrigger value="custom-sections" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Custom Sections</TabsTrigger>
         </TabsList>
 
@@ -162,6 +198,9 @@ export default function OrganizationDetailPage() {
         </TabsContent>
         <TabsContent value="client-tasks">
           <ClientTasksTab orgId={orgId} orgName={org.name} />
+        </TabsContent>
+        <TabsContent value="deal-page">
+          <DealPageTab org={org} onUpdate={fetchOrg} />
         </TabsContent>
         <TabsContent value="custom-sections">
           <CustomSectionsTab orgId={orgId} sections={org.customSections || []} onUpdate={fetchOrg} />

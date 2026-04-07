@@ -26,6 +26,47 @@ export interface ICustomSection {
    Main document interface
    ────────────────────────────────────────────── */
 
+export interface IDeliverable {
+  name: string;
+  description: string;
+  quantity: string;
+  enabled: boolean;
+}
+
+export interface IDealPage {
+  goal?: string;
+  target?: string;
+  startDate?: string;
+  adsCount?: number;
+  socialVideosCount?: number;
+  landingPagesCount?: number;
+  fixedFee?: number;
+  advanceAmount?: number;
+  advanceWithGst?: number;
+  balanceAmount?: number;
+  balanceWithGst?: number;
+  hasPerformanceFee?: boolean;
+  perfBonus1Trigger?: string;
+  perfBonus1Amount?: string;
+  perfBonus2Trigger?: string;
+  perfBonus2Amount?: string;
+  customDeliverable?: string;
+  customDeliverableDesc?: string;
+  portfolioUrl?: string;
+  whatsappNumber?: string;
+  razorpayLink?: string;
+  // Signature fields
+  signatureName?: string;
+  signedAt?: Date;
+  advancePaid?: boolean;
+  advancePaidAt?: Date;
+  // Success screen items (what client gets after payment)
+  successItems?: string[];
+  nextStepText?: string;
+  // Deliverables (editable list)
+  deliverables?: IDeliverable[];
+}
+
 export interface IOrganization extends Document {
   name: string;
   email: string;
@@ -54,6 +95,7 @@ export interface IOrganization extends Document {
     minimumPaymentPaid: boolean;
     passwordSetup: boolean;
   };
+  dealPage?: IDealPage;
   createdAt: Date;
 }
 
@@ -125,6 +167,59 @@ const OrganizationSchema = new Schema<IOrganization>(
       signatureUrl: { type: String },
       minimumPaymentPaid: { type: Boolean, default: false },
       passwordSetup: { type: Boolean, default: false },
+    },
+    dealPage: {
+      goal: { type: String, default: 'Build an end-to-end D2C marketing funnel' },
+      target: { type: String, default: '1,000 paying customers' },
+      startDate: { type: String },
+      adsCount: { type: Number, default: 15 },
+      socialVideosCount: { type: Number, default: 12 },
+      landingPagesCount: { type: Number, default: 1 },
+      fixedFee: { type: Number, default: 449000 },
+      advanceAmount: { type: Number, default: 224500 },
+      advanceWithGst: { type: Number, default: 264910 },
+      balanceAmount: { type: Number, default: 224500 },
+      balanceWithGst: { type: Number, default: 264910 },
+      hasPerformanceFee: { type: Boolean, default: true },
+      perfBonus1Trigger: { type: String, default: '₹25,00,000' },
+      perfBonus1Amount: { type: String, default: '₹1,00,000' },
+      perfBonus2Trigger: { type: String, default: '₹50,00,000' },
+      perfBonus2Amount: { type: String, default: '₹1,00,000' },
+      customDeliverable: { type: String },
+      customDeliverableDesc: { type: String },
+      portfolioUrl: { type: String },
+      whatsappNumber: { type: String, default: '919999900001' },
+      razorpayLink: { type: String },
+      signatureName: { type: String },
+      signedAt: { type: Date },
+      advancePaid: { type: Boolean, default: false },
+      advancePaidAt: { type: Date },
+      successItems: { type: [String], default: [
+        'Client portal is live and ready',
+        'Signed MoU + receipt sent to your email',
+        'WhatsApp group created with your team',
+        'Kickoff call link sent on WhatsApp',
+        'Brand question form sent on WhatsApp',
+        "Yuvraj's personal welcome video sent"
+      ]},
+      nextStepText: { type: String, default: 'Check your WhatsApp — Yuvraj sent a personal welcome message and your kickoff call link is there.' },
+      deliverables: { type: [{
+        name: { type: String, required: true },
+        description: { type: String, required: true },
+        quantity: { type: String, required: true },
+        enabled: { type: Boolean, default: true }
+      }], default: [
+        { name: 'Performance video ads', description: 'Scripted, shot on Netflix-approved cameras, edited · UGC + founder + comparison formats · 9:16 Meta-ready', quantity: '15 ads', enabled: true },
+        { name: 'Social media content + profile', description: 'Instagram Reels · bio rewrite · highlights · blue tick · curated feed ready to launch', quantity: '12 videos', enabled: true },
+        { name: 'High-converting landing page(s)', description: 'VSL · hero · social proof · objection handling · urgency · dark psychology · mobile-first', quantity: '1 page', enabled: true },
+        { name: 'Checkout experience', description: 'Single-click checkout · order bumps · copy optimisation · payment gateway', quantity: 'Full setup', enabled: true },
+        { name: 'WATI WhatsApp automations', description: 'Cart abandonment video + text sequences · repeat purchase · cross-sell + upsell video + text · 2 months subscription covered', quantity: 'Full suite', enabled: true },
+        { name: 'Email automations', description: 'Cart abandonment sequences · post-purchase flows · retention nudges', quantity: 'Full suite', enabled: true },
+        { name: 'ManyChat Instagram automations', description: 'Comment triggers · DM flows · lead capture · WhatsApp opt-in', quantity: 'Full setup', enabled: true },
+        { name: 'AI calling integration', description: "Automated reminder calls for high-intent visitors who didn't convert", quantity: 'Integrated', enabled: true },
+        { name: 'Meta Ads setup + management', description: 'Campaign structure · audience targeting · creative testing · daily optimisation · 60 days', quantity: '60 days', enabled: true },
+        { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true }
+      ]},
     },
     createdAt: { type: Date, default: Date.now },
   },

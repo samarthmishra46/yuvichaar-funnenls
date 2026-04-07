@@ -62,20 +62,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!body.mouUrl || !body.sowUrl) {
-      return NextResponse.json(
-        { error: 'MOU and SOW documents are required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.totalAmount || !body.minimumPayment) {
-      return NextResponse.json(
-        { error: 'Total amount and minimum payment are required' },
-        { status: 400 }
-      );
-    }
-
     // Check for duplicate email
     const existing = await Organization.findOne({ email: body.email });
     if (existing) {
@@ -102,22 +88,20 @@ export async function POST(request: NextRequest) {
       accountManager: body.accountManager || '',
       status: 'onboarding',
       payment: {
-        totalAmount: parseFloat(body.totalAmount),
-        minimumPayment: parseFloat(body.minimumPayment),
+        totalAmount: 0,
+        minimumPayment: 0,
         payments: [],
       },
       onboarding: {
         token: onboardingToken,
-        mouUrl: body.mouUrl,
-        sowUrl: body.sowUrl,
         minimumPaymentPaid: false,
         passwordSetup: false,
       },
     });
 
-    // Send onboarding email
+    // Send deal page email (single link for proposal, agreement, payment)
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const onboardingLink = `${baseUrl}/onboarding/${onboardingToken}`;
+    const onboardingLink = `${baseUrl}/deal/${onboardingToken}`;
     
     await sendEmail({
       to: body.email,

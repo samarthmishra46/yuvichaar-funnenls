@@ -22,8 +22,6 @@ export default function NewOrganizationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [logoPreview, setLogoPreview] = useState('');
   const [logoUploading, setLogoUploading] = useState(false);
-  const [mouUploading, setMouUploading] = useState(false);
-  const [sowUploading, setSowUploading] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -35,10 +33,6 @@ export default function NewOrganizationPage() {
     logo: '',
     accountManager: '',
     status: 'onboarding',
-    mouUrl: '',
-    sowUrl: '',
-    totalAmount: '',
-    minimumPayment: '',
   });
 
   const updateField = (field: string, value: string) => {
@@ -71,51 +65,12 @@ export default function NewOrganizationPage() {
     }
   };
 
-  const handleDocumentUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'mou' | 'sow'
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const setUploading = type === 'mou' ? setMouUploading : setSowUploading;
-    setUploading(true);
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-
-    try {
-      const res = await fetch('/api/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) {
-        updateField(type === 'mou' ? 'mouUrl' : 'sowUrl', data.url);
-        toast.success(`${type.toUpperCase()} uploaded`);
-      } else {
-        toast.error('Upload failed');
-      }
-    } catch {
-      toast.error('Upload failed');
-    } finally {
-      setUploading(false);
-    }
-  };
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.name || !form.email) {
       toast.error('Name and email are required');
-      return;
-    }
-
-    if (!form.mouUrl || !form.sowUrl) {
-      toast.error('Please upload both MOU and SOW documents');
-      return;
-    }
-
-    if (!form.totalAmount || !form.minimumPayment) {
-      toast.error('Please specify total amount and minimum payment');
       return;
     }
 
@@ -282,85 +237,10 @@ export default function NewOrganizationPage() {
               </div>
             </div>
 
-            {/* Onboarding Documents */}
+            {/* Note about pricing */}
             <div className="pt-4 border-t border-[#e2e8f0]">
-              <h3 className="text-sm font-semibold text-[#0f172a] mb-4">Onboarding Documents *</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* MOU Upload */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.8125rem] font-semibold text-[#475569] tracking-wide">
-                    MOU (Memorandum of Understanding)
-                  </label>
-                  <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#e2e8f0] text-[#64748b] text-sm font-medium cursor-pointer hover:bg-[#f8f9fa] transition-colors">
-                    {mouUploading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                    {form.mouUrl ? '✓ MOU Uploaded' : mouUploading ? 'Uploading…' : 'Upload MOU'}
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleDocumentUpload(e, 'mou')}
-                      className="hidden"
-                      disabled={mouUploading}
-                    />
-                  </label>
-                </div>
-
-                {/* SOW Upload */}
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[0.8125rem] font-semibold text-[#475569] tracking-wide">
-                    SOW (Statement of Work)
-                  </label>
-                  <label className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#e2e8f0] text-[#64748b] text-sm font-medium cursor-pointer hover:bg-[#f8f9fa] transition-colors">
-                    {sowUploading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                    {form.sowUrl ? '✓ SOW Uploaded' : sowUploading ? 'Uploading…' : 'Upload SOW'}
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={(e) => handleDocumentUpload(e, 'sow')}
-                      className="hidden"
-                      disabled={sowUploading}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Information */}
-            <div className="pt-4 border-t border-[#e2e8f0]">
-              <h3 className="text-sm font-semibold text-[#0f172a] mb-4">Payment Information *</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                  id="org-total-amount"
-                  label="Total Amount (₹)"
-                  type="number"
-                  placeholder="50000"
-                  value={form.totalAmount}
-                  onChange={(e) => updateField('totalAmount', e.target.value)}
-                  required
-                  className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
-                />
-                <Input
-                  id="org-minimum-payment"
-                  label="Minimum Payment (₹)"
-                  type="number"
-                  placeholder="10000"
-                  value={form.minimumPayment}
-                  onChange={(e) => updateField('minimumPayment', e.target.value)}
-                  required
-                  className="!bg-white !border-[#e2e8f0] !text-[#0f172a] placeholder:!text-[#94a3b8]"
-                />
-              </div>
-              <p className="text-xs text-[#475569] mt-2">
-                Client will receive an onboarding email to review documents, sign, and pay the minimum amount before setting up their password.
+              <p className="text-xs text-[#475569]">
+                💡 Pricing is configured in the Deal Page tab after creating the organization. Client will receive a deal page link to review the proposal, sign the agreement, and make the advance payment.
               </p>
             </div>
 

@@ -22,8 +22,15 @@ interface Organization {
     payments: Array<{ amount: number }>;
   };
   onboarding?: {
-    mouUrl?: string;
-    sowUrl?: string;
+    token?: string;
+  };
+  dealPage?: {
+    signatureName?: string;
+    signedAt?: string;
+    fixedFee?: number;
+    advanceAmount?: number;
+    goal?: string;
+    target?: string;
   };
 }
 
@@ -285,25 +292,49 @@ export default function ClientDashboard() {
           </Card>
         )}
 
-        {/* Legal Documents */}
-        {org.onboarding?.mouUrl && (
+        {/* Service Agreement */}
+        {org.dealPage?.signedAt && (
           <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="!text-[#0f172a] flex items-center gap-2">
                 <Scale className="w-5 h-5 text-[#9333ea]" />
-                Legal Documents
+                Service Agreement
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <p className="text-sm text-[#64748b] mb-4">
-                  Access your signed agreements and legal documents
-                </p>
-                {org.onboarding.mouUrl && (
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-[#f0fdf4] border border-[#bbf7d0]">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckCircle2 className="w-5 h-5 text-[#22c55e]" />
+                    <span className="font-semibold text-[#166534]">Agreement Signed</span>
+                  </div>
+                  <p className="text-sm text-[#15803d]">
+                    Signed by <strong>{org.dealPage.signatureName}</strong> on {new Date(org.dealPage.signedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-[#e2e8f0]">
+                    <span className="text-sm text-[#64748b]">Engagement</span>
+                    <span className="text-sm font-semibold text-[#0f172a]">60-Day Growth Marathon</span>
+                  </div>
+                  {org.dealPage.goal && (
+                    <div className="flex justify-between items-center py-2 border-b border-[#e2e8f0]">
+                      <span className="text-sm text-[#64748b]">Goal</span>
+                      <span className="text-sm font-semibold text-[#0f172a]">{org.dealPage.goal}</span>
+                    </div>
+                  )}
+                  {org.dealPage.fixedFee && (
+                    <div className="flex justify-between items-center py-2 border-b border-[#e2e8f0]">
+                      <span className="text-sm text-[#64748b]">Fixed Fee</span>
+                      <span className="text-sm font-semibold text-[#0f172a]">₹{org.dealPage.fixedFee.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                </div>
+
+                {org.onboarding?.token && (
                   <Link
-                    href={org.onboarding.mouUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`/deal/${org.onboarding.token}`}
                     className="flex items-center justify-between p-4 rounded-xl bg-[#f8f9fa] border border-[#e2e8f0] hover:bg-[#f1f3f5] transition-colors group"
                   >
                     <div className="flex items-center gap-3">
@@ -311,27 +342,8 @@ export default function ClientDashboard() {
                         <FileText className="w-5 h-5 text-[#9333ea]" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-[#0f172a]">Memorandum of Understanding</p>
-                        <p className="text-xs text-[#64748b]">MOU Agreement</p>
-                      </div>
-                    </div>
-                    <ArrowRight className="w-5 h-5 text-[#64748b] group-hover:text-[#e91e8c] transition-colors" />
-                  </Link>
-                )}
-                {org.onboarding.sowUrl && (
-                  <Link
-                    href={org.onboarding.sowUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between p-4 rounded-xl bg-[#f8f9fa] border border-[#e2e8f0] hover:bg-[#f1f3f5] transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-white border border-[#e2e8f0]">
-                        <FileText className="w-5 h-5 text-[#e91e8c]" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[#0f172a]">Statement of Work</p>
-                        <p className="text-xs text-[#64748b]">SOW Agreement</p>
+                        <p className="text-sm font-semibold text-[#0f172a]">View Full Agreement</p>
+                        <p className="text-xs text-[#64748b]">60-Day Growth Marathon Terms</p>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-[#64748b] group-hover:text-[#e91e8c] transition-colors" />
