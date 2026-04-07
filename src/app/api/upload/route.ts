@@ -1,19 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { v2 as cloudinary } from 'cloudinary';
+import crypto from 'crypto';
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// POST /api/upload — upload file to Cloudinary
+// POST /api/upload — upload file to Bunny Storage
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || !['admin', 'staff'].includes(session.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const BUNNY_STORAGE_API_KEY = process.env.BUNNY_STORAGE_API_KEY;
+  const BUNNY_STORAGE_ZONE = process.env.BUNNY_STORAGE_ZONE;
+  const BUNNY_STORAGE_HOSTNAME = process.env.BUNNY_STORAGE_HOSTNAME || 'storage.bunnycdn.com';
+  const BUNNY_CDN_URL = process.env.BUNNY_CDN_URL;
+
+  if (!BUNNY_STORAGE_API_KEY || !BUNNY_STORAGE_ZONE) {
+    return NextResponse.json({ error: 'Bunny Storage not configured' }, { status: 500 });
   }
 
   try {
@@ -29,26 +32,40 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Determine folder based on type
-    const folder = type === 'logo' ? 'yuvichaar/logos' : type === 'pdf' ? 'yuvichaar/research' : 'yuvichaar/files';
+    // Generate unique filename
+    const ext = file.name.split('.').pop() || 'file';
+    const uniqueId = crypto.randomBytes(8).toString('hex');
+    const timestamp = Date.now();
+    const fileName = `${timestamp}-${uniqueId}.${ext}`;
 
-    // Upload to Cloudinary
-    const result = await new Promise<{ secure_url: string }>((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream(
-          {
-            folder,
-            resource_type: 'auto',
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result as { secure_url: string });
-          }
-        )
-        .end(buffer);
+    // Determine folder based on type
+    const folder = type === 'logo' ? 'logos' : type === 'pdf' ? 'research' : type === 'image' ? 'images' : 'files';
+    const filePath = `yuvichaar/${folder}/${fileName}`;
+
+    // Upload to Bunny Storage
+    const uploadUrl = `https://${BUNNY_STORAGE_HOSTNAME}/${BUNNY_STORAGE_ZONE}/${filePath}`;
+    
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': BUNNY_STORAGE_API_KEY,
+        'Content-Type': 'application/octet-stream',
+      },
+      body: buffer,
     });
 
-    return NextResponse.json({ url: result.secure_url });
+    if (!uploadRes.ok) {
+      const errorText = await uploadRes.text();
+      console.error('Bunny Storage upload error:', errorText);
+      return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+    }
+
+    // Return CDN URL
+    const cdnUrl = BUNNY_CDN_URL 
+      ? `${BUNNY_CDN_URL}/${filePath}`
+      : `https://${BUNNY_STORAGE_ZONE}.b-cdn.net/${filePath}`;
+
+    return NextResponse.json({ url: cdnUrl });
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });

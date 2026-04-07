@@ -3,6 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import AdVideo from '@/models/AdVideo';
+import Organization from '@/models/Organization';
+import { sendEmail, getNewVideoEmailTemplate } from '@/lib/email';
 
 // GET /api/organizations/[id]/videos
 export async function GET(
@@ -69,6 +71,21 @@ export async function POST(
       bunnyStreamUrl: body.bunnyStreamUrl,
       thumbnailUrl: body.thumbnailUrl || '',
     });
+
+    // Send email notification to client
+    const org = await Organization.findById(id);
+    if (org?.email) {
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      await sendEmail({
+        to: org.email,
+        subject: `New Video Ready - ${body.title}`,
+        html: getNewVideoEmailTemplate({
+          organizationName: org.name,
+          videoTitle: body.title,
+          dashboardLink: `${baseUrl}/client/videos`,
+        }),
+      });
+    }
 
     return NextResponse.json({ video }, { status: 201 });
   } catch (error) {

@@ -9,6 +9,9 @@ import {
   Inbox,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
+  FileText,
+  DollarSign,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -17,6 +20,9 @@ const navItems = [
   { name: 'Inbox', href: '/admin/inbox', icon: Inbox, showBadge: true },
   { name: 'Organizations', href: '/admin/organizations', icon: Building2 },
   { name: 'Staff', href: '/admin/staff', icon: Users },
+  { name: 'Staff Tasks', href: '/admin/staff-tasks', icon: ClipboardList },
+  { name: 'Finances', href: '/admin/finances', icon: DollarSign },
+  { name: 'Templates', href: '/admin/templates', icon: FileText },
 ];
 
 export default function AdminSidebar() {

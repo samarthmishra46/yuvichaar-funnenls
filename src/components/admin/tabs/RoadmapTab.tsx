@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Calendar, CheckCircle2, Clock, Loader2, User, ChevronDown, ChevronRight, Star, AlertCircle } from 'lucide-react';
+import { Plus, Calendar, CheckCircle2, Clock, Loader2, User, ChevronDown, ChevronRight, Star, AlertCircle, Trash2, Settings } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,18 +47,31 @@ interface Staff {
   name: string;
 }
 
+interface Template {
+  _id: string;
+  name: string;
+  description?: string;
+  totalDays: number;
+  isDefault?: boolean;
+}
+
 export default function RoadmapTab({ orgId }: { orgId: string }) {
   const [roadmap, setRoadmap] = useState<Roadmap | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [phases, setPhases] = useState<Phase[]>([]);
   const [dayTitles, setDayTitles] = useState<Record<number, DayTitle>>({});
   const [staff, setStaff] = useState<Staff[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [expandedPhases, setExpandedPhases] = useState<Set<number>>(new Set([1]));
   const [expandedDays, setExpandedDays] = useState<Set<number>>(new Set());
   const [editingTask, setEditingTask] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [addingTaskForDay, setAddingTaskForDay] = useState<number | null>(null);
+  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskAssignee, setNewTaskAssignee] = useState('');
 
   const [taskForm, setTaskForm] = useState({
     dayNumber: 1,
@@ -81,6 +95,16 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
         setTasks(data.tasks || []);
         setPhases(data.phases || []);
         setDayTitles(data.dayTitles || {});
+        if (data.templates) {
+          setTemplates(data.templates);
+          // Select default template if available
+          const defaultTemplate = data.templates.find((t: Template) => t.isDefault);
+          if (defaultTemplate) {
+            setSelectedTemplateId(defaultTemplate._id);
+          } else if (data.templates.length > 0) {
+            setSelectedTemplateId(data.templates[0]._id);
+          }
+        }
       }
     } catch (error) {
       console.error('Fetch roadmap error:', error);
@@ -107,7 +131,10 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
       const res = await fetch(`/api/roadmaps/${orgId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startDate }),
+        body: JSON.stringify({ 
+          startDate,
+          templateId: selectedTemplateId || undefined,
+        }),
       });
 
       const data = await res.json();
@@ -117,7 +144,7 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
         return;
       }
 
-      toast.success('60-Day Growth Marathon initialized!');
+      toast.success('Roadmap initialized!');
       setRoadmap(data.roadmap);
       setTasks(data.tasks || []);
       setPhases(data.phases || []);
@@ -163,6 +190,43 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
     }
   };
 
+  const handleAddTaskForDay = async (dayNumber: number) => {
+    if (!newTaskTitle.trim()) {
+      toast.error('Task title is required');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roadmapId: roadmap?._id,
+          orgId,
+          dayNumber,
+          title: newTaskTitle,
+          assignedTo: newTaskAssignee || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to create task');
+        return;
+      }
+
+      toast.success('Task added successfully');
+      setNewTaskTitle('');
+      setNewTaskAssignee('');
+      setAddingTaskForDay(null);
+      await fetchRoadmapData();
+    } catch (error) {
+      console.error('Create task error:', error);
+      toast.error('Failed to create task');
+    }
+  };
+
   const handleUpdateTaskAssignment = async (taskId: string, assignedTo: string) => {
     try {
       const res = await fetch(`/api/tasks/${taskId}`, {
@@ -181,6 +245,26 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
       await fetchRoadmapData();
     } catch (error) {
       toast.error('Failed to update task');
+    }
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        toast.error('Failed to delete task');
+        return;
+      }
+
+      toast.success('Task deleted');
+      await fetchRoadmapData();
+    } catch (error) {
+      toast.error('Failed to delete task');
     }
   };
 
@@ -244,24 +328,76 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
   }
 
   if (!roadmap) {
+    const selectedTemplate = templates.find(t => t._id === selectedTemplateId);
+    
     return (
       <div className="text-center py-12 bg-white rounded-2xl border border-[#e2e8f0]">
         <Calendar className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-[#0f172a] mb-2">Start 60-Day Growth Marathon</h3>
+        <h3 className="text-lg font-semibold text-[#0f172a] mb-2">Start Roadmap</h3>
         <p className="text-sm text-[#64748b] mb-6 max-w-md mx-auto">
-          Initialize the roadmap with all phases and tasks from the template. Tasks will be created automatically.
+          Select a template and initialize the roadmap. Tasks will be created automatically from the template.
         </p>
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center gap-2">
-            <label className="text-sm text-[#64748b]">Start Date:</label>
+        <div className="flex flex-col items-center gap-4 max-w-md mx-auto">
+          {/* Template Selection */}
+          {templates.length > 0 && (
+            <div className="w-full">
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm text-[#64748b]">Select Template:</label>
+                <Link 
+                  href="/admin/templates" 
+                  className="text-xs text-[#e91e8c] hover:underline flex items-center gap-1"
+                >
+                  <Settings className="w-3 h-3" />
+                  Manage Templates
+                </Link>
+              </div>
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => setSelectedTemplateId(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+              >
+                <option value="">-- Select a template --</option>
+                {templates.map((t) => (
+                  <option key={t._id} value={t._id}>
+                    {t.name} ({t.totalDays} days) {t.isDefault ? '★' : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedTemplate && selectedTemplate.description && (
+                <p className="text-xs text-[#94a3b8] mt-1 text-left">{selectedTemplate.description}</p>
+              )}
+            </div>
+          )}
+          {templates.length === 0 && (
+            <div className="w-full text-center">
+              <p className="text-sm text-[#f59e0b] bg-[#fffbeb] px-4 py-2 rounded-lg mb-3">
+                No templates found. Create a template first.
+              </p>
+              <Link href="/admin/templates">
+                <Button variant="outline">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create New Template
+                </Button>
+              </Link>
+            </div>
+          )}
+          
+          {/* Start Date */}
+          <div className="w-full">
+            <label className="block text-sm text-[#64748b] mb-2 text-left">Start Date:</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+              className="w-full px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
             />
           </div>
-          <Button onClick={handleCreateRoadmap} disabled={creating}>
+          
+          <Button 
+            onClick={handleCreateRoadmap} 
+            disabled={creating || !selectedTemplateId}
+            className="w-full"
+          >
             {creating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -270,7 +406,7 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
             ) : (
               <>
                 <Plus className="w-4 h-4 mr-2" />
-                Initialize 60-Day Marathon
+                Initialize {selectedTemplate ? selectedTemplate.name : 'Roadmap'}
               </>
             )}
           </Button>
@@ -285,14 +421,23 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
       <div className="bg-white rounded-xl p-4 border border-[#e2e8f0] shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-lg font-semibold text-[#0f172a]">60-Day Growth Marathon</h3>
+            <h3 className="text-lg font-semibold text-[#0f172a]">{roadmap.title}</h3>
             <p className="text-sm text-[#64748b]">
-              {new Date(roadmap.startDate).toLocaleDateString()} — {new Date(roadmap.endDate).toLocaleDateString()}
+              {new Date(roadmap.startDate).toLocaleDateString()} — {new Date(roadmap.endDate).toLocaleDateString()} ({roadmap.totalDays} days)
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-[#0f172a]">{getCompletionPercentage()}%</p>
-            <p className="text-xs text-[#64748b]">Complete</p>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/admin/templates" 
+              className="text-xs text-[#e91e8c] hover:underline flex items-center gap-1 px-3 py-1.5 border border-[#e91e8c] rounded-lg hover:bg-[#fdf2f8] transition-colors"
+            >
+              <Settings className="w-3 h-3" />
+              Manage Templates
+            </Link>
+            <div className="text-right">
+              <p className="text-2xl font-bold text-[#0f172a]">{getCompletionPercentage()}%</p>
+              <p className="text-xs text-[#64748b]">Complete</p>
+            </div>
           </div>
         </div>
         <div className="w-full h-3 bg-[#f1f5f9] rounded-full overflow-hidden">
@@ -428,7 +573,7 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
                             </button>
 
                             {/* Day Tasks */}
-                            {isDayExpanded && dayTasks.length > 0 && (
+                            {isDayExpanded && (
                               <div className="pl-14 pr-4 pb-3 space-y-2">
                                 {dayTasks.map((task) => (
                                   <div
@@ -472,29 +617,88 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
                                         </p>
                                       )}
                                     </div>
-                                    {editingTask === task._id ? (
-                                      <select
-                                        value={task.assignedTo || ''}
-                                        onChange={(e) => handleUpdateTaskAssignment(task._id, e.target.value)}
-                                        onBlur={() => setEditingTask(null)}
-                                        autoFocus
-                                        className="px-2 py-1 text-xs bg-white border border-[#e2e8f0] rounded-lg outline-none focus:border-[#e91e8c]"
-                                      >
-                                        <option value="">Unassigned</option>
-                                        {staff.map((s) => (
-                                          <option key={s._id} value={s.email}>{s.name}</option>
-                                        ))}
-                                      </select>
-                                    ) : (
+                                    <div className="flex items-center gap-2">
+                                      {editingTask === task._id ? (
+                                        <select
+                                          value={task.assignedTo || ''}
+                                          onChange={(e) => handleUpdateTaskAssignment(task._id, e.target.value)}
+                                          onBlur={() => setEditingTask(null)}
+                                          autoFocus
+                                          className="px-2 py-1 text-xs bg-white border border-[#e2e8f0] rounded-lg outline-none focus:border-[#e91e8c]"
+                                        >
+                                          <option value="">Unassigned</option>
+                                          {staff.map((s) => (
+                                            <option key={s._id} value={s.email}>{s.name}</option>
+                                          ))}
+                                        </select>
+                                      ) : (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); setEditingTask(task._id); }}
+                                          className="text-xs text-[#e91e8c] hover:underline"
+                                        >
+                                          {task.assignedTo ? 'Reassign' : 'Assign'}
+                                        </button>
+                                      )}
                                       <button
-                                        onClick={(e) => { e.stopPropagation(); setEditingTask(task._id); }}
-                                        className="text-xs text-[#e91e8c] hover:underline"
+                                        onClick={(e) => { e.stopPropagation(); handleDeleteTask(task._id); }}
+                                        className="p-1 text-[#94a3b8] hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                        title="Delete task"
                                       >
-                                        {task.assignedTo ? 'Reassign' : 'Assign'}
+                                        <Trash2 className="w-3.5 h-3.5" />
                                       </button>
-                                    )}
+                                    </div>
                                   </div>
                                 ))}
+
+                                {/* Add Task Button/Form */}
+                                {addingTaskForDay === day ? (
+                                  <div className="flex items-center gap-2 p-3 rounded-lg border border-[#e91e8c] bg-[#fdf2f8]">
+                                    <input
+                                      type="text"
+                                      placeholder="Task title..."
+                                      value={newTaskTitle}
+                                      onChange={(e) => setNewTaskTitle(e.target.value)}
+                                      onKeyDown={(e) => e.key === 'Enter' && handleAddTaskForDay(day)}
+                                      autoFocus
+                                      className="flex-1 px-2 py-1 text-sm bg-white border border-[#e2e8f0] rounded-lg outline-none focus:border-[#e91e8c]"
+                                    />
+                                    <select
+                                      value={newTaskAssignee}
+                                      onChange={(e) => setNewTaskAssignee(e.target.value)}
+                                      className="px-2 py-1 text-xs bg-white border border-[#e2e8f0] rounded-lg outline-none focus:border-[#e91e8c]"
+                                    >
+                                      <option value="">Assign to...</option>
+                                      {staff.map((s) => (
+                                        <option key={s._id} value={s.email}>{s.name}</option>
+                                      ))}
+                                    </select>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleAddTaskForDay(day)}
+                                      className="!py-1 !px-3"
+                                    >
+                                      Add
+                                    </Button>
+                                    <button
+                                      onClick={() => {
+                                        setAddingTaskForDay(null);
+                                        setNewTaskTitle('');
+                                        setNewTaskAssignee('');
+                                      }}
+                                      className="text-xs text-[#64748b] hover:text-[#0f172a]"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => setAddingTaskForDay(day)}
+                                    className="flex items-center gap-2 w-full p-2 rounded-lg border border-dashed border-[#e2e8f0] text-sm text-[#64748b] hover:border-[#e91e8c] hover:text-[#e91e8c] hover:bg-[#fdf2f8] transition-colors"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                    Add Task
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>

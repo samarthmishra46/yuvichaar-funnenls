@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import ClientTask from '@/models/ClientTask';
 import Organization from '@/models/Organization';
+import { sendEmail, getClientTaskEmailTemplate } from '@/lib/email';
 
 // POST - Create a client task (staff/admin only)
 export async function POST(request: NextRequest) {
@@ -42,6 +43,21 @@ export async function POST(request: NextRequest) {
       createdByEmail: session.user.email,
       createdByRole: session.user.role,
     });
+
+    // Send email notification to client
+    if ((org as any).email) {
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      await sendEmail({
+        to: (org as any).email,
+        subject: `Action Required - ${title}`,
+        html: getClientTaskEmailTemplate({
+          organizationName: (org as any).name,
+          taskTitle: title,
+          taskDescription: description,
+          dashboardLink: `${baseUrl}/client`,
+        }),
+      });
+    }
 
     return NextResponse.json({ task }, { status: 201 });
   } catch (error) {

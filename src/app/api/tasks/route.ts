@@ -53,33 +53,72 @@ export async function GET(request: NextRequest) {
     const orgId = searchParams.get('orgId');
     const assignedTo = searchParams.get('assignedTo');
     const withOrgDetails = searchParams.get('withOrgDetails') === 'true';
+    const dateFilter = searchParams.get('date'); // today, yesterday, tomorrow, all, or specific date (YYYY-MM-DD)
 
     const filter: any = {};
     if (orgId) filter.orgId = orgId;
     if (assignedTo) filter.assignedTo = assignedTo;
 
-    const tasks = await Task.find(filter).sort({ dayNumber: 1, createdAt: 1 }).lean();
+    let tasks = await Task.find(filter).sort({ dayNumber: 1, createdAt: 1 }).lean();
 
-    // If withOrgDetails is requested, fetch organization and roadmap details
+    // Always fetch roadmaps for date filtering or org details
+    const roadmapIds = [...new Set(tasks.map((t: any) => t.roadmapId))];
+    const roadmaps = await Roadmap.find({ _id: { $in: roadmapIds } }).select('orgId startDate totalDays').lean();
+    const roadmapMap = new Map(roadmaps.map((r: any) => [r._id.toString(), r]));
+
+    // Calculate actual date for each task based on roadmap startDate + dayNumber
+    const tasksWithDates = tasks.map((task: any) => {
+      const roadmap = roadmapMap.get(task.roadmapId);
+      let taskDate = null;
+      if (roadmap) {
+        const startDate = new Date(roadmap.startDate);
+        taskDate = new Date(startDate);
+        taskDate.setDate(startDate.getDate() + task.dayNumber - 1);
+      }
+      return { ...task, taskDate, roadmap };
+    });
+
+    // Apply date filter
+    if (dateFilter && dateFilter !== 'all') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      let targetDate: Date;
+      
+      if (dateFilter === 'today') {
+        targetDate = today;
+      } else if (dateFilter === 'yesterday') {
+        targetDate = new Date(today);
+        targetDate.setDate(today.getDate() - 1);
+      } else if (dateFilter === 'tomorrow') {
+        targetDate = new Date(today);
+        targetDate.setDate(today.getDate() + 1);
+      } else {
+        // Specific date in YYYY-MM-DD format
+        targetDate = new Date(dateFilter);
+        targetDate.setHours(0, 0, 0, 0);
+      }
+
+      tasks = tasksWithDates.filter((task: any) => {
+        if (!task.taskDate) return false;
+        const td = new Date(task.taskDate);
+        td.setHours(0, 0, 0, 0);
+        return td.getTime() === targetDate.getTime();
+      });
+    } else {
+      tasks = tasksWithDates;
+    }
+
+    // If withOrgDetails is requested, fetch organization details
     if (withOrgDetails && tasks.length > 0) {
       const orgIds = [...new Set(tasks.map((t: any) => t.orgId))];
-      const roadmapIds = [...new Set(tasks.map((t: any) => t.roadmapId))];
-      
-      const [orgs, roadmaps] = await Promise.all([
-        Organization.find({ _id: { $in: orgIds } }).select('name logo').lean(),
-        Roadmap.find({ _id: { $in: roadmapIds } }).select('orgId startDate totalDays').lean(),
-      ]);
-
+      const orgs = await Organization.find({ _id: { $in: orgIds } }).select('name logo').lean();
       const orgMap = new Map(orgs.map((o: any) => [o._id.toString(), o]));
-      const roadmapMap = new Map(roadmaps.map((r: any) => [r._id.toString(), r]));
 
-      const tasksWithDetails = tasks.map((task: any) => ({
+      tasks = tasks.map((task: any) => ({
         ...task,
         organization: orgMap.get(task.orgId) || null,
-        roadmap: roadmapMap.get(task.roadmapId) || null,
       }));
-
-      return NextResponse.json({ tasks: tasksWithDetails });
     }
 
     return NextResponse.json({ tasks });

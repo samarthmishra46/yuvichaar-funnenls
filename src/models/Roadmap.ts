@@ -154,6 +154,7 @@ export interface IRoadmap extends Document {
   startDate: Date;
   endDate: Date;
   totalDays: number;
+  templateId?: string;
   createdAt: Date;
 }
 
@@ -197,6 +198,7 @@ const RoadmapSchema = new Schema<IRoadmap>(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     totalDays: { type: Number, required: true, default: 60 },
+    templateId: { type: String },
     createdAt: { type: Date, default: Date.now },
   },
   {

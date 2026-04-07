@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import { Roadmap, Task, ROADMAP_PHASES, ROADMAP_DAY_TITLES, DEFAULT_SUBTASKS } from '@/models/Roadmap';
 import Organization from '@/models/Organization';
+import RoadmapTemplate from '@/models/RoadmapTemplate';
 
 export async function GET(
   request: NextRequest,
@@ -19,14 +20,17 @@ export async function GET(
   await dbConnect();
 
   try {
-    const roadmap = await Roadmap.findOne({ orgId }).lean();
+    const roadmap = await Roadmap.findOne({ orgId }).lean() as any;
     
     if (!roadmap) {
+      // Return available templates for selection
+      const templates = await RoadmapTemplate.find().sort({ isDefault: -1, createdAt: -1 }).lean();
       return NextResponse.json({ 
         roadmap: null, 
         tasks: [],
         phases: ROADMAP_PHASES,
         dayTitles: ROADMAP_DAY_TITLES,
+        templates,
       });
     }
 
@@ -34,11 +38,26 @@ export async function GET(
       .sort({ dayNumber: 1, createdAt: 1 })
       .lean();
 
+    // If roadmap has templateId, fetch template for phases/dayTitles
+    let phases = ROADMAP_PHASES;
+    let dayTitles: Record<number, { title: string; milestone?: boolean }> = ROADMAP_DAY_TITLES;
+
+    if (roadmap.templateId) {
+      const template = await RoadmapTemplate.findById(roadmap.templateId).lean();
+      if (template) {
+        phases = template.phases;
+        dayTitles = {};
+        for (const day of template.days) {
+          dayTitles[day.dayNumber] = { title: day.title, milestone: day.milestone };
+        }
+      }
+    }
+
     return NextResponse.json({ 
       roadmap, 
       tasks,
-      phases: ROADMAP_PHASES,
-      dayTitles: ROADMAP_DAY_TITLES,
+      phases,
+      dayTitles,
     });
   } catch (error) {
     console.error('Get roadmap error:', error);
@@ -73,38 +92,69 @@ export async function POST(
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
     }
 
-    const { startDate } = await request.json();
+    const { startDate, templateId } = await request.json();
     const start = startDate ? new Date(startDate) : new Date();
+
+    let totalDays = 60;
+    let title = `60-Day Growth Marathon - ${org.name}`;
+    let phases = ROADMAP_PHASES;
+    let dayTitles: Record<number, { title: string; milestone?: boolean }> = ROADMAP_DAY_TITLES;
+    let defaultSubtasks: Record<number, string[]> = DEFAULT_SUBTASKS;
+
+    // If templateId provided, use that template
+    if (templateId) {
+      const template = await RoadmapTemplate.findById(templateId).lean();
+      if (!template) {
+        return NextResponse.json({ error: 'Template not found' }, { status: 404 });
+      }
+
+      totalDays = template.totalDays;
+      title = `${template.name} - ${org.name}`;
+      phases = template.phases;
+      dayTitles = {};
+      defaultSubtasks = {};
+
+      for (const day of template.days) {
+        dayTitles[day.dayNumber] = { title: day.title, milestone: day.milestone };
+        if (day.subtasks && day.subtasks.length > 0) {
+          defaultSubtasks[day.dayNumber] = day.subtasks;
+        }
+      }
+    }
+
     const end = new Date(start);
-    end.setDate(end.getDate() + 59); // 60 days total
+    end.setDate(end.getDate() + totalDays - 1);
 
     // Create roadmap
     const roadmap = await Roadmap.create({
       orgId,
-      title: `60-Day Growth Marathon - ${org.name}`,
-      description: 'Complete brand transformation and growth program',
+      title,
+      description: templateId ? 'Custom roadmap from template' : 'Complete brand transformation and growth program',
       startDate: start,
       endDate: end,
-      totalDays: 60,
+      totalDays,
+      templateId: templateId || undefined,
     });
 
     // Create tasks from template
     const tasksToCreate: any[] = [];
     
-    for (const [dayStr, subtasks] of Object.entries(DEFAULT_SUBTASKS)) {
+    for (const [dayStr, subtasks] of Object.entries(defaultSubtasks)) {
       const dayNumber = parseInt(dayStr);
-      for (const title of subtasks) {
+      for (const taskTitle of subtasks) {
         tasksToCreate.push({
           roadmapId: roadmap._id.toString(),
           orgId,
           dayNumber,
-          title,
+          title: taskTitle,
           status: 'pending',
         });
       }
     }
 
-    await Task.insertMany(tasksToCreate);
+    if (tasksToCreate.length > 0) {
+      await Task.insertMany(tasksToCreate);
+    }
 
     const tasks = await Task.find({ roadmapId: roadmap._id.toString() })
       .sort({ dayNumber: 1, createdAt: 1 })
@@ -113,8 +163,8 @@ export async function POST(
     return NextResponse.json({ 
       roadmap, 
       tasks,
-      phases: ROADMAP_PHASES,
-      dayTitles: ROADMAP_DAY_TITLES,
+      phases,
+      dayTitles,
     }, { status: 201 });
   } catch (error) {
     console.error('Create roadmap error:', error);

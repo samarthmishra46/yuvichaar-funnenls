@@ -10,6 +10,7 @@ interface Organization {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   payment: {
     totalAmount: number;
     payments: Array<{
@@ -114,6 +115,7 @@ export default function ClientPaymentsPage() {
         prefill: {
           name: session?.user?.name || '',
           email: org.email,
+          contact: org.phone || '',
         },
         theme: {
           color: '#e91e8c',

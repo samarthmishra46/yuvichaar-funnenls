@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/mongodb';
 import Organization from '@/models/Organization';
+import { sendEmail, getNewSectionEmailTemplate } from '@/lib/email';
 
 // GET /api/organizations/[id]/sections
 export async function GET(
@@ -78,6 +79,22 @@ export async function POST(
 
     if (!org) {
       return NextResponse.json({ error: 'Organization not found' }, { status: 404 });
+    }
+
+    // Send email notification to client
+    const fullOrg = await Organization.findById(id).select('email name').lean();
+    if (fullOrg?.email) {
+      const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+      await sendEmail({
+        to: fullOrg.email,
+        subject: `New Content Added - ${body.title}`,
+        html: getNewSectionEmailTemplate({
+          organizationName: fullOrg.name,
+          sectionTitle: body.title,
+          sectionDescription: body.content?.substring(0, 200),
+          dashboardLink: `${baseUrl}/client/sections/${body.id}`,
+        }),
+      });
     }
 
     return NextResponse.json({ sections: org.customSections }, { status: 201 });
