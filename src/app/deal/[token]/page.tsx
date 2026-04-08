@@ -22,6 +22,46 @@ interface Stat {
   label: string;
 }
 
+interface FunnelNode {
+  emoji: string;
+  label: string;
+  description: string;
+}
+
+interface FunnelBranchItem {
+  text: string;
+}
+
+interface FunnelBranch {
+  title: string;
+  items: FunnelBranchItem[];
+}
+
+interface FunnelDiagram {
+  topNote: string;
+  nodes: FunnelNode[];
+  buyBranch: FunnelBranch;
+  noBuyBranch: FunnelBranch;
+  outcomeLabel: string;
+  outcomeText: string;
+}
+
+interface ConfirmationItem {
+  text: string;
+}
+
+interface Clause {
+  number: string;
+  title: string;
+  body: string;
+  listItems?: string[];
+}
+
+interface ClauseSection {
+  title: string;
+  clauses: Clause[];
+}
+
 interface DealData {
   company: string;
   email: string;
@@ -53,6 +93,10 @@ interface DealData {
   deliverables: Deliverable[];
   timeline: TimelineItem[];
   stats: Stat[];
+  funnelDiagram: FunnelDiagram;
+  agreementIntro: string;
+  clauseSections: ClauseSection[];
+  confirmationItems: ConfirmationItem[];
 }
 
 export default function DealPage() {

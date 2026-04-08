@@ -25,6 +25,46 @@ interface Stat {
   label: string;
 }
 
+interface FunnelNode {
+  emoji: string;
+  label: string;
+  description: string;
+}
+
+interface FunnelBranchItem {
+  text: string;
+}
+
+interface FunnelBranch {
+  title: string;
+  items: FunnelBranchItem[];
+}
+
+interface FunnelDiagram {
+  topNote: string;
+  nodes: FunnelNode[];
+  buyBranch: FunnelBranch;
+  noBuyBranch: FunnelBranch;
+  outcomeLabel: string;
+  outcomeText: string;
+}
+
+interface ConfirmationItem {
+  text: string;
+}
+
+interface Clause {
+  number: string;
+  title: string;
+  body: string;
+  listItems?: string[];
+}
+
+interface ClauseSection {
+  title: string;
+  clauses: Clause[];
+}
+
 interface DealPage {
   proposalTitle?: string;
   goal?: string;
@@ -53,6 +93,10 @@ interface DealPage {
   deliverables?: Deliverable[];
   timeline?: TimelineItem[];
   stats?: Stat[];
+  funnelDiagram?: FunnelDiagram;
+  agreementIntro?: string;
+  clauseSections?: ClauseSection[];
+  confirmationItems?: ConfirmationItem[];
 }
 
 interface Organization {
@@ -68,6 +112,48 @@ interface DealPageTabProps {
   org: Organization;
   onUpdate: () => void;
 }
+
+const getDefaultClauseSections = (): ClauseSection[] => [
+  {
+    title: 'Section A — Scope of Work',
+    clauses: [
+      { number: 'Clause 1', title: 'Services to be delivered', body: 'Yuvichaar Funnels ("the Agency") agrees to design and execute the {proposalTitle} for {company}, commencing {startDate}:', listItems: ['{adsCount} performance video ads — scripted, shot, edited, Meta-ready', '{socialVideosCount} social media videos + full Instagram profile optimisation', '{landingPagesCount} high-converting landing page(s) including Video Sales Letter', 'Checkout experience — single-click checkout, order bumps, copy optimisation', 'WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)', 'Email automations — cart abandonment + post-purchase sequences', 'ManyChat Instagram DM automations', 'AI calling integration for high-intent visitors', '60-day Meta campaign management'] },
+      { number: 'Clause 2', title: 'Production and quality standards', body: 'All video content will be shot on professional Netflix-approved cameras. All deliverables meet Meta advertising specifications. Landing pages will be mobile-first, load under 3 seconds, and meet the conversion standards in the proposal. All automation sequences will be fully tested before launch.', listItems: [] },
+      { number: 'Clause 3', title: 'Timeline', body: 'The engagement runs for 60 days from the confirmed start date. Campaigns go live by Day 21. Some phases run in parallel. If the Client delays feedback, access, or approvals, the Agency will notify the Client of the timeline impact and agree a revised schedule.', listItems: [] }
+    ]
+  },
+  {
+    title: 'Section B — Payment Terms',
+    clauses: [
+      { number: 'Clause 4', title: 'Fee structure and payment schedule', body: 'The fixed fee for this engagement is ₹{fixedFee} excluding GST at 18%. Payment is in two equal instalments:', listItems: ['Advance: ₹{advanceAmount} + GST (₹{advanceWithGst} total) — due on signing. This activates the engagement.', 'Balance: ₹{balanceAmount} + GST (₹{balanceWithGst} total) — due on Day 30, regardless of delivery status unless there is a material breach by the Agency.', 'All fixed fee payments are non-refundable once the corresponding phase of work has commenced.'] },
+      { number: 'Clause 5', title: 'Performance bonuses', body: 'A performance fee of ₹2,00,000 + GST is payable in two tranches only upon confirmed achievement of revenue milestones:', listItems: ['{perfBonus1Amount} + GST — upon hitting {perfBonus1Trigger} in attributed revenue', '{perfBonus2Amount} + GST — upon hitting {perfBonus2Trigger} in attributed revenue', 'Performance bonuses are not due unless the stated revenue milestones are met and verified. If milestones are not reached, no performance fee is payable.'] },
+      { number: 'Clause 6', title: 'Ad spend budget', body: 'The fees above cover campaign management only. Meta ad spend is not included. The Agency will fund up to ₹25,000 in initial test spend. Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.', listItems: [] }
+    ]
+  },
+  {
+    title: 'Section C — Mutual Responsibilities',
+    clauses: [
+      { number: 'Clause 7', title: 'Agency commitments', body: '', listItems: ['Deliver every item in Clause 1 within the agreed timeline', 'Assign a dedicated POC who sends the Client a daily update', "Provide real-time visibility via the Client's dedicated portal", 'Cover automation tool subscription costs for the first 2 months', 'Fund ₹25,000 in initial Meta test spend', 'Share weekly performance reports during the campaign period'] },
+      { number: 'Clause 8', title: 'Client responsibilities', body: '', listItems: ['Provide feedback on all deliverables within 48 hours. Delays impact launch timing.', 'Grant platform access (Meta BM, website, WhatsApp API, Instagram) by end of Week 1', 'Designate one decision-maker with authority to approve scripts, creatives, and copy', 'Fund ad spend budget as agreed at kickoff', 'Provide brand assets, product imagery, and testimonials as requested'] }
+    ]
+  },
+  {
+    title: 'Section D — Revisions, Reshoots, Scope',
+    clauses: [
+      { number: 'Clause 9', title: 'Revision policy', body: 'Included at no cost: minor script adjustments before production, subtitle/text corrections, minor editing changes aligned with approved concept. Not included: complete concept changes after production, additional creatives beyond the agreed quantity, new deliverables not in this agreement.', listItems: [] },
+      { number: 'Clause 10', title: 'Reshoot policy', body: 'Reshoots at no cost only when the Agency deviates from the approved script (missed lines, wrong wording, technical equipment failure). Not provided for subjective dissatisfaction including acting preferences or creative direction changes formed after production.', listItems: [] },
+      { number: 'Clause 11', title: 'Scope limitations', body: 'Outside scope unless separately agreed in writing:', listItems: ['Additional video ads or landing pages beyond the quantity in Clause 1', 'Website development outside the funnel landing page', 'Additional automation systems beyond those in Clause 1', 'Customer service handling on behalf of the Client'] }
+    ]
+  },
+  {
+    title: 'Section E — Outcomes and Liability',
+    clauses: [
+      { number: 'Clause 12', title: 'No guarantee of revenue outcomes', body: "The Agency installs the infrastructure and manages campaigns. Revenue outcomes are not guaranteed — they depend on market demand, pricing, competition, and platform dynamics outside the Agency's control. The Agency commits to delivering the best possible system and campaigns.", listItems: [] },
+      { number: 'Clause 13', title: 'Automation subscriptions after 2 months', body: "The Agency covers WATI, email, and ManyChat subscription costs for the first 2 months. After that, all renewals are the Client's responsibility. The Agency provides all credentials and documentation required to manage subscriptions independently.", listItems: [] },
+      { number: 'Clause 14', title: 'Governing law', body: 'This agreement is governed by the laws of India. Disputes are subject to the jurisdiction of the courts of Jaipur, Rajasthan. Both parties agree to attempt amicable resolution before pursuing legal remedies.', listItems: [] }
+    ]
+  }
+];
 
 export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   const [saving, setSaving] = useState(false);
@@ -131,6 +217,43 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       { value: '27%', label: 'Average landing page conversion rate' },
       { value: '60', label: 'Days fixed. Full funnel built and live.' }
     ],
+    funnelDiagram: org.dealPage?.funnelDiagram || {
+      topNote: 'People scrolling Instagram & Facebook',
+      nodes: [
+        { emoji: '🎬', label: 'They see your ads', description: '{adsCount} video ads · Netflix-grade cameras · multiple angles' },
+        { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · {socialVideosCount} trust-building videos · blue tick' },
+        { emoji: '🏠', label: 'They land on your funnel page', description: 'VSL · social proof · urgency · single-click checkout' }
+      ],
+      buyBranch: {
+        title: 'They buy ✓',
+        items: [
+          { text: 'Added to WhatsApp community' },
+          { text: 'Repeat purchase sequences fire' },
+          { text: 'Cross-sell + upsell video flows' },
+          { text: 'Close to zero CAC on repeat' }
+        ]
+      },
+      noBuyBranch: {
+        title: "They don't buy",
+        items: [
+          { text: 'Retargeted with new ads' },
+          { text: 'WhatsApp video sequences fire' },
+          { text: 'Email cart abandonment' },
+          { text: 'AI calling for high-intent visitors' }
+        ]
+      },
+      outcomeLabel: 'The outcome',
+      outcomeText: 'Predictable customers · Lower CAC · Higher LTV'
+    },
+    agreementIntro: org.dealPage?.agreementIntro || 'This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.',
+    clauseSections: org.dealPage?.clauseSections?.length ? org.dealPage.clauseSections : getDefaultClauseSections(),
+    confirmationItems: org.dealPage?.confirmationItems || [
+      { text: 'The exact deliverables and quantities in Clause 1' },
+      { text: 'The payment schedule — advance on signing, balance on Day 30 (Clause 4)' },
+      { text: 'Performance bonuses are only triggered on revenue milestones (Clause 5)' },
+      { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
+      { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
+    ],
   });
 
   // Sync form state when org prop changes (after save/refetch)
@@ -193,6 +316,43 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
         { value: '6×', label: 'Peak ROAS achieved for clients' },
         { value: '27%', label: 'Average landing page conversion rate' },
         { value: '60', label: 'Days fixed. Full funnel built and live.' }
+      ],
+      funnelDiagram: org.dealPage?.funnelDiagram || {
+        topNote: 'People scrolling Instagram & Facebook',
+        nodes: [
+          { emoji: '🎬', label: 'They see your ads', description: '{adsCount} video ads · Netflix-grade cameras · multiple angles' },
+          { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · {socialVideosCount} trust-building videos · blue tick' },
+          { emoji: '🏠', label: 'They land on your funnel page', description: 'VSL · social proof · urgency · single-click checkout' }
+        ],
+        buyBranch: {
+          title: 'They buy ✓',
+          items: [
+            { text: 'Added to WhatsApp community' },
+            { text: 'Repeat purchase sequences fire' },
+            { text: 'Cross-sell + upsell video flows' },
+            { text: 'Close to zero CAC on repeat' }
+          ]
+        },
+        noBuyBranch: {
+          title: "They don't buy",
+          items: [
+            { text: 'Retargeted with new ads' },
+            { text: 'WhatsApp video sequences fire' },
+            { text: 'Email cart abandonment' },
+            { text: 'AI calling for high-intent visitors' }
+          ]
+        },
+        outcomeLabel: 'The outcome',
+        outcomeText: 'Predictable customers · Lower CAC · Higher LTV'
+      },
+      agreementIntro: org.dealPage?.agreementIntro || 'This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.',
+      clauseSections: org.dealPage?.clauseSections?.length ? org.dealPage.clauseSections : getDefaultClauseSections(),
+      confirmationItems: org.dealPage?.confirmationItems || [
+        { text: 'The exact deliverables and quantities in Clause 1' },
+        { text: 'The payment schedule — advance on signing, balance on Day 30 (Clause 4)' },
+        { text: 'Performance bonuses are only triggered on revenue milestones (Clause 5)' },
+        { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
+        { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
       ],
     });
   }, [org]);
@@ -504,6 +664,314 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
             }}
           >
             + Add Stat
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Funnel Diagram */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Funnel Diagram</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-gray-500">Edit the funnel diagram shown on the proposal page. Use {'{adsCount}'}, {'{socialVideosCount}'}, {'{landingPagesCount}'} as placeholders.</p>
+          
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Top Note</label>
+            <Input
+              value={form.funnelDiagram?.topNote || ''}
+              onChange={(e) => setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, topNote: e.target.value } }))}
+              placeholder="e.g., People scrolling Instagram & Facebook"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Funnel Nodes</label>
+            <div className="space-y-3">
+              {form.funnelDiagram?.nodes?.map((node, index) => (
+                <div key={index} className="p-3 rounded-lg border bg-white border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
+                    <Input
+                      value={node.emoji}
+                      onChange={(e) => {
+                        const newNodes = [...(form.funnelDiagram?.nodes || [])];
+                        newNodes[index] = { ...newNodes[index], emoji: e.target.value };
+                        setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, nodes: newNodes } }));
+                      }}
+                      placeholder="Emoji"
+                      className="md:col-span-1"
+                    />
+                    <Input
+                      value={node.label}
+                      onChange={(e) => {
+                        const newNodes = [...(form.funnelDiagram?.nodes || [])];
+                        newNodes[index] = { ...newNodes[index], label: e.target.value };
+                        setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, nodes: newNodes } }));
+                      }}
+                      placeholder="Label"
+                      className="md:col-span-2"
+                    />
+                    <Input
+                      value={node.description}
+                      onChange={(e) => {
+                        const newNodes = [...(form.funnelDiagram?.nodes || [])];
+                        newNodes[index] = { ...newNodes[index], description: e.target.value };
+                        setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, nodes: newNodes } }));
+                      }}
+                      placeholder="Description"
+                      className="md:col-span-3"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => {
+                const newNodes = [...(form.funnelDiagram?.nodes || []), { emoji: '📦', label: 'New step', description: 'Description' }];
+                setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, nodes: newNodes } }));
+              }}
+            >
+              + Add Node
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">Buy Branch Title</label>
+              <Input
+                value={form.funnelDiagram?.buyBranch?.title || ''}
+                onChange={(e) => setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, buyBranch: { ...prev.funnelDiagram!.buyBranch, title: e.target.value } } }))}
+              />
+              <div className="mt-2 space-y-2">
+                {form.funnelDiagram?.buyBranch?.items?.map((item, index) => (
+                  <Input
+                    key={index}
+                    value={item.text}
+                    onChange={(e) => {
+                      const newItems = [...(form.funnelDiagram?.buyBranch?.items || [])];
+                      newItems[index] = { text: e.target.value };
+                      setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, buyBranch: { ...prev.funnelDiagram!.buyBranch, items: newItems } } }));
+                    }}
+                    placeholder="Item text"
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newItems = [...(form.funnelDiagram?.buyBranch?.items || []), { text: 'New item' }];
+                    setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, buyBranch: { ...prev.funnelDiagram!.buyBranch, items: newItems } } }));
+                  }}
+                >
+                  + Add Item
+                </Button>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-2 block">No-Buy Branch Title</label>
+              <Input
+                value={form.funnelDiagram?.noBuyBranch?.title || ''}
+                onChange={(e) => setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, noBuyBranch: { ...prev.funnelDiagram!.noBuyBranch, title: e.target.value } } }))}
+              />
+              <div className="mt-2 space-y-2">
+                {form.funnelDiagram?.noBuyBranch?.items?.map((item, index) => (
+                  <Input
+                    key={index}
+                    value={item.text}
+                    onChange={(e) => {
+                      const newItems = [...(form.funnelDiagram?.noBuyBranch?.items || [])];
+                      newItems[index] = { text: e.target.value };
+                      setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, noBuyBranch: { ...prev.funnelDiagram!.noBuyBranch, items: newItems } } }));
+                    }}
+                    placeholder="Item text"
+                  />
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const newItems = [...(form.funnelDiagram?.noBuyBranch?.items || []), { text: 'New item' }];
+                    setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, noBuyBranch: { ...prev.funnelDiagram!.noBuyBranch, items: newItems } } }));
+                  }}
+                >
+                  + Add Item
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Outcome Label</label>
+              <Input
+                value={form.funnelDiagram?.outcomeLabel || ''}
+                onChange={(e) => setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, outcomeLabel: e.target.value } }))}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Outcome Text</label>
+              <Input
+                value={form.funnelDiagram?.outcomeText || ''}
+                onChange={(e) => setForm(prev => ({ ...prev, funnelDiagram: { ...prev.funnelDiagram!, outcomeText: e.target.value } }))}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Service Agreement Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Service Agreement Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Agreement Intro Text</label>
+            <Input
+              value={form.agreementIntro || ''}
+              onChange={(e) => updateField('agreementIntro', e.target.value)}
+              placeholder="This agreement defines the exact terms..."
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-2 block">Confirmation Checkboxes (before signing)</label>
+            <div className="space-y-2">
+              {form.confirmationItems?.map((item, index) => (
+                <Input
+                  key={index}
+                  value={item.text}
+                  onChange={(e) => {
+                    const newItems = [...(form.confirmationItems || [])];
+                    newItems[index] = { text: e.target.value };
+                    setForm(prev => ({ ...prev, confirmationItems: newItems }));
+                  }}
+                  placeholder="Confirmation text"
+                />
+              ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => {
+                const newItems = [...(form.confirmationItems || []), { text: 'New confirmation item' }];
+                setForm(prev => ({ ...prev, confirmationItems: newItems }));
+              }}
+            >
+              + Add Confirmation Item
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Service Agreement Clauses */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Service Agreement Clauses</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <p className="text-sm text-gray-500">Edit all clauses in the service agreement. Use placeholders like {'{company}'}, {'{proposalTitle}'}, {'{adsCount}'}, {'{fixedFee}'}, etc.</p>
+          
+          {form.clauseSections?.map((section, sectionIndex) => (
+            <div key={sectionIndex} className="border rounded-lg p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <Input
+                  value={section.title}
+                  onChange={(e) => {
+                    const newSections = [...(form.clauseSections || [])];
+                    newSections[sectionIndex] = { ...newSections[sectionIndex], title: e.target.value };
+                    setForm(prev => ({ ...prev, clauseSections: newSections }));
+                  }}
+                  className="font-semibold text-purple-700"
+                  placeholder="Section title"
+                />
+              </div>
+              
+              {section.clauses.map((clause, clauseIndex) => (
+                <div key={clauseIndex} className="bg-gray-50 rounded-lg p-3 space-y-2">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <Input
+                      value={clause.number}
+                      onChange={(e) => {
+                        const newSections = [...(form.clauseSections || [])];
+                        newSections[sectionIndex].clauses[clauseIndex] = { ...clause, number: e.target.value };
+                        setForm(prev => ({ ...prev, clauseSections: newSections }));
+                      }}
+                      placeholder="Clause #"
+                      className="md:col-span-1"
+                    />
+                    <Input
+                      value={clause.title}
+                      onChange={(e) => {
+                        const newSections = [...(form.clauseSections || [])];
+                        newSections[sectionIndex].clauses[clauseIndex] = { ...clause, title: e.target.value };
+                        setForm(prev => ({ ...prev, clauseSections: newSections }));
+                      }}
+                      placeholder="Clause title"
+                      className="md:col-span-3"
+                    />
+                  </div>
+                  <textarea
+                    value={clause.body}
+                    onChange={(e) => {
+                      const newSections = [...(form.clauseSections || [])];
+                      newSections[sectionIndex].clauses[clauseIndex] = { ...clause, body: e.target.value };
+                      setForm(prev => ({ ...prev, clauseSections: newSections }));
+                    }}
+                    placeholder="Clause body text"
+                    className="w-full p-2 border rounded text-sm min-h-[60px]"
+                  />
+                  <div className="space-y-1">
+                    <label className="text-xs text-gray-500">List items (one per line)</label>
+                    <textarea
+                      value={(clause.listItems || []).join('\n')}
+                      onChange={(e) => {
+                        const newSections = [...(form.clauseSections || [])];
+                        newSections[sectionIndex].clauses[clauseIndex] = { 
+                          ...clause, 
+                          listItems: e.target.value.split('\n').filter(item => item.trim()) 
+                        };
+                        setForm(prev => ({ ...prev, clauseSections: newSections }));
+                      }}
+                      placeholder="Enter list items, one per line"
+                      className="w-full p-2 border rounded text-sm min-h-[80px]"
+                    />
+                  </div>
+                </div>
+              ))}
+              
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newSections = [...(form.clauseSections || [])];
+                  newSections[sectionIndex].clauses.push({ number: `Clause ${newSections[sectionIndex].clauses.length + 1}`, title: 'New clause', body: '', listItems: [] });
+                  setForm(prev => ({ ...prev, clauseSections: newSections }));
+                }}
+              >
+                + Add Clause to {section.title}
+              </Button>
+            </div>
+          ))}
+          
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => {
+              const newSections = [...(form.clauseSections || []), { title: 'New Section', clauses: [] }];
+              setForm(prev => ({ ...prev, clauseSections: newSections }));
+            }}
+          >
+            + Add Section
           </Button>
         </CardContent>
       </Card>

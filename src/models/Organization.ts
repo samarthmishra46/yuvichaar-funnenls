@@ -44,6 +44,46 @@ export interface IStat {
   label: string;
 }
 
+export interface IFunnelNode {
+  emoji: string;
+  label: string;
+  description: string;
+}
+
+export interface IFunnelBranchItem {
+  text: string;
+}
+
+export interface IFunnelBranch {
+  title: string;
+  items: IFunnelBranchItem[];
+}
+
+export interface IFunnelDiagram {
+  topNote: string;
+  nodes: IFunnelNode[];
+  buyBranch: IFunnelBranch;
+  noBuyBranch: IFunnelBranch;
+  outcomeLabel: string;
+  outcomeText: string;
+}
+
+export interface IClause {
+  number: string;
+  title: string;
+  body: string;
+  listItems?: string[];
+}
+
+export interface IClauseSection {
+  title: string;
+  clauses: IClause[];
+}
+
+export interface IConfirmationItem {
+  text: string;
+}
+
 export interface IDealPage {
   // Proposal title (e.g., "60 Day Growth Marathon")
   proposalTitle?: string;
@@ -82,6 +122,14 @@ export interface IDealPage {
   timeline?: ITimelineItem[];
   // Stats for "Why Yuvichaar Funnels" section
   stats?: IStat[];
+  // Funnel diagram content
+  funnelDiagram?: IFunnelDiagram;
+  // Service agreement sections
+  clauseSections?: IClauseSection[];
+  // Confirmation checkboxes before signing
+  confirmationItems?: IConfirmationItem[];
+  // Service agreement intro text
+  agreementIntro?: string;
 }
 
 export interface IOrganization extends Document {
@@ -259,6 +307,57 @@ const OrganizationSchema = new Schema<IOrganization>(
         { value: '6×', label: 'Peak ROAS achieved for clients' },
         { value: '27%', label: 'Average landing page conversion rate' },
         { value: '60', label: 'Days fixed. Full funnel built and live.' }
+      ]},
+      funnelDiagram: {
+        topNote: { type: String, default: 'People scrolling Instagram & Facebook' },
+        nodes: { type: [{
+          emoji: { type: String, required: true },
+          label: { type: String, required: true },
+          description: { type: String, required: true }
+        }], default: [
+          { emoji: '🎬', label: 'They see your ads', description: '{adsCount} video ads · Netflix-grade cameras · multiple angles' },
+          { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · {socialVideosCount} trust-building videos · blue tick' },
+          { emoji: '🏠', label: 'They land on your funnel page', description: 'VSL · social proof · urgency · single-click checkout' }
+        ]},
+        buyBranch: {
+          title: { type: String, default: 'They buy ✓' },
+          items: { type: [{ text: { type: String } }], default: [
+            { text: 'Added to WhatsApp community' },
+            { text: 'Repeat purchase sequences fire' },
+            { text: 'Cross-sell + upsell video flows' },
+            { text: 'Close to zero CAC on repeat' }
+          ]}
+        },
+        noBuyBranch: {
+          title: { type: String, default: "They don't buy" },
+          items: { type: [{ text: { type: String } }], default: [
+            { text: 'Retargeted with new ads' },
+            { text: 'WhatsApp video sequences fire' },
+            { text: 'Email cart abandonment' },
+            { text: 'AI calling for high-intent visitors' }
+          ]}
+        },
+        outcomeLabel: { type: String, default: 'The outcome' },
+        outcomeText: { type: String, default: 'Predictable customers · Lower CAC · Higher LTV' }
+      },
+      agreementIntro: { type: String, default: 'This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.' },
+      clauseSections: { type: [{
+        title: { type: String, required: true },
+        clauses: { type: [{
+          number: { type: String, required: true },
+          title: { type: String, required: true },
+          body: { type: String, default: '' },
+          listItems: { type: [String], default: [] }
+        }], default: [] }
+      }], default: [] },
+      confirmationItems: { type: [{
+        text: { type: String, required: true }
+      }], default: [
+        { text: 'The exact deliverables and quantities in Clause 1' },
+        { text: 'The payment schedule — advance on signing, balance on Day 30 (Clause 4)' },
+        { text: 'Performance bonuses are only triggered on revenue milestones (Clause 5)' },
+        { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
+        { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
       ]},
     },
     createdAt: { type: Date, default: Date.now },

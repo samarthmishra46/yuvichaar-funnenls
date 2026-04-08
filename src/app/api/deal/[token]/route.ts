@@ -80,6 +80,83 @@ export async function GET(
         { value: '27%', label: 'Average landing page conversion rate' },
         { value: '60', label: 'Days fixed. Full funnel built and live.' }
       ],
+      funnelDiagram: dealPage.funnelDiagram || {
+        topNote: 'People scrolling Instagram & Facebook',
+        nodes: [
+          { emoji: '🎬', label: 'They see your ads', description: '{adsCount} video ads · Netflix-grade cameras · multiple angles' },
+          { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · {socialVideosCount} trust-building videos · blue tick' },
+          { emoji: '🏠', label: 'They land on your funnel page', description: 'VSL · social proof · urgency · single-click checkout' }
+        ],
+        buyBranch: {
+          title: 'They buy ✓',
+          items: [
+            { text: 'Added to WhatsApp community' },
+            { text: 'Repeat purchase sequences fire' },
+            { text: 'Cross-sell + upsell video flows' },
+            { text: 'Close to zero CAC on repeat' }
+          ]
+        },
+        noBuyBranch: {
+          title: "They don't buy",
+          items: [
+            { text: 'Retargeted with new ads' },
+            { text: 'WhatsApp video sequences fire' },
+            { text: 'Email cart abandonment' },
+            { text: 'AI calling for high-intent visitors' }
+          ]
+        },
+        outcomeLabel: 'The outcome',
+        outcomeText: 'Predictable customers · Lower CAC · Higher LTV'
+      },
+      agreementIntro: dealPage.agreementIntro || 'This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.',
+      clauseSections: dealPage.clauseSections?.length ? dealPage.clauseSections : [
+        {
+          title: 'Section A — Scope of Work',
+          clauses: [
+            { number: 'Clause 1', title: 'Services to be delivered', body: 'Yuvichaar Funnels ("the Agency") agrees to design and execute the {proposalTitle} for {company}, commencing {startDate}:', listItems: ['{adsCount} performance video ads — scripted, shot, edited, Meta-ready', '{socialVideosCount} social media videos + full Instagram profile optimisation', '{landingPagesCount} high-converting landing page(s) including Video Sales Letter', 'Checkout experience — single-click checkout, order bumps, copy optimisation', 'WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)', 'Email automations — cart abandonment + post-purchase sequences', 'ManyChat Instagram DM automations', 'AI calling integration for high-intent visitors', '60-day Meta campaign management'] },
+            { number: 'Clause 2', title: 'Production and quality standards', body: 'All video content will be shot on professional Netflix-approved cameras. All deliverables meet Meta advertising specifications. Landing pages will be mobile-first, load under 3 seconds, and meet the conversion standards in the proposal. All automation sequences will be fully tested before launch.', listItems: [] },
+            { number: 'Clause 3', title: 'Timeline', body: 'The engagement runs for 60 days from the confirmed start date. Campaigns go live by Day 21. Some phases run in parallel. If the Client delays feedback, access, or approvals, the Agency will notify the Client of the timeline impact and agree a revised schedule.', listItems: [] }
+          ]
+        },
+        {
+          title: 'Section B — Payment Terms',
+          clauses: [
+            { number: 'Clause 4', title: 'Fee structure and payment schedule', body: 'The fixed fee for this engagement is ₹{fixedFee} excluding GST at 18%. Payment is in two equal instalments:', listItems: ['Advance: ₹{advanceAmount} + GST (₹{advanceWithGst} total) — due on signing. This activates the engagement.', 'Balance: ₹{balanceAmount} + GST (₹{balanceWithGst} total) — due on Day 30, regardless of delivery status unless there is a material breach by the Agency.', 'All fixed fee payments are non-refundable once the corresponding phase of work has commenced.'] },
+            { number: 'Clause 5', title: 'Performance bonuses', body: 'A performance fee of ₹2,00,000 + GST is payable in two tranches only upon confirmed achievement of revenue milestones:', listItems: ['{perfBonus1Amount} + GST — upon hitting {perfBonus1Trigger} in attributed revenue', '{perfBonus2Amount} + GST — upon hitting {perfBonus2Trigger} in attributed revenue', 'Performance bonuses are not due unless the stated revenue milestones are met and verified. If milestones are not reached, no performance fee is payable.'] },
+            { number: 'Clause 6', title: 'Ad spend budget', body: 'The fees above cover campaign management only. Meta ad spend is not included. The Agency will fund up to ₹25,000 in initial test spend. Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.', listItems: [] }
+          ]
+        },
+        {
+          title: 'Section C — Mutual Responsibilities',
+          clauses: [
+            { number: 'Clause 7', title: 'Agency commitments', body: '', listItems: ['Deliver every item in Clause 1 within the agreed timeline', 'Assign a dedicated POC who sends the Client a daily update', "Provide real-time visibility via the Client's dedicated portal", 'Cover automation tool subscription costs for the first 2 months', 'Fund ₹25,000 in initial Meta test spend', 'Share weekly performance reports during the campaign period'] },
+            { number: 'Clause 8', title: 'Client responsibilities', body: '', listItems: ['Provide feedback on all deliverables within 48 hours. Delays impact launch timing.', 'Grant platform access (Meta BM, website, WhatsApp API, Instagram) by end of Week 1', 'Designate one decision-maker with authority to approve scripts, creatives, and copy', 'Fund ad spend budget as agreed at kickoff', 'Provide brand assets, product imagery, and testimonials as requested'] }
+          ]
+        },
+        {
+          title: 'Section D — Revisions, Reshoots, Scope',
+          clauses: [
+            { number: 'Clause 9', title: 'Revision policy', body: 'Included at no cost: minor script adjustments before production, subtitle/text corrections, minor editing changes aligned with approved concept. Not included: complete concept changes after production, additional creatives beyond the agreed quantity, new deliverables not in this agreement.', listItems: [] },
+            { number: 'Clause 10', title: 'Reshoot policy', body: 'Reshoots at no cost only when the Agency deviates from the approved script (missed lines, wrong wording, technical equipment failure). Not provided for subjective dissatisfaction including acting preferences or creative direction changes formed after production.', listItems: [] },
+            { number: 'Clause 11', title: 'Scope limitations', body: 'Outside scope unless separately agreed in writing:', listItems: ['Additional video ads or landing pages beyond the quantity in Clause 1', 'Website development outside the funnel landing page', 'Additional automation systems beyond those in Clause 1', 'Customer service handling on behalf of the Client'] }
+          ]
+        },
+        {
+          title: 'Section E — Outcomes and Liability',
+          clauses: [
+            { number: 'Clause 12', title: 'No guarantee of revenue outcomes', body: "The Agency installs the infrastructure and manages campaigns. Revenue outcomes are not guaranteed — they depend on market demand, pricing, competition, and platform dynamics outside the Agency's control. The Agency commits to delivering the best possible system and campaigns.", listItems: [] },
+            { number: 'Clause 13', title: 'Automation subscriptions after 2 months', body: "The Agency covers WATI, email, and ManyChat subscription costs for the first 2 months. After that, all renewals are the Client's responsibility. The Agency provides all credentials and documentation required to manage subscriptions independently.", listItems: [] },
+            { number: 'Clause 14', title: 'Governing law', body: 'This agreement is governed by the laws of India. Disputes are subject to the jurisdiction of the courts of Jaipur, Rajasthan. Both parties agree to attempt amicable resolution before pursuing legal remedies.', listItems: [] }
+          ]
+        }
+      ],
+      confirmationItems: dealPage.confirmationItems || [
+        { text: 'The exact deliverables and quantities in Clause 1' },
+        { text: 'The payment schedule — advance on signing, balance on Day 30 (Clause 4)' },
+        { text: 'Performance bonuses are only triggered on revenue milestones (Clause 5)' },
+        { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
+        { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
+      ],
     };
 
     return NextResponse.json({ deal });

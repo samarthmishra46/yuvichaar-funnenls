@@ -21,6 +21,46 @@ interface Stat {
   label: string;
 }
 
+interface FunnelNode {
+  emoji: string;
+  label: string;
+  description: string;
+}
+
+interface FunnelBranchItem {
+  text: string;
+}
+
+interface FunnelBranch {
+  title: string;
+  items: FunnelBranchItem[];
+}
+
+interface FunnelDiagram {
+  topNote: string;
+  nodes: FunnelNode[];
+  buyBranch: FunnelBranch;
+  noBuyBranch: FunnelBranch;
+  outcomeLabel: string;
+  outcomeText: string;
+}
+
+interface ConfirmationItem {
+  text: string;
+}
+
+interface Clause {
+  number: string;
+  title: string;
+  body: string;
+  listItems?: string[];
+}
+
+interface ClauseSection {
+  title: string;
+  clauses: Clause[];
+}
+
 interface DealData {
   company: string;
   email: string;
@@ -52,6 +92,10 @@ interface DealData {
   deliverables: Deliverable[];
   timeline: TimelineItem[];
   stats: Stat[];
+  funnelDiagram: FunnelDiagram;
+  agreementIntro: string;
+  clauseSections: ClauseSection[];
+  confirmationItems: ConfirmationItem[];
 }
 
 interface Props {
@@ -63,7 +107,9 @@ export default function DealPageContent({ data, token }: Props) {
   const [currentScreen, setCurrentScreen] = useState(1);
   const [pricingAccepted, setPricingAccepted] = useState(false);
   const [signature, setSignature] = useState('');
-  const [confirmations, setConfirmations] = useState([false, false, false, false, false]);
+  const [confirmations, setConfirmations] = useState<boolean[]>(() => 
+    new Array(data.confirmationItems?.length || 5).fill(false)
+  );
   const [paymentMethod, setPaymentMethod] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
@@ -76,6 +122,26 @@ export default function DealPageContent({ data, token }: Props) {
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN').format(amount);
+  };
+
+  // Replace placeholders in clause text with actual values
+  const replacePlaceholders = (text: string) => {
+    return text
+      .replace(/\{proposalTitle\}/g, data.proposalTitle)
+      .replace(/\{company\}/g, data.company)
+      .replace(/\{startDate\}/g, data.startDate || 'the agreed start date')
+      .replace(/\{adsCount\}/g, String(data.adsCount))
+      .replace(/\{socialVideosCount\}/g, String(data.socialVideosCount))
+      .replace(/\{landingPagesCount\}/g, String(data.landingPagesCount))
+      .replace(/\{fixedFee\}/g, formatCurrency(data.fixedFee))
+      .replace(/\{advanceAmount\}/g, formatCurrency(data.advanceAmount))
+      .replace(/\{advanceWithGst\}/g, formatCurrency(data.advanceWithGst))
+      .replace(/\{balanceAmount\}/g, formatCurrency(data.balanceAmount))
+      .replace(/\{balanceWithGst\}/g, formatCurrency(data.balanceWithGst))
+      .replace(/\{perfBonus1Amount\}/g, data.perfBonus1Amount)
+      .replace(/\{perfBonus1Trigger\}/g, data.perfBonus1Trigger)
+      .replace(/\{perfBonus2Amount\}/g, data.perfBonus2Amount)
+      .replace(/\{perfBonus2Trigger\}/g, data.perfBonus2Trigger);
   };
 
   const allConfirmed = confirmations.every(c => c);
@@ -305,44 +371,47 @@ export default function DealPageContent({ data, token }: Props) {
             <div className="funnel-label">Your complete funnel — how it works</div>
             <div className="fd">
               <div className="fd-topnote">
-                <span className="fd-topnote-text">People scrolling Instagram &amp; Facebook</span>
+                <span className="fd-topnote-text">{data.funnelDiagram.topNote}</span>
               </div>
               <div className="fd-flow">
-                <div className="fd-node nd-purple">
-                  <div className="fd-node-label">🎬 They see your ads</div>
-                  <div className="fd-node-sub">{data.adsCount} video ads · Netflix-grade cameras · multiple angles</div>
-                </div>
-                <div className="fd-arrow"></div><div className="fd-arrow-head"></div>
-                <div className="fd-node nd-blue">
-                  <div className="fd-node-label">📱 They check your social media</div>
-                  <div className="fd-node-sub">Optimised profile · {data.socialVideosCount} trust-building videos · blue tick</div>
-                </div>
-                <div className="fd-arrow"></div><div className="fd-arrow-head"></div>
-                <div className="fd-node nd-teal">
-                  <div className="fd-node-label">🏠 They land on your funnel page</div>
-                  <div className="fd-node-sub">VSL · social proof · urgency · single-click checkout</div>
-                </div>
+                {data.funnelDiagram.nodes.map((node, index) => {
+                  const colors = ['nd-purple', 'nd-blue', 'nd-teal'];
+                  const colorClass = colors[index % colors.length];
+                  const description = node.description
+                    .replace('{adsCount}', String(data.adsCount))
+                    .replace('{socialVideosCount}', String(data.socialVideosCount))
+                    .replace('{landingPagesCount}', String(data.landingPagesCount));
+                  return (
+                    <div key={index}>
+                      <div className={`fd-node ${colorClass}`}>
+                        <div className="fd-node-label">{node.emoji} {node.label}</div>
+                        <div className="fd-node-sub">{description}</div>
+                      </div>
+                      {index < data.funnelDiagram.nodes.length - 1 && (
+                        <><div className="fd-arrow"></div><div className="fd-arrow-head"></div></>
+                      )}
+                    </div>
+                  );
+                })}
                 <div className="fd-arrow"></div><div className="fd-arrow-head"></div>
               </div>
               <div className="fd-split">
                 <div className="fd-branch buy">
-                  <div className="fd-branch-title">They buy ✓</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Added to WhatsApp community</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Repeat purchase sequences fire</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Cross-sell + upsell video flows</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Close to zero CAC on repeat</div>
+                  <div className="fd-branch-title">{data.funnelDiagram.buyBranch.title}</div>
+                  {data.funnelDiagram.buyBranch.items.map((item, index) => (
+                    <div className="fd-branch-item" key={index}><div className="fd-branch-dot"></div>{item.text}</div>
+                  ))}
                 </div>
                 <div className="fd-branch nobuy">
-                  <div className="fd-branch-title">They don&apos;t buy</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Retargeted with new ads</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>WhatsApp video sequences fire</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>Email cart abandonment</div>
-                  <div className="fd-branch-item"><div className="fd-branch-dot"></div>AI calling for high-intent visitors</div>
+                  <div className="fd-branch-title">{data.funnelDiagram.noBuyBranch.title}</div>
+                  {data.funnelDiagram.noBuyBranch.items.map((item, index) => (
+                    <div className="fd-branch-item" key={index}><div className="fd-branch-dot"></div>{item.text}</div>
+                  ))}
                 </div>
               </div>
               <div className="fd-profit">
-                <div className="fd-profit-label">The outcome</div>
-                <div className="fd-profit-text">Predictable customers · Lower CAC · Higher LTV</div>
+                <div className="fd-profit-label">{data.funnelDiagram.outcomeLabel}</div>
+                <div className="fd-profit-text">{data.funnelDiagram.outcomeText}</div>
               </div>
             </div>
           </div>
@@ -566,7 +635,7 @@ export default function DealPageContent({ data, token }: Props) {
           <div className="mou-hero">
             <div className="mou-eyebrow">Legal document · MoU</div>
             <div className="mou-title">Service Agreement</div>
-            <div className="mou-intro">This agreement defines the exact terms of the engagement. Read every clause. By signing, you confirm you have read, understood, and agreed to all terms.</div>
+            <div className="mou-intro">{data.agreementIntro}</div>
           </div>
 
           <div className="parties">
@@ -591,160 +660,36 @@ export default function DealPageContent({ data, token }: Props) {
           </div>
 
           <div className="clauses">
-            <div className="cg-title">Section A — Scope of Work</div>
-            <div className="clause">
-              <div className="cl-num">Clause 1</div>
-              <div className="cl-title">Services to be delivered</div>
-              <div className="cl-body">Yuvichaar Funnels (&quot;the Agency&quot;) agrees to design and execute the {data.proposalTitle} for <span className="hl">{data.company}</span>, commencing <span className="hl">{data.startDate || 'the agreed start date'}</span>:
-                <ul className="cl-list">
-                  <li>{data.adsCount} performance video ads — scripted, shot, edited, Meta-ready</li>
-                  <li>{data.socialVideosCount} social media videos + full Instagram profile optimisation</li>
-                  <li>{data.landingPagesCount} high-converting landing page(s) including Video Sales Letter</li>
-                  <li>Checkout experience — single-click checkout, order bumps, copy optimisation</li>
-                  <li>WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)</li>
-                  <li>Email automations — cart abandonment + post-purchase sequences</li>
-                  <li>ManyChat Instagram DM automations</li>
-                  <li>AI calling integration for high-intent visitors</li>
-                  <li>60-day Meta campaign management</li>
-                  {data.customDeliverable && <li>{data.customDeliverable} — as separately agreed</li>}
-                </ul>
+            {data.clauseSections.map((section, sectionIndex) => (
+              <div key={sectionIndex}>
+                <div className="cg-title">{section.title}</div>
+                {section.clauses.map((clause, clauseIndex) => (
+                  <div 
+                    className="clause" 
+                    key={clauseIndex}
+                    style={sectionIndex === data.clauseSections.length - 1 && clauseIndex === section.clauses.length - 1 ? {marginBottom: 0} : undefined}
+                  >
+                    <div className="cl-num">{clause.number}</div>
+                    <div className="cl-title">{clause.title}</div>
+                    <div className="cl-body">
+                      {clause.body && replacePlaceholders(clause.body)}
+                      {clause.listItems && clause.listItems.length > 0 && (
+                        <ul className="cl-list">
+                          {clause.listItems.map((item, itemIndex) => (
+                            <li key={itemIndex}>{replacePlaceholders(item)}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 2</div>
-              <div className="cl-title">Production and quality standards</div>
-              <div className="cl-body">All video content will be shot on professional Netflix-approved cameras. All deliverables meet Meta advertising specifications. Landing pages will be mobile-first, load under 3 seconds, and meet the conversion standards in the proposal. All automation sequences will be fully tested before launch.</div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 3</div>
-              <div className="cl-title">Timeline</div>
-              <div className="cl-body">The engagement runs for 60 days from the confirmed start date. Campaigns go live by Day 21. Some phases run in parallel. If the Client delays feedback, access, or approvals, the Agency will notify the Client of the timeline impact and agree a revised schedule.</div>
-            </div>
-
-            <div className="cg-title">Section B — Payment Terms</div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 4</div>
-              <div className="cl-title">Fee structure and payment schedule</div>
-              <div className="cl-body">The fixed fee for this engagement is <span className="hl">₹{formatCurrency(data.fixedFee)}</span> excluding GST at 18%. Payment is in two equal instalments:
-                <ul className="cl-list">
-                  <li>Advance: <span className="hl">₹{formatCurrency(data.advanceAmount)} + GST (₹{formatCurrency(data.advanceWithGst)} total)</span> — due on signing. This activates the engagement.</li>
-                  <li>Balance: <span className="hl">₹{formatCurrency(data.balanceAmount)} + GST (₹{formatCurrency(data.balanceWithGst)} total)</span> — due on Day 30, regardless of delivery status unless there is a material breach by the Agency.</li>
-                </ul>
-                All fixed fee payments are non-refundable once the corresponding phase of work has commenced.
-              </div>
-            </div>
-
-            {data.hasPerformanceFee && (
-              <div className="clause">
-                <div className="cl-num">Clause 5</div>
-                <div className="cl-title">Performance bonuses</div>
-                <div className="cl-body">A performance fee of <span className="hl">₹2,00,000 + GST</span> is payable in two tranches only upon confirmed achievement of revenue milestones:
-                  <ul className="cl-list">
-                    <li>{data.perfBonus1Amount} + GST — upon hitting {data.perfBonus1Trigger} in attributed revenue</li>
-                    <li>{data.perfBonus2Amount} + GST — upon hitting {data.perfBonus2Trigger} in attributed revenue</li>
-                  </ul>
-                  Performance bonuses are not due unless the stated revenue milestones are met and verified. If milestones are not reached, no performance fee is payable.
-                </div>
-              </div>
-            )}
-
-            <div className="clause">
-              <div className="cl-num">Clause 6</div>
-              <div className="cl-title">Ad spend budget</div>
-              <div className="cl-body">The fees above cover campaign management only. Meta ad spend is not included. The Agency will fund up to ₹25,000 in initial test spend. Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.</div>
-            </div>
-
-            <div className="cg-title">Section C — Mutual Responsibilities</div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 7</div>
-              <div className="cl-title">Agency commitments</div>
-              <div className="cl-body">
-                <ul className="cl-list">
-                  <li>Deliver every item in Clause 1 within the agreed timeline</li>
-                  <li>Assign a dedicated POC who sends the Client a daily update</li>
-                  <li>Provide real-time visibility via the Client&apos;s dedicated portal</li>
-                  <li>Cover automation tool subscription costs for the first 2 months</li>
-                  <li>Fund ₹25,000 in initial Meta test spend</li>
-                  <li>Share weekly performance reports during the campaign period</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 8</div>
-              <div className="cl-title">Client responsibilities</div>
-              <div className="cl-body">
-                <ul className="cl-list">
-                  <li>Provide feedback on all deliverables within 48 hours. Delays impact launch timing.</li>
-                  <li>Grant platform access (Meta BM, website, WhatsApp API, Instagram) by end of Week 1</li>
-                  <li>Designate one decision-maker with authority to approve scripts, creatives, and copy</li>
-                  <li>Fund ad spend budget as agreed at kickoff</li>
-                  <li>Provide brand assets, product imagery, and testimonials as requested</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="cg-title">Section D — Revisions, Reshoots, Scope</div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 9</div>
-              <div className="cl-title">Revision policy</div>
-              <div className="cl-body">Included at no cost: minor script adjustments before production, subtitle/text corrections, minor editing changes aligned with approved concept. Not included: complete concept changes after production, additional creatives beyond the agreed quantity, new deliverables not in this agreement.</div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 10</div>
-              <div className="cl-title">Reshoot policy</div>
-              <div className="cl-body">Reshoots at no cost only when the Agency deviates from the approved script (missed lines, wrong wording, technical equipment failure). Not provided for subjective dissatisfaction including acting preferences or creative direction changes formed after production.</div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 11</div>
-              <div className="cl-title">Scope limitations</div>
-              <div className="cl-body">Outside scope unless separately agreed in writing:
-                <ul className="cl-list">
-                  <li>Additional video ads or landing pages beyond the quantity in Clause 1</li>
-                  <li>Website development outside the funnel landing page</li>
-                  <li>Additional automation systems beyond those in Clause 1</li>
-                  <li>Customer service handling on behalf of the Client</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="cg-title">Section E — Outcomes and Liability</div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 12</div>
-              <div className="cl-title">No guarantee of revenue outcomes</div>
-              <div className="cl-body">The Agency installs the infrastructure and manages campaigns. Revenue outcomes are not guaranteed — they depend on market demand, pricing, competition, and platform dynamics outside the Agency&apos;s control. The Agency commits to delivering the best possible system and campaigns.</div>
-            </div>
-
-            <div className="clause">
-              <div className="cl-num">Clause 13</div>
-              <div className="cl-title">Automation subscriptions after 2 months</div>
-              <div className="cl-body">The Agency covers WATI, email, and ManyChat subscription costs for the first 2 months. After that, all renewals are the Client&apos;s responsibility. The Agency provides all credentials and documentation required to manage subscriptions independently.</div>
-            </div>
-
-            <div className="clause" style={{marginBottom: 0}}>
-              <div className="cl-num">Clause 14</div>
-              <div className="cl-title">Governing law</div>
-              <div className="cl-body">This agreement is governed by the laws of India. Disputes are subject to the jurisdiction of the courts of Jaipur, Rajasthan. Both parties agree to attempt amicable resolution before pursuing legal remedies.</div>
-            </div>
+            ))}
           </div>
 
           <div className="confirms-wrap">
             <div className="confirms-label">Before signing — confirm you have read</div>
-            {[
-              'The exact deliverables and quantities in Clause 1',
-              'The payment schedule — advance on signing, balance on Day 30 (Clause 4)',
-              'Performance bonuses are only triggered on revenue milestones (Clause 5)',
-              'Revenue outcomes are not guaranteed (Clause 12)',
-              'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)'
-            ].map((text, i) => (
+            {data.confirmationItems.map((item, i) => (
               <div className="ci" key={i}>
                 <input 
                   type="checkbox" 
@@ -760,7 +705,7 @@ export default function DealPageContent({ data, token }: Props) {
                   const newConf = [...confirmations];
                   newConf[i] = !newConf[i];
                   setConfirmations(newConf);
-                }}>{text}</label>
+                }}>{item.text}</label>
               </div>
             ))}
           </div>
