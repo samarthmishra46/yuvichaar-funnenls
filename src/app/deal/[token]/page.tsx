@@ -11,10 +11,22 @@ interface Deliverable {
   enabled: boolean;
 }
 
+interface TimelineItem {
+  week: string;
+  phase: string;
+  description: string;
+}
+
+interface Stat {
+  value: string;
+  label: string;
+}
+
 interface DealData {
   company: string;
   email: string;
   phone?: string;
+  proposalTitle: string;
   goal: string;
   target: string;
   startDate?: string;
@@ -39,6 +51,8 @@ interface DealData {
   successItems: string[];
   nextStepText: string;
   deliverables: Deliverable[];
+  timeline: TimelineItem[];
+  stats: Stat[];
 }
 
 export default function DealPage() {

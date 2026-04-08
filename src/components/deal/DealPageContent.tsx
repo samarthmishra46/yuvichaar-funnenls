@@ -10,10 +10,22 @@ interface Deliverable {
   enabled: boolean;
 }
 
+interface TimelineItem {
+  week: string;
+  phase: string;
+  description: string;
+}
+
+interface Stat {
+  value: string;
+  label: string;
+}
+
 interface DealData {
   company: string;
   email: string;
   phone?: string;
+  proposalTitle: string;
   goal: string;
   target: string;
   startDate?: string;
@@ -38,6 +50,8 @@ interface DealData {
   successItems: string[];
   nextStepText: string;
   deliverables: Deliverable[];
+  timeline: TimelineItem[];
+  stats: Stat[];
 }
 
 interface Props {
@@ -268,7 +282,7 @@ export default function DealPageContent({ data, token }: Props) {
           {/* Hero */}
           <div className="hero">
             <div className="hero-eyebrow">Proposal</div>
-            <div className="hero-title">60 Day Growth<br/>Marathon</div>
+            <div className="hero-title">{data.proposalTitle.split(' ').slice(0, 3).join(' ')}<br/>{data.proposalTitle.split(' ').slice(3).join(' ')}</div>
             <div className="hero-for">Prepared for <strong>{data.company}</strong> &nbsp;·&nbsp; Yuvraj Singh Rajawat</div>
           </div>
 
@@ -354,71 +368,30 @@ export default function DealPageContent({ data, token }: Props) {
 
           {/* Timeline */}
           <div className="tl-wrap">
-            <div className="tl-label">Exact 60-day timeline</div>
+            <div className="tl-label">Exact timeline</div>
             <table className="tl-table">
               <tbody>
-                <tr>
-                  <td className="tt-week">Week 1</td>
-                  <td>
-                    <div className="tt-phase">Strategy</div>
-                    <div className="tt-desc">Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="tt-week">Wk 2–3</td>
-                  <td>
-                    <div className="tt-phase">Creative production</div>
-                    <div className="tt-desc">Scripts · storyboards · shoot days · editing · social media content</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="tt-week">Wk 3–4</td>
-                  <td>
-                    <div className="tt-phase">Funnel build</div>
-                    <div className="tt-desc">Landing pages · checkout · profile optimised · all automations built and tested</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="tt-week">Wk 4–5</td>
-                  <td>
-                    <div className="tt-phase">Approvals + QA</div>
-                    <div className="tt-desc">Ads reviewed · feedback incorporated · full funnel tested end to end</div>
-                  </td>
-                </tr>
-                <tr className="tl-launch-row">
-                  <td className="tt-week tl-launch-week">Day 21</td>
-                  <td>
-                    <div className="tt-phase tl-launch-phase">🚀 Campaigns go live</div>
-                    <div className="tt-desc tl-launch-desc">Ads live · automations active · landing page live · marathon officially running</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="tt-week">Wk 5–8</td>
-                  <td>
-                    <div className="tt-phase">Optimise + scale</div>
-                    <div className="tt-desc">Weekly reviews · scale winners · creative refresh · final push Days 50–60</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="tt-week">Day 60</td>
-                  <td>
-                    <div className="tt-phase">Wrap + handover</div>
-                    <div className="tt-desc">60-day results report · wrap call · all assets and logins handed over</div>
-                  </td>
-                </tr>
+                {data.timeline.map((item, index) => (
+                  <tr key={index} className={item.phase.includes('🚀') ? 'tl-launch-row' : ''}>
+                    <td className={`tt-week ${item.phase.includes('🚀') ? 'tl-launch-week' : ''}`}>{item.week}</td>
+                    <td>
+                      <div className={`tt-phase ${item.phase.includes('🚀') ? 'tl-launch-phase' : ''}`}>{item.phase}</div>
+                      <div className={`tt-desc ${item.phase.includes('🚀') ? 'tl-launch-desc' : ''}`}>{item.description}</div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <div className="tl-note">Marathon starts on <strong style={{color: 'var(--ink)'}}>{data.startDate || 'your confirmed kickoff date'}</strong>. Campaigns go live by Day 21.</div>
+            <div className="tl-note">Engagement starts on <strong style={{color: 'var(--ink)'}}>{data.startDate || 'your confirmed kickoff date'}</strong>.</div>
           </div>
 
           {/* Proof */}
           <div className="proof-wrap">
             <div className="proof-label">Why Yuvichaar Funnels</div>
             <div className="proof-grid">
-              <div className="pc"><div className="pc-num">75+</div><div className="pc-lbl">D2C brands trust us with their growth</div></div>
-              <div className="pc"><div className="pc-num">6×</div><div className="pc-lbl">Peak ROAS achieved for clients</div></div>
-              <div className="pc"><div className="pc-num">27%</div><div className="pc-lbl">Average landing page conversion rate</div></div>
-              <div className="pc"><div className="pc-num">60</div><div className="pc-lbl">Days fixed. Full funnel built and live.</div></div>
+              {data.stats.map((stat, index) => (
+                <div className="pc" key={index}><div className="pc-num">{stat.value}</div><div className="pc-lbl">{stat.label}</div></div>
+              ))}
             </div>
           </div>
 
@@ -610,7 +583,7 @@ export default function DealPageContent({ data, token }: Props) {
           </div>
 
           <div className="meta-block">
-            <div className="meta-row"><span className="mk">Engagement</span><span className="mv">60-Day Growth Marathon</span></div>
+            <div className="meta-row"><span className="mk">Engagement</span><span className="mv">{data.proposalTitle}</span></div>
             <div className="meta-row"><span className="mk">Start date</span><span className="mv">{data.startDate || 'To be confirmed at kickoff'}</span></div>
             <div className="meta-row"><span className="mk">Fixed fee</span><span className="mv">₹{formatCurrency(data.fixedFee)} + GST</span></div>
             <div className="meta-row"><span className="mk">Advance (50% — on signing)</span><span className="mv">₹{formatCurrency(data.advanceWithGst)} incl. GST</span></div>
@@ -622,7 +595,7 @@ export default function DealPageContent({ data, token }: Props) {
             <div className="clause">
               <div className="cl-num">Clause 1</div>
               <div className="cl-title">Services to be delivered</div>
-              <div className="cl-body">Yuvichaar Funnels (&quot;the Agency&quot;) agrees to design and execute the 60-Day Growth Marathon for <span className="hl">{data.company}</span>, commencing <span className="hl">{data.startDate || 'the agreed start date'}</span>:
+              <div className="cl-body">Yuvichaar Funnels (&quot;the Agency&quot;) agrees to design and execute the {data.proposalTitle} for <span className="hl">{data.company}</span>, commencing <span className="hl">{data.startDate || 'the agreed start date'}</span>:
                 <ul className="cl-list">
                   <li>{data.adsCount} performance video ads — scripted, shot, edited, Meta-ready</li>
                   <li>{data.socialVideosCount} social media videos + full Instagram profile optimisation</li>

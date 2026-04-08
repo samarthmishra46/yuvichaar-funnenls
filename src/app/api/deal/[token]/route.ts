@@ -22,6 +22,7 @@ export async function GET(
       company: org.name,
       email: org.email,
       phone: org.phone || '',
+      proposalTitle: dealPage.proposalTitle || '60 Day Growth Marathon',
       goal: dealPage.goal || 'Build an end-to-end D2C marketing funnel',
       target: dealPage.target || '1,000 paying customers',
       startDate: dealPage.startDate || '',
@@ -63,6 +64,21 @@ export async function GET(
         { name: 'AI calling integration', description: "Automated reminder calls for high-intent visitors who didn't convert", quantity: 'Integrated', enabled: true },
         { name: 'Meta Ads setup + management', description: 'Campaign structure · audience targeting · creative testing · daily optimisation · 60 days', quantity: '60 days', enabled: true },
         { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true }
+      ],
+      timeline: dealPage.timeline || [
+        { week: 'Week 1', phase: 'Strategy', description: 'Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework' },
+        { week: 'Wk 2–3', phase: 'Creative production', description: 'Scripts · storyboards · shoot days · editing · social media content' },
+        { week: 'Wk 3–4', phase: 'Funnel build', description: 'Landing pages · checkout · profile optimised · all automations built and tested' },
+        { week: 'Wk 4–5', phase: 'Approvals + QA', description: 'Ads reviewed · feedback incorporated · full funnel tested end to end' },
+        { week: 'Day 21', phase: '🚀 Campaigns go live', description: 'Ads live · automations active · landing page live · marathon officially running' },
+        { week: 'Wk 5–8', phase: 'Optimise + scale', description: 'Weekly reviews · scale winners · creative refresh · final push Days 50–60' },
+        { week: 'Day 60', phase: 'Wrap + handover', description: '60-day results report · wrap call · all assets and logins handed over' }
+      ],
+      stats: dealPage.stats || [
+        { value: '75+', label: 'D2C brands trust us with their growth' },
+        { value: '6×', label: 'Peak ROAS achieved for clients' },
+        { value: '27%', label: 'Average landing page conversion rate' },
+        { value: '60', label: 'Days fixed. Full funnel built and live.' }
       ],
     };
 

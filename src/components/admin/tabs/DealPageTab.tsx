@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2, Save, ExternalLink, Copy, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,19 @@ interface Deliverable {
   enabled: boolean;
 }
 
+interface TimelineItem {
+  week: string;
+  phase: string;
+  description: string;
+}
+
+interface Stat {
+  value: string;
+  label: string;
+}
+
 interface DealPage {
+  proposalTitle?: string;
   goal?: string;
   target?: string;
   startDate?: string;
@@ -39,6 +51,8 @@ interface DealPage {
   successItems?: string[];
   nextStepText?: string;
   deliverables?: Deliverable[];
+  timeline?: TimelineItem[];
+  stats?: Stat[];
 }
 
 interface Organization {
@@ -59,6 +73,7 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [form, setForm] = useState<DealPage>({
+    proposalTitle: org.dealPage?.proposalTitle || '60 Day Growth Marathon',
     goal: org.dealPage?.goal || 'Build an end-to-end D2C marketing funnel',
     target: org.dealPage?.target || '1,000 paying customers',
     startDate: org.dealPage?.startDate || '',
@@ -101,7 +116,86 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       { name: 'Meta Ads setup + management', description: 'Campaign structure · audience targeting · creative testing · daily optimisation · 60 days', quantity: '60 days', enabled: true },
       { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true }
     ],
+    timeline: org.dealPage?.timeline || [
+      { week: 'Week 1', phase: 'Strategy', description: 'Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework' },
+      { week: 'Wk 2–3', phase: 'Creative production', description: 'Scripts · storyboards · shoot days · editing · social media content' },
+      { week: 'Wk 3–4', phase: 'Funnel build', description: 'Landing pages · checkout · profile optimised · all automations built and tested' },
+      { week: 'Wk 4–5', phase: 'Approvals + QA', description: 'Ads reviewed · feedback incorporated · full funnel tested end to end' },
+      { week: 'Day 21', phase: '🚀 Campaigns go live', description: 'Ads live · automations active · landing page live · marathon officially running' },
+      { week: 'Wk 5–8', phase: 'Optimise + scale', description: 'Weekly reviews · scale winners · creative refresh · final push Days 50–60' },
+      { week: 'Day 60', phase: 'Wrap + handover', description: '60-day results report · wrap call · all assets and logins handed over' }
+    ],
+    stats: org.dealPage?.stats || [
+      { value: '75+', label: 'D2C brands trust us with their growth' },
+      { value: '6×', label: 'Peak ROAS achieved for clients' },
+      { value: '27%', label: 'Average landing page conversion rate' },
+      { value: '60', label: 'Days fixed. Full funnel built and live.' }
+    ],
   });
+
+  // Sync form state when org prop changes (after save/refetch)
+  useEffect(() => {
+    setForm({
+      proposalTitle: org.dealPage?.proposalTitle || '60 Day Growth Marathon',
+      goal: org.dealPage?.goal || 'Build an end-to-end D2C marketing funnel',
+      target: org.dealPage?.target || '1,000 paying customers',
+      startDate: org.dealPage?.startDate || '',
+      adsCount: org.dealPage?.adsCount || 15,
+      socialVideosCount: org.dealPage?.socialVideosCount || 12,
+      landingPagesCount: org.dealPage?.landingPagesCount || 1,
+      fixedFee: org.dealPage?.fixedFee || 449000,
+      advanceAmount: org.dealPage?.advanceAmount || 224500,
+      advanceWithGst: org.dealPage?.advanceWithGst || 264910,
+      balanceAmount: org.dealPage?.balanceAmount || 224500,
+      balanceWithGst: org.dealPage?.balanceWithGst || 264910,
+      hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
+      perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
+      perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
+      perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
+      perfBonus2Amount: org.dealPage?.perfBonus2Amount || '₹1,00,000',
+      customDeliverable: org.dealPage?.customDeliverable || '',
+      customDeliverableDesc: org.dealPage?.customDeliverableDesc || '',
+      portfolioUrl: org.dealPage?.portfolioUrl || '',
+      whatsappNumber: org.dealPage?.whatsappNumber || '919999900001',
+      razorpayLink: org.dealPage?.razorpayLink || '',
+      successItems: org.dealPage?.successItems || [
+        'Client portal is live and ready',
+        'Signed MoU + receipt sent to your email',
+        'WhatsApp group created with your team',
+        'Kickoff call link sent on WhatsApp',
+        'Brand question form sent on WhatsApp',
+        "Yuvraj's personal welcome video sent"
+      ],
+      nextStepText: org.dealPage?.nextStepText || 'Check your WhatsApp — Yuvraj sent a personal welcome message and your kickoff call link is there.',
+      deliverables: org.dealPage?.deliverables || [
+        { name: 'Performance video ads', description: 'Scripted, shot on Netflix-approved cameras, edited · UGC + founder + comparison formats · 9:16 Meta-ready', quantity: '15 ads', enabled: true },
+        { name: 'Social media content + profile', description: 'Instagram Reels · bio rewrite · highlights · blue tick · curated feed ready to launch', quantity: '12 videos', enabled: true },
+        { name: 'High-converting landing page(s)', description: 'VSL · hero · social proof · objection handling · urgency · dark psychology · mobile-first', quantity: '1 page', enabled: true },
+        { name: 'Checkout experience', description: 'Single-click checkout · order bumps · copy optimisation · payment gateway', quantity: 'Full setup', enabled: true },
+        { name: 'WATI WhatsApp automations', description: 'Cart abandonment video + text sequences · repeat purchase · cross-sell + upsell video + text · 2 months subscription covered', quantity: 'Full suite', enabled: true },
+        { name: 'Email automations', description: 'Cart abandonment sequences · post-purchase flows · retention nudges', quantity: 'Full suite', enabled: true },
+        { name: 'ManyChat Instagram automations', description: 'Comment triggers · DM flows · lead capture · WhatsApp opt-in', quantity: 'Full setup', enabled: true },
+        { name: 'AI calling integration', description: "Automated reminder calls for high-intent visitors who didn't convert", quantity: 'Integrated', enabled: true },
+        { name: 'Meta Ads setup + management', description: 'Campaign structure · audience targeting · creative testing · daily optimisation · 60 days', quantity: '60 days', enabled: true },
+        { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true }
+      ],
+      timeline: org.dealPage?.timeline || [
+        { week: 'Week 1', phase: 'Strategy', description: 'Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework' },
+        { week: 'Wk 2–3', phase: 'Creative production', description: 'Scripts · storyboards · shoot days · editing · social media content' },
+        { week: 'Wk 3–4', phase: 'Funnel build', description: 'Landing pages · checkout · profile optimised · all automations built and tested' },
+        { week: 'Wk 4–5', phase: 'Approvals + QA', description: 'Ads reviewed · feedback incorporated · full funnel tested end to end' },
+        { week: 'Day 21', phase: '🚀 Campaigns go live', description: 'Ads live · automations active · landing page live · marathon officially running' },
+        { week: 'Wk 5–8', phase: 'Optimise + scale', description: 'Weekly reviews · scale winners · creative refresh · final push Days 50–60' },
+        { week: 'Day 60', phase: 'Wrap + handover', description: '60-day results report · wrap call · all assets and logins handed over' }
+      ],
+      stats: org.dealPage?.stats || [
+        { value: '75+', label: 'D2C brands trust us with their growth' },
+        { value: '6×', label: 'Peak ROAS achieved for clients' },
+        { value: '27%', label: 'Average landing page conversion rate' },
+        { value: '60', label: 'Days fixed. Full funnel built and live.' }
+      ],
+    });
+  }, [org]);
 
   const dealPageUrl = org.onboarding?.token 
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/deal/${org.onboarding.token}`
@@ -114,18 +208,22 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
+      console.log('Saving form data:', JSON.stringify(form, null, 2));
       const res = await fetch(`/api/organizations/${org._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ dealPage: form }),
       });
+      const data = await res.json();
+      console.log('Save response:', JSON.stringify(data, null, 2));
       if (res.ok) {
         toast.success('Deal page settings saved');
         onUpdate();
       } else {
-        toast.error('Failed to save');
+        toast.error('Failed to save: ' + (data.error || 'Unknown error'));
       }
-    } catch {
+    } catch (err) {
+      console.error('Save error:', err);
       toast.error('Error saving deal page settings');
     } finally {
       setSaving(false);
@@ -188,6 +286,15 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
           <CardTitle className="text-lg">Proposal Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Proposal Title</label>
+            <Input
+              value={form.proposalTitle}
+              onChange={(e) => updateField('proposalTitle', e.target.value)}
+              placeholder="e.g., 60 Day Growth Marathon"
+            />
+            <p className="text-xs text-gray-500 mt-1">This appears as the main title on the deal page and in the service agreement.</p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700 mb-1 block">Engagement Goal</label>
@@ -293,7 +400,114 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
         </CardContent>
       </Card>
 
-      
+      {/* Timeline */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Timeline</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-gray-500">Edit the timeline phases shown on the deal page.</p>
+          <div className="space-y-3">
+            {form.timeline?.map((item, index) => (
+              <div key={index} className="p-3 rounded-lg border bg-white border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
+                  <Input
+                    value={item.week}
+                    onChange={(e) => {
+                      const newTimeline = [...(form.timeline || [])];
+                      newTimeline[index] = { ...newTimeline[index], week: e.target.value };
+                      setForm(prev => ({ ...prev, timeline: newTimeline }));
+                    }}
+                    placeholder="Week"
+                    className="md:col-span-1"
+                  />
+                  <Input
+                    value={item.phase}
+                    onChange={(e) => {
+                      const newTimeline = [...(form.timeline || [])];
+                      newTimeline[index] = { ...newTimeline[index], phase: e.target.value };
+                      setForm(prev => ({ ...prev, timeline: newTimeline }));
+                    }}
+                    placeholder="Phase"
+                    className="md:col-span-2"
+                  />
+                  <Input
+                    value={item.description}
+                    onChange={(e) => {
+                      const newTimeline = [...(form.timeline || [])];
+                      newTimeline[index] = { ...newTimeline[index], description: e.target.value };
+                      setForm(prev => ({ ...prev, timeline: newTimeline }));
+                    }}
+                    placeholder="Description"
+                    className="md:col-span-3"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const newTimeline = [...(form.timeline || []), { week: 'Week X', phase: 'New phase', description: 'Description' }];
+              setForm(prev => ({ ...prev, timeline: newTimeline }));
+            }}
+          >
+            + Add Timeline Item
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Stats (Why Yuvichaar Funnels) */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Stats (Why Yuvichaar Funnels)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-sm text-gray-500">Edit the stats shown in the &quot;Why Yuvichaar Funnels&quot; section.</p>
+          <div className="space-y-3">
+            {form.stats?.map((stat, index) => (
+              <div key={index} className="p-3 rounded-lg border bg-white border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                  <Input
+                    value={stat.value}
+                    onChange={(e) => {
+                      const newStats = [...(form.stats || [])];
+                      newStats[index] = { ...newStats[index], value: e.target.value };
+                      setForm(prev => ({ ...prev, stats: newStats }));
+                    }}
+                    placeholder="Value (e.g., 75+)"
+                    className="md:col-span-1 font-bold"
+                  />
+                  <Input
+                    value={stat.label}
+                    onChange={(e) => {
+                      const newStats = [...(form.stats || [])];
+                      newStats[index] = { ...newStats[index], label: e.target.value };
+                      setForm(prev => ({ ...prev, stats: newStats }));
+                    }}
+                    placeholder="Label"
+                    className="md:col-span-3"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const newStats = [...(form.stats || []), { value: '0', label: 'New stat' }];
+              setForm(prev => ({ ...prev, stats: newStats }));
+            }}
+          >
+            + Add Stat
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Pricing */}
       <Card>
         <CardHeader>

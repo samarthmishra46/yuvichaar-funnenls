@@ -73,6 +73,20 @@ export async function PUT(
 
     let org;
     if (hasOtherFields) {
+      // For dealPage, fetch existing and merge to preserve signature fields
+      if (body.dealPage) {
+        const existingOrg = await Organization.findById(id).lean();
+        if (existingOrg) {
+          // Merge existing dealPage with new dealPage data
+          body.dealPage = {
+            ...existingOrg.dealPage,
+            ...body.dealPage,
+          };
+        }
+      }
+      
+      console.log('Updating organization with dealPage:', JSON.stringify(body.dealPage, null, 2));
+      
       org = await Organization.findByIdAndUpdate(
         id,
         { $set: body },
@@ -80,6 +94,8 @@ export async function PUT(
       )
         .select('-password')
         .lean();
+      
+      console.log('Updated dealPage result:', JSON.stringify(org?.dealPage, null, 2));
     } else {
       org = await Organization.findById(id).select('-password').lean();
     }
