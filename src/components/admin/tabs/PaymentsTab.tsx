@@ -172,6 +172,9 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
               {savingTotal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
             </Button>
           </div>
+          <p className="text-xs text-[#64748b] mt-2">
+            💡 This amount is automatically synced when you save pricing in the Deal Page tab (Fixed Fee + 18% GST).
+          </p>
         </CardContent>
       </Card>
 

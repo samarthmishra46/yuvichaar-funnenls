@@ -5,7 +5,6 @@ import dbConnect from '@/lib/mongodb';
 import Organization from '@/models/Organization';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { sendEmail, getOnboardingEmailTemplate } from '@/lib/email';
 
 // GET /api/organizations — list all orgs (admin only)
 export async function GET(request: NextRequest) {
@@ -97,19 +96,6 @@ export async function POST(request: NextRequest) {
         minimumPaymentPaid: false,
         passwordSetup: false,
       },
-    });
-
-    // Send deal page email (single link for proposal, agreement, payment)
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const onboardingLink = `${baseUrl}/deal/${onboardingToken}`;
-    
-    await sendEmail({
-      to: body.email,
-      subject: 'Welcome to Yuvichaar - Complete Your Onboarding',
-      html: getOnboardingEmailTemplate({
-        organizationName: body.name,
-        onboardingLink,
-      }),
     });
 
     // Return without password

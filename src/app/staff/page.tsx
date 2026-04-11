@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Loader2, CheckCircle2, Clock, Upload, Building2, ArrowLeft, AlertCircle, Calendar, MessageSquarePlus } from 'lucide-react';
+import { Loader2, CheckCircle2, Clock, Upload, Building2, ArrowLeft, AlertCircle, Calendar, MessageSquarePlus, Key } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -59,6 +59,13 @@ export default function StaffPortalPage() {
     taskType: 'credentials',
     priority: 'medium',
   });
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -275,6 +282,47 @@ export default function StaffPortalPage() {
     }
   };
 
+  const handleChangePassword = async () => {
+    if (!passwordForm.oldPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('New password and confirm password do not match');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch('/api/staff/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(passwordForm),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to change password');
+        return;
+      }
+
+      toast.success('Password changed successfully');
+      setShowPasswordModal(false);
+      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      toast.error('Failed to change password');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   if (status === 'loading' || loading) {
     return (
       <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
@@ -481,6 +529,14 @@ export default function StaffPortalPage() {
                 Leaves
               </Button>
             </Link>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPasswordModal(true)} 
+              className="!border-[#e2e8f0] !text-[#64748b] hover:!text-[#0f172a]"
+            >
+              <Key className="w-4 h-4 mr-2" />
+              Change Password
+            </Button>
             <Button variant="ghost" onClick={() => signOut({ callbackUrl: '/staff/login' })} className="!text-[#64748b]">
               Logout
             </Button>
@@ -562,6 +618,80 @@ export default function StaffPortalPage() {
 
         {/* Complete Task Modal */}
         {selectedTask && renderCompleteTaskModal()}
+
+        {/* Change Password Modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <Card className="!bg-white !border-[#e2e8f0] shadow-xl max-w-md w-full">
+              <CardHeader>
+                <CardTitle className="!text-[#0f172a]">Change Password</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[0.8125rem] font-semibold text-[#475569]">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.oldPassword}
+                    onChange={(e) => setPasswordForm(p => ({ ...p, oldPassword: e.target.value }))}
+                    placeholder="Enter current password"
+                    className="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[0.8125rem] font-semibold text-[#475569]">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm(p => ({ ...p, newPassword: e.target.value }))}
+                    placeholder="Enter new password (min 6 characters)"
+                    className="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[0.8125rem] font-semibold text-[#475569]">
+                    Confirm New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm(p => ({ ...p, confirmPassword: e.target.value }))}
+                    placeholder="Confirm new password"
+                    className="px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#e91e8c]"
+                  />
+                </div>
+
+                <div className="flex gap-2 justify-end pt-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setShowPasswordModal(false);
+                      setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
+                    }}
+                    className="!text-[#64748b]"
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleChangePassword} disabled={changingPassword}>
+                    {changingPassword ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                        Changing...
+                      </>
+                    ) : (
+                      'Change Password'
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   );

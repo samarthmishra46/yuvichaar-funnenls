@@ -190,7 +190,7 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* ── Onboarding Link Card ── */}
+      {/* ── Onboarding Link Card ──
       {org.onboarding?.token && !org.onboarding?.passwordSetup && (
         <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
           <CardContent className="pt-6">
@@ -251,7 +251,7 @@ export default function BrandInfoTab({ org, onUpdate }: BrandInfoTabProps) {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* ── Brand Info Card ── */}
       <Card className="!bg-white !border-[#e2e8f0] shadow-sm">

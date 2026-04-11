@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Loader2, Save, ExternalLink, Copy, CheckCircle2 } from 'lucide-react';
+import { Loader2, Save, ExternalLink, Copy, CheckCircle2, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -158,6 +158,7 @@ const getDefaultClauseSections = (): ClauseSection[] => [
 export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   const [form, setForm] = useState<DealPage>({
     proposalTitle: org.dealPage?.proposalTitle || '60 Day Growth Marathon',
     goal: org.dealPage?.goal || 'Build an end-to-end D2C marketing funnel',
@@ -368,14 +369,18 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      console.log('Saving form data:', JSON.stringify(form, null, 2));
+      // Calculate total with GST for payment.totalAmount
+      const totalWithGst = Math.round((form.fixedFee || 0) * 1.18);
+      
       const res = await fetch(`/api/organizations/${org._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dealPage: form }),
+        body: JSON.stringify({ 
+          dealPage: form,
+          'payment.totalAmount': totalWithGst,
+        }),
       });
       const data = await res.json();
-      console.log('Save response:', JSON.stringify(data, null, 2));
       if (res.ok) {
         toast.success('Deal page settings saved');
         onUpdate();
@@ -400,6 +405,28 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   };
 
   const calculateGst = (amount: number) => Math.round(amount * 1.18);
+
+  const handleSendProposalEmail = async () => {
+    setSendingEmail(true);
+    try {
+      const res = await fetch(`/api/organizations/${org._id}/send-proposal-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success('Proposal email sent successfully!');
+        onUpdate();
+      } else {
+        toast.error(data.error || 'Failed to send email');
+      }
+    } catch (error) {
+      console.error('Send email error:', error);
+      toast.error('Failed to send proposal email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
 
   const updateFixedFee = (value: number) => {
     const half = Math.round(value / 2);
@@ -434,6 +461,21 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 </a>
+                <Button 
+                  size="sm" 
+                  onClick={handleSendProposalEmail} 
+                  disabled={sendingEmail}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  {sendingEmail ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4 mr-1" />
+                      Send Email
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
           </CardContent>

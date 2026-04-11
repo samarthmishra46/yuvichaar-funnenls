@@ -42,22 +42,46 @@ export async function POST(request: NextRequest) {
     const folder = type === 'logo' ? 'logos' : type === 'pdf' ? 'research' : type === 'image' ? 'images' : 'files';
     const filePath = `yuvichaar/${folder}/${fileName}`;
 
-    // Upload to Bunny Storage
+    // Upload to Bunny Storage with retry logic
     const uploadUrl = `https://${BUNNY_STORAGE_HOSTNAME}/${BUNNY_STORAGE_ZONE}/${filePath}`;
     
-    const uploadRes = await fetch(uploadUrl, {
-      method: 'PUT',
-      headers: {
-        'AccessKey': BUNNY_STORAGE_API_KEY,
-        'Content-Type': 'application/octet-stream',
-      },
-      body: buffer,
-    });
+    let uploadRes: Response | null = null;
+    let lastError: Error | null = null;
+    const maxRetries = 3;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'AccessKey': BUNNY_STORAGE_API_KEY,
+            'Content-Type': 'application/octet-stream',
+          },
+          body: buffer,
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (uploadRes.ok) {
+          break; // Success, exit retry loop
+        }
+      } catch (err) {
+        lastError = err as Error;
+        console.error(`Upload attempt ${attempt} failed:`, err);
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
+        }
+      }
+    }
 
-    if (!uploadRes.ok) {
-      const errorText = await uploadRes.text();
+    if (!uploadRes || !uploadRes.ok) {
+      const errorText = uploadRes ? await uploadRes.text() : lastError?.message || 'Unknown error';
       console.error('Bunny Storage upload error:', errorText);
-      return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+      return NextResponse.json({ error: 'Upload failed', details: errorText }, { status: 500 });
     }
 
     // Return CDN URL
