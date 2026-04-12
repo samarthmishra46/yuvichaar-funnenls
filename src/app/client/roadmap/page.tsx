@@ -175,7 +175,7 @@ export default function ClientRoadmapPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[#0f172a]">60-Day Growth Marathon</h1>
+        <h1 className="text-2xl font-bold text-[#0f172a]">{roadmap?.title || '60-Day Growth Marathon'}</h1>
         <p className="text-sm text-[#64748b] mt-1">Track your project progress day by day</p>
       </div>
 

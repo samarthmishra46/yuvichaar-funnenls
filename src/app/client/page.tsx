@@ -25,6 +25,7 @@ interface Organization {
     token?: string;
   };
   dealPage?: {
+    proposalTitle?: string;
     signatureName?: string;
     signedAt?: string;
     fixedFee?: number;
@@ -316,7 +317,7 @@ export default function ClientDashboard() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-[#e2e8f0]">
                     <span className="text-sm text-[#64748b]">Engagement</span>
-                    <span className="text-sm font-semibold text-[#0f172a]">60-Day Growth Marathon</span>
+                    <span className="text-sm font-semibold text-[#0f172a]">{org.dealPage?.proposalTitle || '60-Day Growth Marathon'}</span>
                   </div>
                   {org.dealPage.goal && (
                     <div className="flex justify-between items-center py-2 border-b border-[#e2e8f0]">
@@ -343,7 +344,7 @@ export default function ClientDashboard() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[#0f172a]">View Full Agreement</p>
-                        <p className="text-xs text-[#64748b]">60-Day Growth Marathon Terms</p>
+                        <p className="text-xs text-[#64748b]">{org.dealPage?.proposalTitle || '60-Day Growth Marathon'} Terms</p>
                       </div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-[#64748b] group-hover:text-[#e91e8c] transition-colors" />

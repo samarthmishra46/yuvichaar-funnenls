@@ -38,6 +38,9 @@ export async function GET(
       .sort({ dayNumber: 1, createdAt: 1 })
       .lean();
 
+    // Always fetch templates for change template functionality
+    const templates = await RoadmapTemplate.find().sort({ isDefault: -1, createdAt: -1 }).lean();
+
     // If roadmap has templateId, fetch template for phases/dayTitles
     let phases = ROADMAP_PHASES;
     let dayTitles: Record<number, { title: string; milestone?: boolean }> = ROADMAP_DAY_TITLES;
@@ -58,6 +61,7 @@ export async function GET(
       tasks,
       phases,
       dayTitles,
+      templates,
     });
   } catch (error) {
     console.error('Get roadmap error:', error);
@@ -169,5 +173,38 @@ export async function POST(
   } catch (error) {
     console.error('Create roadmap error:', error);
     return NextResponse.json({ error: 'Failed to create roadmap' }, { status: 500 });
+  }
+}
+
+// DELETE - Delete roadmap and all associated tasks
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ orgId: string }> }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'admin') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { orgId } = await params;
+
+  await dbConnect();
+
+  try {
+    const roadmap = await Roadmap.findOne({ orgId });
+    if (!roadmap) {
+      return NextResponse.json({ error: 'Roadmap not found' }, { status: 404 });
+    }
+
+    // Delete all tasks associated with this roadmap
+    await Task.deleteMany({ roadmapId: roadmap._id.toString() });
+
+    // Delete the roadmap
+    await Roadmap.findByIdAndDelete(roadmap._id);
+
+    return NextResponse.json({ success: true, message: 'Roadmap deleted' });
+  } catch (error) {
+    console.error('Delete roadmap error:', error);
+    return NextResponse.json({ error: 'Failed to delete roadmap' }, { status: 500 });
   }
 }

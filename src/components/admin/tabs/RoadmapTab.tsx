@@ -72,6 +72,10 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
   const [addingTaskForDay, setAddingTaskForDay] = useState<number | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskAssignee, setNewTaskAssignee] = useState('');
+  const [showChangeTemplate, setShowChangeTemplate] = useState(false);
+  const [newTemplateId, setNewTemplateId] = useState('');
+  const [newStartDate, setNewStartDate] = useState('');
+  const [reinitializing, setReinitializing] = useState(false);
 
   const [taskForm, setTaskForm] = useState({
     dayNumber: 1,
@@ -268,6 +272,59 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
     }
   };
 
+  const handleReinitializeRoadmap = async () => {
+    if (!newTemplateId) {
+      toast.error('Please select a template');
+      return;
+    }
+    if (!newStartDate) {
+      toast.error('Please select a start date');
+      return;
+    }
+
+    const confirmMsg = 'This will DELETE all existing tasks and reinitialize the roadmap with the new template. Are you sure?';
+    if (!confirm(confirmMsg)) return;
+
+    setReinitializing(true);
+    try {
+      // First delete the existing roadmap
+      await fetch(`/api/roadmaps/${orgId}`, {
+        method: 'DELETE',
+      });
+
+      // Then create a new one with the selected template
+      const res = await fetch(`/api/roadmaps/${orgId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          startDate: newStartDate,
+          templateId: newTemplateId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to reinitialize roadmap');
+        return;
+      }
+
+      toast.success('Roadmap reinitialized successfully!');
+      setRoadmap(data.roadmap);
+      setTasks(data.tasks || []);
+      setPhases(data.phases || []);
+      setDayTitles(data.dayTitles || {});
+      setShowChangeTemplate(false);
+      setNewTemplateId('');
+      setNewStartDate('');
+    } catch (error) {
+      console.error('Reinitialize roadmap error:', error);
+      toast.error('Failed to reinitialize roadmap');
+    } finally {
+      setReinitializing(false);
+    }
+  };
+
   const getTasksForDay = (day: number) => tasks.filter((t) => t.dayNumber === day);
 
   const getPhaseProgress = (phase: Phase) => {
@@ -427,6 +484,17 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
             </p>
           </div>
           <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                setShowChangeTemplate(true);
+                setNewTemplateId('');
+                setNewStartDate(roadmap.startDate.split('T')[0]);
+              }}
+              className="text-xs text-[#3b82f6] hover:underline flex items-center gap-1 px-3 py-1.5 border border-[#3b82f6] rounded-lg hover:bg-[#eff6ff] transition-colors"
+            >
+              <Calendar className="w-3 h-3" />
+              Change Template
+            </button>
             <Link 
               href="/admin/templates" 
               className="text-xs text-[#e91e8c] hover:underline flex items-center gap-1 px-3 py-1.5 border border-[#e91e8c] rounded-lg hover:bg-[#fdf2f8] transition-colors"
@@ -461,6 +529,92 @@ export default function RoadmapTab({ orgId }: { orgId: string }) {
           </span>
         </div>
       </div>
+
+      {/* Change Template Modal */}
+      {showChangeTemplate && (
+        <Card className="!border-[#3b82f6] shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-[#0f172a]">Change Roadmap Template</h3>
+              <button
+                onClick={() => setShowChangeTemplate(false)}
+                className="text-[#64748b] hover:text-[#0f172a]"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="bg-[#fef3c7] border border-[#f59e0b] rounded-lg p-3 mb-4">
+              <p className="text-sm text-[#92400e]">
+                <strong>Warning:</strong> Changing the template will delete all existing tasks and reinitialize the roadmap with the new template. This action cannot be undone.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {/* Template Selection */}
+              <div>
+                <label className="block text-sm font-medium text-[#0f172a] mb-2">Select New Template:</label>
+                <select
+                  value={newTemplateId}
+                  onChange={(e) => setNewTemplateId(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#3b82f6]"
+                >
+                  <option value="">-- Select a template --</option>
+                  {templates.map((t) => (
+                    <option key={t._id} value={t._id}>
+                      {t.name} ({t.totalDays} days) {t.isDefault ? '★' : ''}
+                    </option>
+                  ))}
+                </select>
+                {newTemplateId && templates.find(t => t._id === newTemplateId)?.description && (
+                  <p className="text-xs text-[#64748b] mt-1">
+                    {templates.find(t => t._id === newTemplateId)?.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Start Date */}
+              <div>
+                <label className="block text-sm font-medium text-[#0f172a] mb-2">Start Date:</label>
+                <input
+                  type="date"
+                  value={newStartDate}
+                  onChange={(e) => setNewStartDate(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-[#e2e8f0] rounded-xl text-[#0f172a] text-sm outline-none focus:border-[#3b82f6]"
+                />
+                <p className="text-xs text-[#64748b] mt-1">
+                  You can choose a past date to backdate the roadmap or a future date to schedule it.
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-[#e2e8f0]">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowChangeTemplate(false)}
+                  disabled={reinitializing}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleReinitializeRoadmap}
+                  disabled={reinitializing || !newTemplateId || !newStartDate}
+                  className="bg-[#3b82f6] hover:bg-[#2563eb]"
+                >
+                  {reinitializing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Reinitializing...
+                    </>
+                  ) : (
+                    'Reinitialize Roadmap'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Phases */}
       <div className="space-y-4">
