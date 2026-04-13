@@ -79,6 +79,7 @@ interface DealPage {
   balanceAmount?: number;
   balanceWithGst?: number;
   hasPerformanceFee?: boolean;
+  performanceFeeAmount?: string;
   perfBonus1Trigger?: string;
   perfBonus1Amount?: string;
   perfBonus2Trigger?: string;
@@ -173,6 +174,7 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
     balanceAmount: org.dealPage?.balanceAmount || 224500,
     balanceWithGst: org.dealPage?.balanceWithGst || 264910,
     hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
+    performanceFeeAmount: org.dealPage?.performanceFeeAmount || '₹2,00,000',
     perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
     perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
     perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
@@ -273,6 +275,7 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       balanceAmount: org.dealPage?.balanceAmount || 224500,
       balanceWithGst: org.dealPage?.balanceWithGst || 264910,
       hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
+      performanceFeeAmount: org.dealPage?.performanceFeeAmount || '₹2,00,000',
       perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
       perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
       perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
@@ -1061,8 +1064,16 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
               className="w-4 h-4 rounded border-gray-300"
             />
             <label htmlFor="hasPerformanceFee" className="text-sm font-medium text-gray-700">
-              Include Performance Fee (₹2,00,000)
+              Include Performance Fee
             </label>
+            {form.hasPerformanceFee && (
+              <Input
+                value={form.performanceFeeAmount}
+                onChange={(e) => updateField('performanceFeeAmount', e.target.value)}
+                placeholder="e.g., ₹2,00,000"
+                className="w-40"
+              />
+            )}
           </div>
 
           {form.hasPerformanceFee && (
