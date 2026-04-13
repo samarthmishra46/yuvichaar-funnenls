@@ -80,10 +80,12 @@ interface DealData {
   balanceWithGst: number;
   hasPerformanceFee: boolean;
   performanceFeeAmount: string;
-  perfBonus1Trigger: string;
-  perfBonus1Amount: string;
-  perfBonus2Trigger: string;
-  perfBonus2Amount: string;
+  performanceBonuses?: Array<{ trigger: string; amount: string }>;
+  // Legacy fields for backward compatibility
+  perfBonus1Trigger?: string;
+  perfBonus1Amount?: string;
+  perfBonus2Trigger?: string;
+  perfBonus2Amount?: string;
   customDeliverable?: string;
   customDeliverableDesc?: string;
   portfolioUrl?: string;

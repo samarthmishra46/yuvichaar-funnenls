@@ -36,14 +36,43 @@ export async function GET(
       balanceWithGst: dealPage.balanceWithGst || 264910,
       hasPerformanceFee: dealPage.hasPerformanceFee !== false,
       performanceFeeAmount: (() => {
-        const b1 = parseInt((dealPage.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-        const b2 = parseInt((dealPage.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-        return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+        const bonuses = dealPage.performanceBonuses || [];
+        if (bonuses.length > 0) {
+          const total = bonuses.reduce((sum, b) => sum + (parseInt(b.amount.replace(/[₹,\s]/g, '')) || 0), 0);
+          return `₹${total.toLocaleString()}`;
+        }
+        // Fallback to legacy fields - only if they exist
+        const b1 = dealPage.perfBonus1Amount ? (parseInt(dealPage.perfBonus1Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+        const b2 = dealPage.perfBonus2Amount ? (parseInt(dealPage.perfBonus2Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+        return `₹${(b1 + b2).toLocaleString()}`;
       })(),
-      perfBonus1Trigger: dealPage.perfBonus1Trigger || '₹25,00,000',
-      perfBonus1Amount: dealPage.perfBonus1Amount || '₹1,00,000',
-      perfBonus2Trigger: dealPage.perfBonus2Trigger || '₹50,00,000',
-      perfBonus2Amount: dealPage.perfBonus2Amount || '₹1,00,000',
+      performanceBonuses: (() => {
+        // If performanceBonuses exists and has data, use it
+        if (dealPage.performanceBonuses && dealPage.performanceBonuses.length > 0) {
+          return dealPage.performanceBonuses;
+        }
+        // Otherwise, migrate from legacy fields - only add if there's actual data
+        const migrated: Array<{ trigger: string; amount: string }> = [];
+        if (dealPage.perfBonus1Amount && dealPage.perfBonus1Trigger) {
+          migrated.push({
+            trigger: dealPage.perfBonus1Trigger,
+            amount: dealPage.perfBonus1Amount
+          });
+        }
+        if (dealPage.perfBonus2Amount && dealPage.perfBonus2Trigger) {
+          migrated.push({
+            trigger: dealPage.perfBonus2Trigger,
+            amount: dealPage.perfBonus2Amount
+          });
+        }
+        // Return migrated or empty array (no defaults)
+        return migrated;
+      })(),
+      // Legacy fields for backward compatibility
+      perfBonus1Trigger: dealPage.perfBonus1Trigger || '',
+      perfBonus1Amount: dealPage.perfBonus1Amount || '',
+      perfBonus2Trigger: dealPage.perfBonus2Trigger || '',
+      perfBonus2Amount: dealPage.perfBonus2Amount || '',
       customDeliverable: dealPage.customDeliverable || '',
       customDeliverableDesc: dealPage.customDeliverableDesc || '',
       portfolioUrl: dealPage.portfolioUrl || '',

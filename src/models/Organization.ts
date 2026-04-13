@@ -100,6 +100,11 @@ export interface IDealPage {
   balanceWithGst?: number;
   hasPerformanceFee?: boolean;
   performanceFeeAmount?: string;
+  performanceBonuses?: Array<{
+    trigger: string;
+    amount: string;
+  }>;
+  // Legacy fields for backward compatibility
   perfBonus1Trigger?: string;
   perfBonus1Amount?: string;
   perfBonus2Trigger?: string;
@@ -249,6 +254,11 @@ const OrganizationSchema = new Schema<IOrganization>(
       balanceWithGst: { type: Number, default: 264910 },
       hasPerformanceFee: { type: Boolean, default: true },
       performanceFeeAmount: { type: String, default: '₹2,00,000' },
+      performanceBonuses: [{
+        trigger: { type: String },
+        amount: { type: String }
+      }],
+      // Legacy fields for backward compatibility
       perfBonus1Trigger: { type: String, default: '₹25,00,000' },
       perfBonus1Amount: { type: String, default: '₹1,00,000' },
       perfBonus2Trigger: { type: String, default: '₹50,00,000' },

@@ -79,10 +79,12 @@ interface DealData {
   balanceWithGst: number;
   hasPerformanceFee: boolean;
   performanceFeeAmount: string;
-  perfBonus1Trigger: string;
-  perfBonus1Amount: string;
-  perfBonus2Trigger: string;
-  perfBonus2Amount: string;
+  performanceBonuses?: Array<{ trigger: string; amount: string }>;
+  // Legacy fields for backward compatibility
+  perfBonus1Trigger?: string;
+  perfBonus1Amount?: string;
+  perfBonus2Trigger?: string;
+  perfBonus2Amount?: string;
   customDeliverable?: string;
   customDeliverableDesc?: string;
   portfolioUrl?: string;
@@ -139,10 +141,10 @@ export default function DealPageContent({ data, token }: Props) {
       .replace(/\{advanceWithGst\}/g, formatCurrency(data.advanceWithGst))
       .replace(/\{balanceAmount\}/g, formatCurrency(data.balanceAmount))
       .replace(/\{balanceWithGst\}/g, formatCurrency(data.balanceWithGst))
-      .replace(/\{perfBonus1Amount\}/g, data.perfBonus1Amount)
-      .replace(/\{perfBonus1Trigger\}/g, data.perfBonus1Trigger)
-      .replace(/\{perfBonus2Amount\}/g, data.perfBonus2Amount)
-      .replace(/\{perfBonus2Trigger\}/g, data.perfBonus2Trigger);
+      .replace(/\{perfBonus1Amount\}/g, data.perfBonus1Amount || '')
+      .replace(/\{perfBonus1Trigger\}/g, data.perfBonus1Trigger || '')
+      .replace(/\{perfBonus2Amount\}/g, data.perfBonus2Amount || '')
+      .replace(/\{perfBonus2Trigger\}/g, data.perfBonus2Trigger || '');
   };
 
   const allConfirmed = confirmations.every(c => c);
@@ -560,34 +562,27 @@ export default function DealPageContent({ data, token }: Props) {
                 </div>
               </div>
               {data.hasPerformanceFee && (
-                <>
-                  <div className="track-item">
+                (data.performanceBonuses && data.performanceBonuses.length > 0 
+                  ? data.performanceBonuses 
+                  : [
+                      ...(data.perfBonus1Amount && data.perfBonus1Trigger ? [{ trigger: data.perfBonus1Trigger, amount: data.perfBonus1Amount }] : []),
+                      ...(data.perfBonus2Amount && data.perfBonus2Trigger ? [{ trigger: data.perfBonus2Trigger, amount: data.perfBonus2Amount }] : [])
+                    ]
+                ).filter(bonus => bonus.amount && bonus.trigger).map((bonus, index) => (
+                  <div key={index} className="track-item">
                     <div className="track-dot perf"></div>
                     <div className="track-card perf-card">
-                      <div className="tc-when">Performance milestone 1</div>
+                      <div className="tc-when">Performance milestone {index + 1}</div>
                       <div className="tc-title">Revenue bonus</div>
-                      <div className="tc-amount">{data.perfBonus1Amount}</div>
+                      <div className="tc-amount">{bonus.amount}</div>
                       <div className="tc-note">+ 18% GST</div>
                       <div className="tc-trigger">
                         <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                        Triggered on {data.perfBonus1Trigger} in revenue
+                        Triggered on {bonus.trigger} in revenue
                       </div>
                     </div>
                   </div>
-                  <div className="track-item">
-                    <div className="track-dot perf"></div>
-                    <div className="track-card perf-card">
-                      <div className="tc-when">Performance milestone 2</div>
-                      <div className="tc-title">Revenue bonus</div>
-                      <div className="tc-amount">{data.perfBonus2Amount}</div>
-                      <div className="tc-note">+ 18% GST</div>
-                      <div className="tc-trigger">
-                        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                        Triggered on {data.perfBonus2Trigger} in revenue
-                      </div>
-                    </div>
-                  </div>
-                </>
+                ))
               )}
             </div>
           </div>
@@ -643,12 +638,12 @@ export default function DealPageContent({ data, token }: Props) {
             <div className="party">
               <div className="party-label">Service provider</div>
               <div className="party-name">Yuvichaar Funnels</div>
-              <div className="party-sub">Yuvichaar Edtech Pvt Ltd<br/>GSTIN: 08AABCY8310R1ZP</div>
+              <div className="party-sub">Yuvichaar Digital Solutions Pvt Ltd<br/>GSTIN: 08AABCY8310R1ZP</div>
             </div>
             <div className="party">
               <div className="party-label">Client</div>
               <div className="party-name">{data.company}</div>
-              <div className="party-sub">{data.company}</div>
+              <div className="party-sub">{data.companyAddress}</div>
             </div>
           </div>
 

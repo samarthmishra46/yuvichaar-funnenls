@@ -80,6 +80,8 @@ interface DealPage {
   balanceWithGst?: number;
   hasPerformanceFee?: boolean;
   performanceFeeAmount?: string;
+  performanceBonuses?: Array<{ trigger: string; amount: string }>;
+  // Legacy fields for backward compatibility
   perfBonus1Trigger?: string;
   perfBonus1Amount?: string;
   perfBonus2Trigger?: string;
@@ -175,14 +177,43 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
     balanceWithGst: org.dealPage?.balanceWithGst || 264910,
     hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
     performanceFeeAmount: (() => {
-      const b1 = parseInt((org.dealPage?.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-      const b2 = parseInt((org.dealPage?.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-      return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+      const bonuses = org.dealPage?.performanceBonuses || [];
+      if (bonuses.length > 0) {
+        const total = bonuses.reduce((sum, b) => sum + (parseInt(b.amount.replace(/[₹,\s]/g, '')) || 0), 0);
+        return `₹${total.toLocaleString()}`;
+      }
+      // Fallback to legacy fields - only if they exist
+      const b1 = org.dealPage?.perfBonus1Amount ? (parseInt(org.dealPage.perfBonus1Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+      const b2 = org.dealPage?.perfBonus2Amount ? (parseInt(org.dealPage.perfBonus2Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+      return `₹${(b1 + b2).toLocaleString()}`;
     })(),
-    perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
-    perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
-    perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
-    perfBonus2Amount: org.dealPage?.perfBonus2Amount || '₹1,00,000',
+    performanceBonuses: (() => {
+      // If performanceBonuses exists and has data, use it
+      if (org.dealPage?.performanceBonuses && org.dealPage.performanceBonuses.length > 0) {
+        return org.dealPage.performanceBonuses;
+      }
+      // Otherwise, migrate from legacy fields - only add if there's actual data
+      const migrated: Array<{ trigger: string; amount: string }> = [];
+      if (org.dealPage?.perfBonus1Amount && org.dealPage?.perfBonus1Trigger) {
+        migrated.push({
+          trigger: org.dealPage.perfBonus1Trigger,
+          amount: org.dealPage.perfBonus1Amount
+        });
+      }
+      if (org.dealPage?.perfBonus2Amount && org.dealPage?.perfBonus2Trigger) {
+        migrated.push({
+          trigger: org.dealPage.perfBonus2Trigger,
+          amount: org.dealPage.perfBonus2Amount
+        });
+      }
+      // Return migrated or empty array (no defaults)
+      return migrated;
+    })(),
+    // Legacy fields for backward compatibility
+    perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '',
+    perfBonus1Amount: org.dealPage?.perfBonus1Amount || '',
+    perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '',
+    perfBonus2Amount: org.dealPage?.perfBonus2Amount || '',
     customDeliverable: org.dealPage?.customDeliverable || '',
     customDeliverableDesc: org.dealPage?.customDeliverableDesc || '',
     portfolioUrl: org.dealPage?.portfolioUrl || '',
@@ -280,14 +311,43 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       balanceWithGst: org.dealPage?.balanceWithGst || 264910,
       hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
       performanceFeeAmount: (() => {
-        const b1 = parseInt((org.dealPage?.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-        const b2 = parseInt((org.dealPage?.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
-        return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+        const bonuses = org.dealPage?.performanceBonuses || [];
+        if (bonuses.length > 0) {
+          const total = bonuses.reduce((sum, b) => sum + (parseInt(b.amount.replace(/[₹,\s]/g, '')) || 0), 0);
+          return `₹${total.toLocaleString()}`;
+        }
+        // Fallback to legacy fields - only if they exist
+        const b1 = org.dealPage?.perfBonus1Amount ? (parseInt(org.dealPage.perfBonus1Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+        const b2 = org.dealPage?.perfBonus2Amount ? (parseInt(org.dealPage.perfBonus2Amount.replace(/[₹,\s]/g, '')) || 0) : 0;
+        return `₹${(b1 + b2).toLocaleString()}`;
       })(),
-      perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
-      perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
-      perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
-      perfBonus2Amount: org.dealPage?.perfBonus2Amount || '₹1,00,000',
+      performanceBonuses: (() => {
+        // If performanceBonuses exists and has data, use it
+        if (org.dealPage?.performanceBonuses && org.dealPage.performanceBonuses.length > 0) {
+          return org.dealPage.performanceBonuses;
+        }
+        // Otherwise, migrate from legacy fields - only add if there's actual data
+        const migrated: Array<{ trigger: string; amount: string }> = [];
+        if (org.dealPage?.perfBonus1Amount && org.dealPage?.perfBonus1Trigger) {
+          migrated.push({
+            trigger: org.dealPage.perfBonus1Trigger,
+            amount: org.dealPage.perfBonus1Amount
+          });
+        }
+        if (org.dealPage?.perfBonus2Amount && org.dealPage?.perfBonus2Trigger) {
+          migrated.push({
+            trigger: org.dealPage.perfBonus2Trigger,
+            amount: org.dealPage.perfBonus2Amount
+          });
+        }
+        // Return migrated or empty array (no defaults)
+        return migrated;
+      })(),
+      // Legacy fields for backward compatibility
+      perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '',
+      perfBonus1Amount: org.dealPage?.perfBonus1Amount || '',
+      perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '',
+      perfBonus2Amount: org.dealPage?.perfBonus2Amount || '',
       customDeliverable: org.dealPage?.customDeliverable || '',
       customDeliverableDesc: org.dealPage?.customDeliverableDesc || '',
       portfolioUrl: org.dealPage?.portfolioUrl || '',
@@ -383,11 +443,21 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       // Calculate total with GST for payment.totalAmount
       const totalWithGst = Math.round((form.fixedFee || 0) * 1.18);
       
+      // Sync legacy fields from performanceBonuses for backward compatibility
+      const bonuses = form.performanceBonuses || [];
+      const saveData = {
+        ...form,
+        perfBonus1Trigger: bonuses[0]?.trigger || '',
+        perfBonus1Amount: bonuses[0]?.amount || '',
+        perfBonus2Trigger: bonuses[1]?.trigger || '',
+        perfBonus2Amount: bonuses[1]?.amount || '',
+      };
+      
       const res = await fetch(`/api/organizations/${org._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          dealPage: form,
+          dealPage: saveData,
           'payment.totalAmount': totalWithGst,
         }),
       });
@@ -1047,19 +1117,19 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
             <div>
               <p className="text-xs text-gray-500">Advance (50%)</p>
-              <p className="font-semibold">₹{form.advanceAmount?.toLocaleString('en-IN')}</p>
+              <p className="font-semibold">₹{form.advanceAmount?.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Advance + GST</p>
-              <p className="font-semibold">₹{form.advanceWithGst?.toLocaleString('en-IN')}</p>
+              <p className="font-semibold">₹{form.advanceWithGst?.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Balance (50%)</p>
-              <p className="font-semibold">₹{form.balanceAmount?.toLocaleString('en-IN')}</p>
+              <p className="font-semibold">₹{form.balanceAmount?.toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Balance + GST</p>
-              <p className="font-semibold">₹{form.balanceWithGst?.toLocaleString('en-IN')}</p>
+              <p className="font-semibold">₹{form.balanceWithGst?.toLocaleString()}</p>
             </div>
           </div>
 
@@ -1082,63 +1152,77 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
           </div>
 
           {form.hasPerformanceFee && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7">
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 1 Trigger</label>
-                <Input
-                  value={form.perfBonus1Trigger}
-                  onChange={(e) => updateField('perfBonus1Trigger', e.target.value)}
-                  placeholder="e.g., ₹25,00,000"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 1 Amount</label>
-                <Input
-                  value={form.perfBonus1Amount}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    updateField('perfBonus1Amount', newValue);
-                    // Auto-calculate total
-                    const bonus1 = parseInt(newValue.replace(/[₹,\s]/g, '')) || 0;
-                    const bonus2 = parseInt((form.perfBonus2Amount || '').replace(/[₹,\s]/g, '')) || 0;
-                    const total = bonus1 + bonus2;
-                    updateField('performanceFeeAmount', `₹${total.toLocaleString('en-IN')}`);
+            <div className="space-y-4 pl-7">
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium text-gray-700">Performance Bonuses</label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newBonuses = [...(form.performanceBonuses || []), { trigger: '', amount: '' }];
+                    setForm({ ...form, performanceBonuses: newBonuses });
                   }}
-                  placeholder="e.g., ₹1,00,000"
-                />
+                  className="text-xs bg-[#e91e8c] text-white px-3 py-1.5 rounded-lg hover:bg-[#d81b60] transition-colors"
+                >
+                  + Add Bonus
+                </button>
               </div>
+              {(form.performanceBonuses || []).map((bonus, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-start relative">
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus {index + 1} Trigger</label>
+                    <Input
+                      value={bonus.trigger}
+                      onChange={(e) => {
+                        const newBonuses = [...(form.performanceBonuses || [])];
+                        newBonuses[index] = { ...newBonuses[index], trigger: e.target.value };
+                        setForm({ ...form, performanceBonuses: newBonuses });
+                      }}
+                      placeholder="e.g., ₹25,00,000"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus {index + 1} Amount</label>
+                    <Input
+                      value={bonus.amount}
+                      onChange={(e) => {
+                        const newBonuses = [...(form.performanceBonuses || [])];
+                        newBonuses[index] = { ...newBonuses[index], amount: e.target.value };
+                        setForm({ ...form, performanceBonuses: newBonuses });
+                        // Auto-calculate total
+                        const total = newBonuses.reduce((sum, b) => sum + (parseInt(b.amount.replace(/[₹,\s]/g, '')) || 0), 0);
+                        setForm(prev => ({ ...prev, performanceFeeAmount: `₹${total.toLocaleString()}` }));
+                      }}
+                      placeholder="e.g., ₹1,00,000"
+                    />
+                  </div>
+                  <div className="md:col-span-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newBonuses = (form.performanceBonuses || []).filter((_, i) => i !== index);
+                        setForm({ ...form, performanceBonuses: newBonuses });
+                        // Recalculate total
+                        const total = newBonuses.reduce((sum, b) => sum + (parseInt(b.amount.replace(/[₹,\s]/g, '')) || 0), 0);
+                        setForm(prev => ({ ...prev, performanceFeeAmount: `₹${total.toLocaleString()}` }));
+                      }}
+                      className="mt-7 text-xs bg-red-100 text-red-600 px-3 py-1.5 rounded-lg hover:bg-red-200 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {(form.performanceBonuses || []).length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">No bonuses added yet. Click "Add Bonus" to add one.</p>
+              )}
               <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 2 Trigger</label>
-                <Input
-                  value={form.perfBonus2Trigger}
-                  onChange={(e) => updateField('perfBonus2Trigger', e.target.value)}
-                  placeholder="e.g., ₹50,00,000"
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 2 Amount</label>
-                <Input
-                  value={form.perfBonus2Amount}
-                  onChange={(e) => {
-                    const newValue = e.target.value;
-                    updateField('perfBonus2Amount', newValue);
-                    // Auto-calculate total
-                    const bonus1 = parseInt((form.perfBonus1Amount || '').replace(/[₹,\s]/g, '')) || 0;
-                    const bonus2 = parseInt(newValue.replace(/[₹,\s]/g, '')) || 0;
-                    const total = bonus1 + bonus2;
-                    updateField('performanceFeeAmount', `₹${total.toLocaleString('en-IN')}`);
-                  }}
-                  placeholder="e.g., ₹1,00,000"
-                />
-              </div>
-              <div className="md:col-span-2">
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Total Performance Fee (auto-calculated)</label>
                 <Input
                   value={form.performanceFeeAmount}
                   readOnly
                   className="bg-gray-50"
                 />
-                <p className="text-xs text-gray-500 mt-1">Automatically calculated from Bonus 1 + Bonus 2 amounts</p>
+                <p className="text-xs text-gray-500 mt-1">Automatically calculated from all bonus amounts</p>
               </div>
             </div>
           )}
