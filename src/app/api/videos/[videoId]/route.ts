@@ -44,7 +44,7 @@ export async function DELETE(
   { params }: { params: Promise<{ videoId: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -52,11 +52,19 @@ export async function DELETE(
 
   await dbConnect();
 
-  const deleted = await AdVideo.findByIdAndDelete(videoId);
+  // Find the video first to check ownership
+  const video = await AdVideo.findById(videoId);
 
-  if (!deleted) {
+  if (!video) {
     return NextResponse.json({ error: 'Video not found' }, { status: 404 });
   }
+
+  // Staff can only delete their own uploads
+  if (session.user.role === 'staff' && video.uploadedBy !== session.user.email) {
+    return NextResponse.json({ error: 'You can only delete videos you uploaded' }, { status: 403 });
+  }
+
+  await AdVideo.findByIdAndDelete(videoId);
 
   return NextResponse.json({ success: true });
 }

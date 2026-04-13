@@ -13,6 +13,7 @@ export interface IAdVideo extends Document {
   bunnyVideoId: string;
   bunnyStreamUrl: string;
   thumbnailUrl?: string;
+  uploadedBy?: string;    // Email of uploader (for staff permission checks)
   createdAt: Date;
 }
 
@@ -39,6 +40,7 @@ const AdVideoSchema = new Schema<IAdVideo>(
     bunnyVideoId: { type: String, required: true },
     bunnyStreamUrl: { type: String, required: true },
     thumbnailUrl: { type: String },
+    uploadedBy: { type: String },
     createdAt: { type: Date, default: Date.now },
   },
   {

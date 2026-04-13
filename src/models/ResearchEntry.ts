@@ -11,6 +11,7 @@ export interface IResearchEntry extends Document {
   fileUrl?: string;       // Cloudinary URL – for PDFs
   docLink?: string;       // Google Doc URL
   description?: string;
+  uploadedBy?: string;    // Email of uploader (for staff permission checks)
   createdAt: Date;
 }
 
@@ -35,6 +36,7 @@ const ResearchEntrySchema = new Schema<IResearchEntry>(
     fileUrl: { type: String },
     docLink: { type: String },
     description: { type: String },
+    uploadedBy: { type: String },
     createdAt: { type: Date, default: Date.now },
   },
   {

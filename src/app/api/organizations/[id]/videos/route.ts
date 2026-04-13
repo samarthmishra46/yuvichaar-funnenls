@@ -43,7 +43,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -70,6 +70,7 @@ export async function POST(
       bunnyVideoId: body.bunnyVideoId,
       bunnyStreamUrl: body.bunnyStreamUrl,
       thumbnailUrl: body.thumbnailUrl || '',
+      uploadedBy: body.uploadedBy || session.user.email || '',
     });
 
     // Send email notification to client

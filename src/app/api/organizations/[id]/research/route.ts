@@ -36,7 +36,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -58,6 +58,7 @@ export async function POST(
       fileUrl: body.fileUrl || '',
       docLink: body.docLink || '',
       description: body.description || '',
+      uploadedBy: body.uploadedBy || session.user.email || '',
     });
 
     return NextResponse.json({ entry }, { status: 201 });

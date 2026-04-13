@@ -10,7 +10,7 @@ export async function DELETE(
   { params }: { params: Promise<{ entryId: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -18,11 +18,19 @@ export async function DELETE(
 
   await dbConnect();
 
-  const deleted = await ResearchEntry.findByIdAndDelete(entryId);
+  // Find the entry first to check ownership
+  const entry = await ResearchEntry.findById(entryId);
 
-  if (!deleted) {
+  if (!entry) {
     return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
   }
+
+  // Staff can only delete their own uploads
+  if (session.user.role === 'staff' && entry.uploadedBy !== session.user.email) {
+    return NextResponse.json({ error: 'You can only delete entries you uploaded' }, { status: 403 });
+  }
+
+  await ResearchEntry.findByIdAndDelete(entryId);
 
   return NextResponse.json({ success: true });
 }

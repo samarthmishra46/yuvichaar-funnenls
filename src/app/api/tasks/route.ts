@@ -7,7 +7,7 @@ import Organization from '@/models/Organization';
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -15,6 +15,11 @@ export async function POST(request: NextRequest) {
 
   try {
     const { roadmapId, orgId, dayNumber, title, description, assignedTo } = await request.json();
+
+    // Staff can only create tasks assigned to themselves
+    if (session.user.role === 'staff' && assignedTo !== session.user.email) {
+      return NextResponse.json({ error: 'Staff can only create tasks assigned to themselves' }, { status: 403 });
+    }
 
     if (!roadmapId || !orgId || !dayNumber || !title) {
       return NextResponse.json(

@@ -9,6 +9,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import StaffTasksTab from '@/components/staff/tabs/StaffTasksTab';
+import StaffBrandResearchTab from '@/components/staff/tabs/StaffBrandResearchTab';
+import StaffAdVideosTab from '@/components/staff/tabs/StaffAdVideosTab';
+import StaffLandingPageTab from '@/components/staff/tabs/StaffLandingPageTab';
 
 interface Task {
   _id: string;
@@ -449,61 +454,28 @@ export default function StaffPortalPage() {
             </Card>
           )}
 
-          {/* Tasks grouped by day */}
-          {tasksByDay.length === 0 ? (
-            <div className="text-center py-16 bg-white rounded-2xl border border-[#e2e8f0]">
-              <CheckCircle2 className="w-12 h-12 text-[#22c55e] mx-auto mb-4" />
-              <p className="text-[#0f172a] font-semibold">All caught up!</p>
-              <p className="text-sm text-[#64748b] mt-1">No pending tasks for this organization</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {tasksByDay.map(([dayNumber, dayTasks]) => (
-                <div key={dayNumber}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="px-3 py-1.5 bg-[#e91e8c] text-white text-sm font-semibold rounded-lg">
-                      Day {dayNumber}
-                    </div>
-                    <span className="text-sm text-[#64748b]">
-                      {dayTasks.length} task{dayTasks.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  <div className="space-y-3">
-                    {dayTasks.map((task) => (
-                      <Card key={task._id} className="!bg-white !border-[#e2e8f0] shadow-sm">
-                        <CardContent className="p-5">
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex-1">
-                              <h3 className="text-[#0f172a] font-semibold mb-1">{task.title}</h3>
-                              {task.description && (
-                                <p className="text-sm text-[#64748b]">{task.description}</p>
-                              )}
-                            </div>
-                            <Badge
-                              variant={
-                                task.status === 'in_progress'
-                                  ? 'warning'
-                                  : 'default'
-                              }
-                            >
-                              {task.status.replace('_', ' ')}
-                            </Badge>
-                          </div>
-                          <Button
-                            onClick={() => setSelectedTask(task)}
-                            size="sm"
-                            className="mt-2"
-                          >
-                            Mark as Complete
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Tabs for different sections */}
+          <Tabs defaultValue="tasks">
+            <TabsList className="!border-[rgba(255,255,255,0.06)] mb-6">
+              <TabsTrigger value="tasks" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Tasks</TabsTrigger>
+              <TabsTrigger value="research" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Research</TabsTrigger>
+              <TabsTrigger value="videos" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Ad Videos</TabsTrigger>
+              <TabsTrigger value="landing-page" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Landing Page</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="tasks">
+              <StaffTasksTab orgId={selectedOrgId} staffEmail={session.user.email} />
+            </TabsContent>
+            <TabsContent value="research">
+              <StaffBrandResearchTab orgId={selectedOrgId} staffEmail={session.user.email} />
+            </TabsContent>
+            <TabsContent value="videos">
+              <StaffAdVideosTab orgId={selectedOrgId} staffEmail={session.user.email} />
+            </TabsContent>
+            <TabsContent value="landing-page">
+              <StaffLandingPageTab orgId={selectedOrgId} />
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Complete Task Modal - same as before but with light theme */}
