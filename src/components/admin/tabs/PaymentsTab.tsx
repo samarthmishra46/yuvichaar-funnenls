@@ -38,10 +38,8 @@ interface PaymentsTabProps {
 }
 
 export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
-  const [savingTotal, setSavingTotal] = useState(false);
   const [loggingPayment, setLoggingPayment] = useState(false);
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
-  const [totalAmount, setTotalAmount] = useState(org.payment?.totalAmount || 0);
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
     date: new Date().toISOString().split('T')[0],
@@ -84,28 +82,6 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
 
   const totalPaid = (org.payment?.payments || []).reduce((sum, p) => sum + p.amount, 0);
   const amountDue = grandTotal - totalPaid;
-
-  const handleSaveTotal = async () => {
-    setSavingTotal(true);
-    try {
-      const res = await fetch(`/api/organizations/${org._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 'payment.totalAmount': totalAmount }),
-      });
-
-      if (res.ok) {
-        toast.success('Total amount updated');
-        onUpdate();
-      } else {
-        toast.error('Failed to update');
-      }
-    } catch {
-      toast.error('Something went wrong');
-    } finally {
-      setSavingTotal(false);
-    }
-  };
 
   const handleLogPayment = async () => {
     const amount = parseFloat(paymentForm.amount);
@@ -233,33 +209,12 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
         </div>
       </div>
 
-      {/* Total Amount Setting */}
-      <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
-        <CardContent className="pt-6">
-          <h4 className="font-semibold text-[#0f172a] mb-4 flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-[#e91e8c]" />
-            Contract Amount
-          </h4>
-          <div className="flex gap-3 items-end">
-            <div className="flex-1 max-w-xs">
-              <Input
-                id="total-amount"
-                type="number"
-                placeholder="100000"
-                value={totalAmount || ''}
-                onChange={(e) => setTotalAmount(Number(e.target.value))}
-                className="!bg-white !border-[#e2e8f0] !text-[#0f172a]"
-              />
-            </div>
-            <Button onClick={handleSaveTotal} disabled={savingTotal}>
-              {savingTotal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save'}
-            </Button>
-          </div>
-          <p className="text-xs text-[#64748b] mt-2">
-            💡 This amount is automatically synced when you save pricing in the Deal Page tab (Fixed Fee + 18% GST).
-          </p>
-        </CardContent>
-      </Card>
+      {/* Contract Amount Info */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <p className="text-sm text-blue-800">
+          💡 <strong>Note:</strong> Contract amount is calculated automatically from the Deal Page settings (Fixed Fee + Performance Fee + GST). To edit the pricing, go to the <strong>Deal Page</strong> tab.
+        </p>
+      </div>
 
       {/* Log Payment */}
       <Card className="!bg-white !border-[#e2e8f0] shadow-sm">
