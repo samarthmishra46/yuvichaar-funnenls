@@ -20,6 +20,7 @@ export async function GET(
 
     const deal = {
       company: org.name,
+      companyAddress: org.address || '',
       email: org.email,
       phone: org.phone || '',
       proposalTitle: dealPage.proposalTitle || '60 Day Growth Marathon',

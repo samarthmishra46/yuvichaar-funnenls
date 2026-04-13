@@ -64,6 +64,7 @@ interface ClauseSection {
 
 interface DealData {
   company: string;
+  companyAddress?: string;
   email: string;
   phone?: string;
   proposalTitle: string;
