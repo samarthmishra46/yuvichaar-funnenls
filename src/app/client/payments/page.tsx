@@ -20,6 +20,12 @@ interface Organization {
       razorpayPaymentId?: string;
     }>;
   };
+  dealPage?: {
+    fixedFee?: number;
+    hasPerformanceFee?: boolean;
+    perfBonus1Amount?: string;
+    perfBonus2Amount?: string;
+  };
 }
 
 declare global {
@@ -58,8 +64,20 @@ export default function ClientPaymentsPage() {
     };
   }, [fetchOrg]);
 
+  // Calculate fee breakdown
+  const fixedFee = org?.dealPage?.fixedFee || 449000;
+  const hasPerformanceFee = org?.dealPage?.hasPerformanceFee !== false;
+  const perfBonus1 = parseInt((org?.dealPage?.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+  const perfBonus2 = parseInt((org?.dealPage?.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+  const performanceFee = hasPerformanceFee ? (perfBonus1 + perfBonus2) : 0;
+  const fixedFeeGst = Math.round(fixedFee * 0.18);
+  const performanceFeeGst = Math.round(performanceFee * 0.18);
+  const totalFixedWithGst = fixedFee + fixedFeeGst;
+  const totalPerformanceWithGst = performanceFee + performanceFeeGst;
+  const grandTotal = totalFixedWithGst + totalPerformanceWithGst;
+
   const totalPaid = (org?.payment?.payments || []).reduce((sum, p) => sum + p.amount, 0);
-  const amountDue = (org?.payment?.totalAmount || 0) - totalPaid;
+  const amountDue = grandTotal - totalPaid;
 
   const handlePayNow = async () => {
     if (!org || amountDue <= 0) return;
@@ -154,20 +172,59 @@ export default function ClientPaymentsPage() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Payments</h1>
 
+      {/* Fee Breakdown */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+        <h3 className="font-semibold text-gray-900 mb-4">Fee Breakdown</h3>
+        <div className="space-y-3">
+          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <span className="text-sm text-gray-500">Fixed Fee</span>
+            <span className="font-semibold text-gray-900">₹{fixedFee.toLocaleString('en-IN')}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-100">
+            <span className="text-sm text-gray-500">GST on Fixed Fee (18%)</span>
+            <span className="font-semibold text-gray-900">₹{fixedFeeGst.toLocaleString('en-IN')}</span>
+          </div>
+          <div className="flex justify-between items-center py-2 border-b border-gray-100 bg-gray-50 -mx-5 px-5">
+            <span className="text-sm font-medium text-gray-900">Fixed Fee Total (incl. GST)</span>
+            <span className="font-bold text-gray-900">₹{totalFixedWithGst.toLocaleString('en-IN')}</span>
+          </div>
+          {hasPerformanceFee && (
+            <>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <span className="text-sm text-gray-500">Performance Fee <span className="text-xs text-gray-400">(on milestone triggers)</span></span>
+                <span className="font-semibold text-pink-600">₹{performanceFee.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <span className="text-sm text-gray-500">GST on Performance Fee (18%)</span>
+                <span className="font-semibold text-pink-600">₹{performanceFeeGst.toLocaleString('en-IN')}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-gray-100 bg-pink-50 -mx-5 px-5">
+                <span className="text-sm font-medium text-gray-900">Performance Fee Total (incl. GST)</span>
+                <span className="font-bold text-pink-600">₹{totalPerformanceWithGst.toLocaleString('en-IN')}</span>
+              </div>
+            </>
+          )}
+          <div className="flex justify-between items-center py-3 bg-gray-900 -mx-5 px-5 rounded-b-xl mt-2">
+            <span className="text-sm font-semibold text-white">Grand Total (All Fees + GST)</span>
+            <span className="text-xl font-bold text-white">₹{grandTotal.toLocaleString('en-IN')}</span>
+          </div>
+        </div>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider mb-1">Total Amount</p>
-          <p className="text-2xl font-bold text-gray-900">₹{(org.payment?.totalAmount || 0).toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gray-900">₹{grandTotal.toLocaleString('en-IN')}</p>
         </div>
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider mb-1">Amount Paid</p>
-          <p className="text-2xl font-bold text-green-500">₹{totalPaid.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-green-500">₹{totalPaid.toLocaleString('en-IN')}</p>
         </div>
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider mb-1">Amount Due</p>
           <p className={`text-2xl font-bold ${amountDue > 0 ? 'text-red-500' : 'text-green-500'}`}>
-            ₹{Math.max(0, amountDue).toLocaleString()}
+            ₹{Math.max(0, amountDue).toLocaleString('en-IN')}
           </p>
         </div>
       </div>

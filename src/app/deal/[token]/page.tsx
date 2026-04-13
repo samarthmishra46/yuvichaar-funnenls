@@ -79,6 +79,7 @@ interface DealData {
   balanceAmount: number;
   balanceWithGst: number;
   hasPerformanceFee: boolean;
+  performanceFeeAmount: string;
   perfBonus1Trigger: string;
   perfBonus1Amount: string;
   perfBonus2Trigger: string;

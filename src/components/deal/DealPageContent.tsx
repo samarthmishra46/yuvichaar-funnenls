@@ -78,6 +78,7 @@ interface DealData {
   balanceAmount: number;
   balanceWithGst: number;
   hasPerformanceFee: boolean;
+  performanceFeeAmount: string;
   perfBonus1Trigger: string;
   perfBonus1Amount: string;
   perfBonus2Trigger: string;
@@ -526,14 +527,14 @@ export default function DealPageContent({ data, token }: Props) {
                   <div className="fee-desc">Only paid when you hit revenue milestones. Our incentive is aligned with yours.</div>
                 </div>
                 <div style={{textAlign: 'right'}}>
-                  <div className="fee-amount">₹2,00,000</div>
+                  <div className="fee-amount">{data.performanceFeeAmount}</div>
                   <div className="fee-note">+ GST</div>
                 </div>
               </div>
             )}
             <div className="fee-total-row">
               <div className="fee-total-label">Total engagement value</div>
-              <div className="fee-total-amount">₹{formatCurrency(data.fixedFee)}{data.hasPerformanceFee ? ' + ₹2,00,000' : ''} + GST</div>
+              <div className="fee-total-amount">₹{formatCurrency(data.fixedFee)}{data.hasPerformanceFee ? ` + ${data.performanceFeeAmount}` : ''} + GST</div>
             </div>
           </div>
 
@@ -932,7 +933,7 @@ export default function DealPageContent({ data, token }: Props) {
         <div className="faq-lbl">Common questions</div>
         {[
           { q: 'What is the 60-Day Growth Marathon?', a: 'A fixed 60-day engagement where we build your complete D2C customer acquisition system — video ads, landing page, automations, live campaigns. By Day 60 you have a fully running funnel.' },
-          { q: 'Why is the fee split?', a: 'The fixed fee (₹4,49,000) is paid in two equal halves — 50% on signing, 50% on Day 30 after you\'ve seen 30 days of work. The performance fee (₹2,00,000) is only paid when you hit the revenue milestones.' },
+          { q: 'Why is the fee split?', a: `The fixed fee (₹${formatCurrency(data.fixedFee)}) is paid in two equal halves — 50% on signing, 50% on Day 30 after you've seen 30 days of work.${data.hasPerformanceFee ? ` The performance fee (${data.performanceFeeAmount}) is only paid when you hit the revenue milestones.` : ''}` },
           { q: 'Is my payment secure?', a: 'Yes. Online payments go through Razorpay with 256-bit SSL. Bank transfers go directly to our registered HDFC current account (Yuvichaar Edtech Pvt Ltd).' },
           { q: 'What happens after I pay?', a: 'Everything activates automatically — your portal, a personal WhatsApp from Yuvraj, your kickoff call link, your brand question form, and your signed MoU + receipt by email.' }
         ].map((faq, i) => (

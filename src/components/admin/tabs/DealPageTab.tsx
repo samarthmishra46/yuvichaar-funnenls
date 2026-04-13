@@ -174,7 +174,11 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
     balanceAmount: org.dealPage?.balanceAmount || 224500,
     balanceWithGst: org.dealPage?.balanceWithGst || 264910,
     hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
-    performanceFeeAmount: org.dealPage?.performanceFeeAmount || '₹2,00,000',
+    performanceFeeAmount: (() => {
+      const b1 = parseInt((org.dealPage?.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+      const b2 = parseInt((org.dealPage?.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+      return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+    })(),
     perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
     perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
     perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
@@ -275,7 +279,11 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       balanceAmount: org.dealPage?.balanceAmount || 224500,
       balanceWithGst: org.dealPage?.balanceWithGst || 264910,
       hasPerformanceFee: org.dealPage?.hasPerformanceFee !== false,
-      performanceFeeAmount: org.dealPage?.performanceFeeAmount || '₹2,00,000',
+      performanceFeeAmount: (() => {
+        const b1 = parseInt((org.dealPage?.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+        const b2 = parseInt((org.dealPage?.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+        return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+      })(),
       perfBonus1Trigger: org.dealPage?.perfBonus1Trigger || '₹25,00,000',
       perfBonus1Amount: org.dealPage?.perfBonus1Amount || '₹1,00,000',
       perfBonus2Trigger: org.dealPage?.perfBonus2Trigger || '₹50,00,000',
@@ -1067,12 +1075,9 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
               Include Performance Fee
             </label>
             {form.hasPerformanceFee && (
-              <Input
-                value={form.performanceFeeAmount}
-                onChange={(e) => updateField('performanceFeeAmount', e.target.value)}
-                placeholder="e.g., ₹2,00,000"
-                className="w-40"
-              />
+              <span className="text-sm font-semibold text-[#e91e8c]">
+                (Total: {form.performanceFeeAmount})
+              </span>
             )}
           </div>
 
@@ -1090,7 +1095,15 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 1 Amount</label>
                 <Input
                   value={form.perfBonus1Amount}
-                  onChange={(e) => updateField('perfBonus1Amount', e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    updateField('perfBonus1Amount', newValue);
+                    // Auto-calculate total
+                    const bonus1 = parseInt(newValue.replace(/[₹,\s]/g, '')) || 0;
+                    const bonus2 = parseInt((form.perfBonus2Amount || '').replace(/[₹,\s]/g, '')) || 0;
+                    const total = bonus1 + bonus2;
+                    updateField('performanceFeeAmount', `₹${total.toLocaleString('en-IN')}`);
+                  }}
                   placeholder="e.g., ₹1,00,000"
                 />
               </div>
@@ -1106,9 +1119,26 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
                 <label className="text-sm font-medium text-gray-700 mb-1 block">Bonus 2 Amount</label>
                 <Input
                   value={form.perfBonus2Amount}
-                  onChange={(e) => updateField('perfBonus2Amount', e.target.value)}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    updateField('perfBonus2Amount', newValue);
+                    // Auto-calculate total
+                    const bonus1 = parseInt((form.perfBonus1Amount || '').replace(/[₹,\s]/g, '')) || 0;
+                    const bonus2 = parseInt(newValue.replace(/[₹,\s]/g, '')) || 0;
+                    const total = bonus1 + bonus2;
+                    updateField('performanceFeeAmount', `₹${total.toLocaleString('en-IN')}`);
+                  }}
                   placeholder="e.g., ₹1,00,000"
                 />
+              </div>
+              <div className="md:col-span-2">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Total Performance Fee (auto-calculated)</label>
+                <Input
+                  value={form.performanceFeeAmount}
+                  readOnly
+                  className="bg-gray-50"
+                />
+                <p className="text-xs text-gray-500 mt-1">Automatically calculated from Bonus 1 + Bonus 2 amounts</p>
               </div>
             </div>
           )}

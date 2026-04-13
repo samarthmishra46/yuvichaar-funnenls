@@ -35,6 +35,11 @@ export async function GET(
       balanceAmount: dealPage.balanceAmount || 224500,
       balanceWithGst: dealPage.balanceWithGst || 264910,
       hasPerformanceFee: dealPage.hasPerformanceFee !== false,
+      performanceFeeAmount: (() => {
+        const b1 = parseInt((dealPage.perfBonus1Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+        const b2 = parseInt((dealPage.perfBonus2Amount || '₹1,00,000').replace(/[₹,\s]/g, '')) || 0;
+        return `₹${(b1 + b2).toLocaleString('en-IN')}`;
+      })(),
       perfBonus1Trigger: dealPage.perfBonus1Trigger || '₹25,00,000',
       perfBonus1Amount: dealPage.perfBonus1Amount || '₹1,00,000',
       perfBonus2Trigger: dealPage.perfBonus2Trigger || '₹50,00,000',

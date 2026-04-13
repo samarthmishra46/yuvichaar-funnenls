@@ -99,6 +99,7 @@ export interface IDealPage {
   balanceAmount?: number;
   balanceWithGst?: number;
   hasPerformanceFee?: boolean;
+  performanceFeeAmount?: string;
   perfBonus1Trigger?: string;
   perfBonus1Amount?: string;
   perfBonus2Trigger?: string;
@@ -247,6 +248,7 @@ const OrganizationSchema = new Schema<IOrganization>(
       balanceAmount: { type: Number, default: 224500 },
       balanceWithGst: { type: Number, default: 264910 },
       hasPerformanceFee: { type: Boolean, default: true },
+      performanceFeeAmount: { type: String, default: '₹2,00,000' },
       perfBonus1Trigger: { type: String, default: '₹25,00,000' },
       perfBonus1Amount: { type: String, default: '₹1,00,000' },
       perfBonus2Trigger: { type: String, default: '₹50,00,000' },
