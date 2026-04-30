@@ -550,7 +550,7 @@ export default function DealPageContent({ data, token }: Props) {
                   <div className="tc-when">On signing — due today</div>
                   <div className="tc-title">Advance payment</div>
                   <div className="tc-amount">₹{formatCurrency(data.advanceWithGst)}</div>
-                  <div className="tc-note">50% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST<br/>This unlocks your portal and starts the marathon</div>
+                  <div className="tc-note">{Math.round((data.advanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST<br/>This unlocks your portal and starts the marathon</div>
                 </div>
               </div>
               <div className="track-item">
@@ -559,7 +559,7 @@ export default function DealPageContent({ data, token }: Props) {
                   <div className="tc-when">Day 30</div>
                   <div className="tc-title">Balance payment</div>
                   <div className="tc-amount">₹{formatCurrency(data.balanceWithGst)}</div>
-                  <div className="tc-note">Remaining 50% of fixed fee (₹{formatCurrency(data.balanceAmount)}) + 18% GST<br/>Due after 30 days of delivered work</div>
+                  <div className="tc-note">Remaining {Math.round((data.balanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.balanceAmount)}) + 18% GST<br/>Due after 30 days of delivered work</div>
                 </div>
               </div>
               {data.hasPerformanceFee && (
@@ -652,8 +652,8 @@ export default function DealPageContent({ data, token }: Props) {
             <div className="meta-row"><span className="mk">Engagement</span><span className="mv">{data.proposalTitle}</span></div>
             <div className="meta-row"><span className="mk">Start date</span><span className="mv">{data.startDate || 'To be confirmed at kickoff'}</span></div>
             <div className="meta-row"><span className="mk">Fixed fee</span><span className="mv">₹{formatCurrency(data.fixedFee)} + GST</span></div>
-            <div className="meta-row"><span className="mk">Advance (50% — on signing)</span><span className="mv">₹{formatCurrency(data.advanceWithGst)} incl. GST</span></div>
-            <div className="meta-row"><span className="mk">Balance (50% — Day 30)</span><span className="mv">₹{formatCurrency(data.balanceWithGst)} incl. GST</span></div>
+            <div className="meta-row"><span className="mk">Advance ({Math.round((data.advanceAmount / data.fixedFee) * 100)}% — on signing)</span><span className="mv">₹{formatCurrency(data.advanceWithGst)} incl. GST</span></div>
+            <div className="meta-row"><span className="mk">Balance ({Math.round((data.balanceAmount / data.fixedFee) * 100)}% — Day 30)</span><span className="mv">₹{formatCurrency(data.balanceWithGst)} incl. GST</span></div>
           </div>
 
           <div className="clauses">
@@ -754,7 +754,7 @@ export default function DealPageContent({ data, token }: Props) {
           <div className="pay-hero">
             <div className="pay-eyebrow">Advance payment — due now</div>
             <div className="pay-amount">₹{formatCurrency(data.advanceWithGst)}</div>
-            <div className="pay-breakdown">₹{formatCurrency(data.advanceAmount)} + 18% GST · 50% of fixed fee</div>
+            <div className="pay-breakdown">₹{formatCurrency(data.advanceAmount)} + 18% GST </div>
           </div>
 
           <div className="unlock-block">

@@ -98,6 +98,7 @@ export interface IDealPage {
   advanceWithGst?: number;
   balanceAmount?: number;
   balanceWithGst?: number;
+  advancePercent?: number;
   hasPerformanceFee?: boolean;
   performanceFeeAmount?: string;
   performanceBonuses?: Array<{
@@ -252,6 +253,7 @@ const OrganizationSchema = new Schema<IOrganization>(
       advanceWithGst: { type: Number, default: 264910 },
       balanceAmount: { type: Number, default: 224500 },
       balanceWithGst: { type: Number, default: 264910 },
+      advancePercent: { type: Number, default: 50 },
       hasPerformanceFee: { type: Boolean, default: true },
       performanceFeeAmount: { type: String, default: '₹2,00,000' },
       performanceBonuses: [{

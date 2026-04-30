@@ -73,11 +73,11 @@ interface DealPage {
   adsCount?: number;
   socialVideosCount?: number;
   landingPagesCount?: number;
-  fixedFee?: number;
-  advanceAmount?: number;
-  advanceWithGst?: number;
-  balanceAmount?: number;
-  balanceWithGst?: number;
+  fixedFee: number;
+  advanceAmount: number;
+  advanceWithGst: number;
+  balanceAmount: number;
+  balanceWithGst: number;
   hasPerformanceFee?: boolean;
   performanceFeeAmount?: string;
   performanceBonuses?: Array<{ trigger: string; amount: string }>;
@@ -510,15 +510,30 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
   };
 
   const updateFixedFee = (value: number) => {
-    const half = Math.round(value / 2);
-    const halfWithGst = calculateGst(half);
+    const advanceAmount = form.advanceAmount || Math.round(value / 2);
+    const balanceAmount = value - advanceAmount;
+    
     setForm(prev => ({
       ...prev,
       fixedFee: value,
-      advanceAmount: half,
-      advanceWithGst: halfWithGst,
-      balanceAmount: half,
-      balanceWithGst: halfWithGst,
+      advanceAmount,
+      advanceWithGst: calculateGst(advanceAmount),
+      balanceAmount,
+      balanceWithGst: calculateGst(balanceAmount),
+    }));
+  };
+
+  const updateAdvanceAmount = (value: number) => {
+    const fixedFee = form.fixedFee || 0;
+    const advanceAmount = Math.min(value, fixedFee);
+    const balanceAmount = fixedFee - advanceAmount;
+    
+    setForm(prev => ({
+      ...prev,
+      advanceAmount,
+      advanceWithGst: calculateGst(advanceAmount),
+      balanceAmount,
+      balanceWithGst: calculateGst(balanceAmount),
     }));
   };
 
@@ -1112,24 +1127,53 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
               value={form.fixedFee}
               onChange={(e) => updateFixedFee(parseInt(e.target.value) || 0)}
             />
-            <p className="text-xs text-gray-500 mt-1">Advance and balance will be auto-calculated as 50% each + 18% GST</p>
+            <p className="text-xs text-gray-500 mt-1">Balance will be auto-calculated as Fixed Fee - Advance Amount + 18% GST</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
-            <div>
-              <p className="text-xs text-gray-500">Advance (50%)</p>
-              <p className="font-semibold">₹{form.advanceAmount?.toLocaleString()}</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Advance Amount (₹)</label>
+                <Input
+                  type="number"
+                  min="0"
+                  max={form.fixedFee}
+                  value={form.advanceAmount || 0}
+                  onChange={(e) => {
+                    const value = Math.min(form.fixedFee || 0, Math.max(0, parseInt(e.target.value) || 0));
+                    updateAdvanceAmount(value);
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-1">Amount due on signing</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Balance Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={form.balanceAmount || 0}
+                  disabled
+                  className="bg-gray-100"
+                />
+                <p className="text-xs text-gray-500 mt-1">Auto-calculated (Fixed Fee - Advance)</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-gray-500">Advance + GST</p>
-              <p className="font-semibold">₹{form.advanceWithGst?.toLocaleString()}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500">Balance (50%)</p>
-              <p className="font-semibold">₹{form.balanceAmount?.toLocaleString()}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500">Balance + GST</p>
-              <p className="font-semibold">₹{form.balanceWithGst?.toLocaleString()}</p>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-lg">
+              <div>
+                <p className="text-xs text-gray-500">Advance</p>
+                <p className="font-semibold">₹{form.advanceAmount?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Advance + GST</p>
+                <p className="font-semibold">₹{form.advanceWithGst?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Balance</p>
+                <p className="font-semibold">₹{form.balanceAmount?.toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Balance + GST</p>
+                <p className="font-semibold">₹{form.balanceWithGst?.toLocaleString()}</p>
+              </div>
             </div>
           </div>
 
