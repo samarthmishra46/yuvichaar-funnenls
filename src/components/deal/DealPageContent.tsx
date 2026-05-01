@@ -591,7 +591,7 @@ export default function DealPageContent({ data, token }: Props) {
           <div style={{padding: '0 20px'}}>
             <div className="notice gray">
               <div className="notice-title">Ad spend is not included in the fee</div>
-              <div className="notice-body">We cover campaign management. Ad spend on Meta is separate. We start with our own ₹25,000 test budget to find what works — then you fund the scale.</div>
+              <div className="notice-body">We cover campaign management. Ad spend on Meta is separate.</div>
             </div>
             <div className="notice gray" style={{marginTop: '10px'}}>
               <div className="notice-title">On revenue outcomes</div>
