@@ -89,16 +89,17 @@ export async function GET(
       ],
       nextStepText: dealPage.nextStepText || 'Check your WhatsApp — Yuvraj sent a personal welcome message and your kickoff call link is there.',
       deliverables: dealPage.deliverables || [
-        { name: 'Performance video ads', description: 'Scripted, shot on Netflix-approved cameras, edited · UGC + founder + comparison formats · 9:16 Meta-ready', quantity: '15 ads', enabled: true },
-        { name: 'Social media content + profile', description: 'Instagram Reels · bio rewrite · highlights · blue tick · curated feed ready to launch', quantity: '12 videos', enabled: true },
+        { name: 'Performance video ads', description: 'Scripted, shot on Netflix-approved cameras, edited · UGC + founder + comparison formats · 9:16 Meta-ready', quantity: '12-15 ads', enabled: true },
+        { name: 'Social media content + profile', description: 'Instagram Reels · bio rewrite · highlights · blue tick · curated feed ready to launch', quantity: '10-12 videos', enabled: true },
         { name: 'High-converting landing page(s)', description: 'VSL · hero · social proof · objection handling · urgency · dark psychology · mobile-first', quantity: '1 page', enabled: true },
         { name: 'Checkout experience', description: 'Single-click checkout · order bumps · copy optimisation · payment gateway', quantity: 'Full setup', enabled: true },
-        { name: 'WATI WhatsApp automations', description: 'Cart abandonment video + text sequences · repeat purchase · cross-sell + upsell video + text · 2 months subscription covered', quantity: 'Full suite', enabled: true },
+        { name: 'WATI WhatsApp automations', description: 'Cart abandonment video + text sequences · repeat purchase · cross-sell + upsell video + text ', quantity: 'Full suite', enabled: true },
         { name: 'Email automations', description: 'Cart abandonment sequences · post-purchase flows · retention nudges', quantity: 'Full suite', enabled: true },
         { name: 'ManyChat Instagram automations', description: 'Comment triggers · DM flows · lead capture · WhatsApp opt-in', quantity: 'Full setup', enabled: true },
         { name: 'AI calling integration', description: "Automated reminder calls for high-intent visitors who didn't convert", quantity: 'Integrated', enabled: true },
         { name: 'Meta Ads setup + management', description: 'Campaign structure · audience targeting · creative testing · daily optimisation · 60 days', quantity: '60 days', enabled: true },
-        { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true }
+        { name: 'Weekly strategy calls', description: 'Screen-share · performance review · next week plan · creative feedback', quantity: '8 calls', enabled: true },
+        { name: 'Consulting Sessions', description: 'Two consulting sessions on GTM ,PMF,Pricing & Customer Journey by Vineet mishra', quantity: '8 calls', enabled: true }
       ],
       timeline: dealPage.timeline || [
         { week: 'Week 1', phase: 'Strategy', description: 'Kickoff · brand deep-dive · funnel architecture · creative angles · audience framework' },
@@ -118,8 +119,8 @@ export async function GET(
       funnelDiagram: dealPage.funnelDiagram || {
         topNote: 'People scrolling Instagram & Facebook',
         nodes: [
-          { emoji: '🎬', label: 'They see your ads', description: '{adsCount} video ads · Netflix-grade cameras · multiple angles' },
-          { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · {socialVideosCount} trust-building videos · blue tick' },
+          { emoji: '🎬', label: 'They see your ads', description: '12-15 video ads · Netflix-grade cameras · multiple angles' },
+          { emoji: '📱', label: 'They check your social media', description: 'Optimised profile · 10-12 trust-building videos · blue tick' },
           { emoji: '🏠', label: 'They land on your funnel page', description: 'VSL · social proof · urgency · single-click checkout' }
         ],
         buyBranch: {
@@ -148,7 +149,7 @@ export async function GET(
         {
           title: 'Section A — Scope of Work',
           clauses: [
-            { number: 'Clause 1', title: 'Services to be delivered', body: 'Yuvichaar Funnels ("the Agency") agrees to design and execute the {proposalTitle} for {company}, commencing {startDate}:', listItems: ['{adsCount} performance video ads — scripted, shot, edited, Meta-ready', '{socialVideosCount} social media videos + full Instagram profile optimisation', '{landingPagesCount} high-converting landing page(s) including Video Sales Letter', 'Checkout experience — single-click checkout, order bumps, copy optimisation', 'WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)', 'Email automations — cart abandonment + post-purchase sequences', 'ManyChat Instagram DM automations', 'AI calling integration for high-intent visitors', '60-day Meta campaign management'] },
+            { number: 'Clause 1', title: 'Services to be delivered', body: 'Yuvichaar Funnels ("the Agency") agrees to design and execute the {proposalTitle} for {company}, commencing {startDate}:', listItems: ['12-15 performance video ads — scripted, shot, edited, Meta-ready', '10-12 social media videos + full Instagram profile optimisation', '{landingPagesCount} high-converting landing page(s) including Video Sales Letter', 'Checkout experience — single-click checkout, order bumps, copy optimisation', 'WATI WhatsApp automations — cart abandonment + repeat purchase + cross-sell + upsell (video + text sequences)', 'Email automations — cart abandonment + post-purchase sequences', 'ManyChat Instagram DM automations', 'AI calling integration for high-intent visitors', '60-day Meta campaign management'] },
             { number: 'Clause 2', title: 'Production and quality standards', body: 'All video content will be shot on professional Netflix-approved cameras. All deliverables meet Meta advertising specifications. Landing pages will be mobile-first, load under 3 seconds, and meet the conversion standards in the proposal. All automation sequences will be fully tested before launch.', listItems: [] },
             { number: 'Clause 3', title: 'Timeline', body: 'The engagement runs for 60 days from the confirmed start date. Campaigns go live by Day 21. Some phases run in parallel. If the Client delays feedback, access, or approvals, the Agency will notify the Client of the timeline impact and agree a revised schedule.', listItems: [] }
           ]
@@ -156,15 +157,15 @@ export async function GET(
         {
           title: 'Section B — Payment Terms',
           clauses: [
-            { number: 'Clause 4', title: 'Fee structure and payment schedule', body: 'The fixed fee for this engagement is ₹{fixedFee} excluding GST at 18%. Payment is in two equal instalments:', listItems: ['Advance: ₹{advanceAmount} + GST (₹{advanceWithGst} total) — due on signing. This activates the engagement.', 'Balance: ₹{balanceAmount} + GST (₹{balanceWithGst} total) — due on Day 30, regardless of delivery status unless there is a material breach by the Agency.', 'All fixed fee payments are non-refundable once the corresponding phase of work has commenced.'] },
+            { number: 'Clause 4', title: 'Fee structure and payment schedule', body: 'The fixed fee for this engagement is ₹{fixedFee} excluding GST at 18%. Payment is in two instalments:', listItems: ['Advance: ₹{advanceAmount} + GST (₹{advanceWithGst} total) — due on signing. This activates the engagement.', 'Balance: ₹{balanceAmount} + GST (₹{balanceWithGst} total) , regardless of delivery status unless there is a material breach by the Agency.', 'All fixed fee payments are non-refundable once the corresponding phase of work has commenced.'] },
             { number: 'Clause 5', title: 'Performance bonuses', body: 'A performance fee of ₹2,00,000 + GST is payable in two tranches only upon confirmed achievement of revenue milestones:', listItems: ['{perfBonus1Amount} + GST — upon hitting {perfBonus1Trigger} in attributed revenue', '{perfBonus2Amount} + GST — upon hitting {perfBonus2Trigger} in attributed revenue', 'Performance bonuses are not due unless the stated revenue milestones are met and verified. If milestones are not reached, no performance fee is payable.'] },
-            { number: 'Clause 6', title: 'Ad spend budget', body: 'The fees above cover campaign management only. Meta ad spend is not included. The Agency will fund up to ₹25,000 in initial test spend. Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.', listItems: [] }
+            { number: 'Clause 6', title: 'Ad spend budget', body: 'The fees above cover campaign management only. Meta ad spend is not included.Thereafter, the Client is responsible for funding ad spend. The Agency cannot be held responsible for campaign results if the Client does not fund adequate spend.', listItems: [] }
           ]
         },
         {
           title: 'Section C — Mutual Responsibilities',
           clauses: [
-            { number: 'Clause 7', title: 'Agency commitments', body: '', listItems: ['Deliver every item in Clause 1 within the agreed timeline', 'Assign a dedicated POC who sends the Client a daily update', "Provide real-time visibility via the Client's dedicated portal", 'Cover automation tool subscription costs for the first 2 months', 'Fund ₹25,000 in initial Meta test spend', 'Share weekly performance reports during the campaign period'] },
+            { number: 'Clause 7', title: 'Agency commitments', body: '', listItems: ['Deliver every item in Clause 1 within the agreed timeline', 'Assign a dedicated POC who sends the Client a daily update', "Provide real-time visibility via the Client's dedicated portal", 'Share weekly performance reports during the campaign period'] },
             { number: 'Clause 8', title: 'Client responsibilities', body: '', listItems: ['Provide feedback on all deliverables within 48 hours. Delays impact launch timing.', 'Grant platform access (Meta BM, website, WhatsApp API, Instagram) by end of Week 1', 'Designate one decision-maker with authority to approve scripts, creatives, and copy', 'Fund ad spend budget as agreed at kickoff', 'Provide brand assets, product imagery, and testimonials as requested'] }
           ]
         },
@@ -180,7 +181,7 @@ export async function GET(
           title: 'Section E — Outcomes and Liability',
           clauses: [
             { number: 'Clause 12', title: 'No guarantee of revenue outcomes', body: "The Agency installs the infrastructure and manages campaigns. Revenue outcomes are not guaranteed — they depend on market demand, pricing, competition, and platform dynamics outside the Agency's control. The Agency commits to delivering the best possible system and campaigns.", listItems: [] },
-            { number: 'Clause 13', title: 'Automation subscriptions after 2 months', body: "The Agency covers WATI, email, and ManyChat subscription costs for the first 2 months. After that, all renewals are the Client's responsibility. The Agency provides all credentials and documentation required to manage subscriptions independently.", listItems: [] },
+            { number: 'Clause 13', title: 'Automation subscriptions', body: "The Agency will not covers WATI, email, and ManyChat subscription costs. All renewals are the Client's responsibility. The Agency will only setup.", listItems: [] },
             { number: 'Clause 14', title: 'Governing law', body: 'This agreement is governed by the laws of India. Disputes are subject to the jurisdiction of the courts of Jaipur, Rajasthan. Both parties agree to attempt amicable resolution before pursuing legal remedies.', listItems: [] }
           ]
         }
