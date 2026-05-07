@@ -28,7 +28,11 @@ export async function POST(
       return NextResponse.json({ error: 'Please sign the agreement first' }, { status: 400 });
     }
 
-    const paymentAmount = amount || org.dealPage?.advanceWithGst || org.payment?.minimumPayment || 0;
+    const paymentAmount = amount || (
+      org.dealPage?.hasLockIn && org.dealPage?.lockInAmount
+        ? Math.round(org.dealPage.lockInAmount * 1.18)
+        : (org.dealPage?.advanceWithGst || org.payment?.minimumPayment || 0)
+    );
 
     // Record the payment
     org.payment.payments.push({

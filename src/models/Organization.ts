@@ -137,6 +137,9 @@ export interface IDealPage {
   confirmationItems?: IConfirmationItem[];
   // Service agreement intro text
   agreementIntro?: string;
+  // Lock-in payment (small onboarding amount set by admin)
+  hasLockIn?: boolean;
+  lockInAmount?: number;
 }
 
 export interface IOrganization extends Document {
@@ -373,6 +376,8 @@ const OrganizationSchema = new Schema<IOrganization>(
         { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
         { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
       ]},
+      hasLockIn: { type: Boolean, default: false },
+      lockInAmount: { type: Number, default: 0 },
     },
     createdAt: { type: Date, default: Date.now },
   },

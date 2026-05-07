@@ -100,6 +100,8 @@ interface DealData {
   agreementIntro: string;
   clauseSections: ClauseSection[];
   confirmationItems: ConfirmationItem[];
+  hasLockIn?: boolean;
+  lockInAmount?: number;
 }
 
 interface Props {
@@ -277,9 +279,9 @@ export default function DealPageContent({ data, token }: Props) {
       const res = await fetch(`/api/deal/${token}/payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           paymentMethod: paymentMethod === 2 ? 'bank_transfer' : 'manual',
-          amount: data.advanceWithGst 
+          amount: data.hasLockIn && data.lockInAmount ? Math.round(data.lockInAmount * 1.18) : data.advanceWithGst,
         }),
       });
       
@@ -544,15 +546,38 @@ export default function DealPageContent({ data, token }: Props) {
           <div className="paytl-block">
             <div className="paytl-label">Payment schedule</div>
             <div className="track">
-              <div className="track-item">
-                <div className="track-dot active"><div className="track-dot-inner"></div></div>
-                <div className="track-card featured">
-                  <div className="tc-when">On signing — due today</div>
-                  <div className="tc-title">Advance payment</div>
-                  <div className="tc-amount">₹{formatCurrency(data.advanceWithGst)}</div>
-                  <div className="tc-note">{Math.round((data.advanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST<br/>This unlocks your portal and starts the marathon</div>
+              {data.hasLockIn && data.lockInAmount ? (
+                <div className="track-item">
+                  <div className="track-dot active"><div className="track-dot-inner"></div></div>
+                  <div className="track-card featured">
+                    <div className="tc-when">On signing — due today</div>
+                    <div className="tc-title">Lock-in payment</div>
+                    <div className="tc-amount">₹{formatCurrency(Math.round(data.lockInAmount * 1.18))}</div>
+                    <div className="tc-note">₹{formatCurrency(data.lockInAmount)} + 18% GST<br/>This small amount locks in your slot and starts onboarding</div>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="track-item">
+                  <div className="track-dot active"><div className="track-dot-inner"></div></div>
+                  <div className="track-card featured">
+                    <div className="tc-when">On signing — due today</div>
+                    <div className="tc-title">Advance payment</div>
+                    <div className="tc-amount">₹{formatCurrency(data.advanceWithGst)}</div>
+                    <div className="tc-note">{Math.round((data.advanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST<br/>This unlocks your portal and starts the marathon</div>
+                  </div>
+                </div>
+              )}
+              {data.hasLockIn && data.lockInAmount && (
+                <div className="track-item">
+                  <div className="track-dot"><div className="track-dot-inner"></div></div>
+                  <div className="track-card">
+                    <div className="tc-when">After onboarding</div>
+                    <div className="tc-title">Advance payment</div>
+                    <div className="tc-amount">₹{formatCurrency(data.advanceWithGst)}</div>
+                    <div className="tc-note">{Math.round((data.advanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST</div>
+                  </div>
+                </div>
+              )}
               <div className="track-item">
                 <div className="track-dot"><div className="track-dot-inner"></div></div>
                 <div className="track-card">
@@ -752,9 +777,19 @@ export default function DealPageContent({ data, token }: Props) {
         </div>
         <div className="body">
           <div className="pay-hero">
-            <div className="pay-eyebrow">Advance payment — due now</div>
-            <div className="pay-amount">₹{formatCurrency(data.advanceWithGst)}</div>
-            <div className="pay-breakdown">₹{formatCurrency(data.advanceAmount)} + 18% GST </div>
+            {data.hasLockIn && data.lockInAmount ? (
+              <>
+                <div className="pay-eyebrow">Lock-in payment — due now</div>
+                <div className="pay-amount">₹{formatCurrency(Math.round(data.lockInAmount * 1.18))}</div>
+                <div className="pay-breakdown">₹{formatCurrency(data.lockInAmount)} + 18% GST · locks in your slot</div>
+              </>
+            ) : (
+              <>
+                <div className="pay-eyebrow">Advance payment — due now</div>
+                <div className="pay-amount">₹{formatCurrency(data.advanceWithGst)}</div>
+                <div className="pay-breakdown">₹{formatCurrency(data.advanceAmount)} + 18% GST </div>
+              </>
+            )}
           </div>
 
           <div className="unlock-block">
@@ -791,7 +826,7 @@ export default function DealPageContent({ data, token }: Props) {
               <div className="brow"><span className="bk">Account number</span><span className="bv">50200104748061</span></div>
               <div className="brow"><span className="bk">IFSC code</span><span className="bv">HDFC0007731</span></div>
               <div className="brow"><span className="bk">Account type</span><span className="bv">Current</span></div>
-              <div className="brow"><span className="bk">Amount to transfer</span><span className="bv">₹{formatCurrency(data.advanceWithGst)}</span></div>
+              <div className="brow"><span className="bk">Amount to transfer</span><span className="bv">₹{formatCurrency(data.hasLockIn && data.lockInAmount ? Math.round(data.lockInAmount * 1.18) : data.advanceWithGst)}</span></div>
               <div className="bank-note">After transferring, select &quot;Already paid&quot; below and upload your screenshot. We verify within 2 hours.</div>
             </div>
             <div className={`popt ${paymentMethod === 3 ? 'sel' : ''}`} onClick={() => setPaymentMethod(3)}>
@@ -812,7 +847,7 @@ export default function DealPageContent({ data, token }: Props) {
         </div>
         <div className="footer">
           <button className="cta" disabled={processingPayment} onClick={handlePayment}>
-            {processingPayment ? 'Processing...' : `Pay ₹${formatCurrency(data.advanceWithGst)} →`}
+            {processingPayment ? 'Processing...' : `Pay ₹${formatCurrency(data.hasLockIn && data.lockInAmount ? Math.round(data.lockInAmount * 1.18) : data.advanceWithGst)} →`}
           </button>
         </div>
       </div>

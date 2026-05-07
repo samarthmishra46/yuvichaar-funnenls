@@ -100,6 +100,8 @@ interface DealPage {
   agreementIntro?: string;
   clauseSections?: ClauseSection[];
   confirmationItems?: ConfirmationItem[];
+  hasLockIn?: boolean;
+  lockInAmount?: number;
 }
 
 interface Organization {
@@ -292,6 +294,8 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
       { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
       { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
     ],
+    hasLockIn: org.dealPage?.hasLockIn || false,
+    lockInAmount: org.dealPage?.lockInAmount || 0,
   });
 
   // Sync form state when org prop changes (after save/refetch)
@@ -426,6 +430,8 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
         { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
         { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
       ],
+      hasLockIn: org.dealPage?.hasLockIn || false,
+      lockInAmount: org.dealPage?.lockInAmount || 0,
     });
   }, [org]);
 
@@ -1270,6 +1276,41 @@ export default function DealPageTab({ org, onUpdate }: DealPageTabProps) {
               </div>
             </div>
           )}
+
+          <div className="border-t pt-4 mt-2">
+            <div className="flex items-center gap-3 mb-3">
+              <input
+                type="checkbox"
+                id="hasLockIn"
+                checked={form.hasLockIn}
+                onChange={(e) => updateField('hasLockIn', e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300"
+              />
+              <label htmlFor="hasLockIn" className="text-sm font-medium text-gray-700">
+                Enable Lock-In Payment
+              </label>
+              {form.hasLockIn && (
+                <span className="text-sm text-amber-600 font-medium">
+                  (Client pays only lock-in to onboard)
+                </span>
+              )}
+            </div>
+            {form.hasLockIn && (
+              <div className="pl-7 space-y-2">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Lock-In Amount (₹, excl. GST)</label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={form.lockInAmount || 0}
+                  onChange={(e) => updateField('lockInAmount', parseInt(e.target.value) || 0)}
+                  placeholder="e.g., 10000"
+                />
+                <p className="text-xs text-gray-500">
+                  Client pays ₹{calculateGst(form.lockInAmount || 0).toLocaleString()} incl. GST to onboard. Remaining advance is due separately.
+                </p>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 

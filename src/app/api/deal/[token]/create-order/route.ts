@@ -28,8 +28,10 @@ export async function POST(
       return NextResponse.json({ error: 'Advance already paid' }, { status: 400 });
     }
 
-    // Get advance amount with GST
-    const amount = org.dealPage?.advanceWithGst || org.payment?.minimumPayment || 0;
+    // Use lock-in amount if set, otherwise use full advance
+    const amount = org.dealPage?.hasLockIn && org.dealPage?.lockInAmount
+      ? Math.round(org.dealPage.lockInAmount * 1.18)
+      : (org.dealPage?.advanceWithGst || org.payment?.minimumPayment || 0);
 
     if (!amount || amount <= 0) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });

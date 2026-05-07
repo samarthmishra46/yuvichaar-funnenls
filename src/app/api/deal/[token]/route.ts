@@ -193,6 +193,8 @@ export async function GET(
         { text: 'Revenue outcomes are not guaranteed (Clause 12)' },
         { text: 'My 48-hour feedback responsibility and scope limitations (Clauses 8 & 11)' }
       ],
+      hasLockIn: dealPage.hasLockIn || false,
+      lockInAmount: dealPage.lockInAmount || 0,
     };
 
     return NextResponse.json({ deal });
