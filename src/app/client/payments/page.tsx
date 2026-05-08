@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import { CreditCard, CheckCircle } from 'lucide-react';
+import { CreditCard, CheckCircle, Clock, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -22,6 +22,14 @@ interface Organization {
   };
   dealPage?: {
     fixedFee?: number;
+    advanceAmount?: number;
+    advanceWithGst?: number;
+    balanceAmount?: number;
+    balanceWithGst?: number;
+    hasLockIn?: boolean;
+    lockInAmount?: number;
+    advancePaid?: boolean;
+    advancePaidAt?: string;
     hasPerformanceFee?: boolean;
     performanceBonuses?: Array<{ trigger: string; amount: string }>;
     // Legacy fields for backward compatibility
@@ -104,6 +112,22 @@ export default function ClientPaymentsPage() {
 
   const totalPaid = (org?.payment?.payments || []).reduce((sum, p) => sum + p.amount, 0);
   const amountDue = grandTotal - totalPaid;
+
+  // Lock-in / advance / balance breakdown (lock-in is part of advance)
+  const advanceAmount = org?.dealPage?.advanceAmount || 0;
+  const balanceAmount = org?.dealPage?.balanceAmount || 0;
+  const hasLockIn = !!(org?.dealPage?.hasLockIn && org?.dealPage?.lockInAmount);
+  const lockInAmount = hasLockIn ? (org?.dealPage?.lockInAmount || 0) : 0;
+  const lockInWithGst = Math.round(lockInAmount * 1.18);
+  const remainingAdvanceAmount = Math.max(0, advanceAmount - lockInAmount);
+  const remainingAdvanceWithGst = Math.round(remainingAdvanceAmount * 1.18);
+  const balanceWithGst = org?.dealPage?.balanceWithGst || Math.round(balanceAmount * 1.18);
+  const advanceWithGst = org?.dealPage?.advanceWithGst || Math.round(advanceAmount * 1.18);
+
+  // Determine paid status of each schedule item from totalPaid (FIFO allocation)
+  const lockInPaid = totalPaid >= lockInWithGst;
+  const advanceFullyPaid = !!org?.dealPage?.advancePaid || totalPaid >= advanceWithGst;
+  const balancePaid = totalPaid >= advanceWithGst + balanceWithGst;
 
   const handlePayNow = async () => {
     if (!org || amountDue <= 0) return;
@@ -237,6 +261,50 @@ export default function ClientPaymentsPage() {
         </div>
       </div>
 
+      {/* Payment Schedule */}
+      {advanceAmount > 0 && (
+        <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
+          <h3 className="font-semibold text-gray-900 mb-1">Payment Schedule</h3>
+          <p className="text-xs text-gray-500 mb-4">
+            {hasLockIn
+              ? 'Lock-in is a part of your advance — paying it reduces what you owe later.'
+              : 'Your advance unlocks the engagement; balance is due on Day 30.'}
+          </p>
+          <div className="space-y-3">
+            {hasLockIn && (
+              <ScheduleRow
+                icon={<Lock className="w-4 h-4" />}
+                label="Lock-in payment"
+                sublabel={`₹${lockInAmount.toLocaleString()} + 18% GST · counts toward advance`}
+                amount={lockInWithGst}
+                paid={lockInPaid}
+                accent="amber"
+              />
+            )}
+            <ScheduleRow
+              icon={<CreditCard className="w-4 h-4" />}
+              label={hasLockIn ? 'Remaining advance' : 'Advance payment'}
+              sublabel={
+                hasLockIn
+                  ? `₹${remainingAdvanceAmount.toLocaleString()} + 18% GST · advance ₹${advanceAmount.toLocaleString()} − lock-in ₹${lockInAmount.toLocaleString()}`
+                  : `₹${advanceAmount.toLocaleString()} + 18% GST · due on signing`
+              }
+              amount={hasLockIn ? remainingAdvanceWithGst : advanceWithGst}
+              paid={advanceFullyPaid}
+              accent="pink"
+            />
+            <ScheduleRow
+              icon={<Clock className="w-4 h-4" />}
+              label="Balance payment"
+              sublabel={`₹${balanceAmount.toLocaleString()} + 18% GST · due on Day 30`}
+              amount={balanceWithGst}
+              paid={balancePaid}
+              accent="gray"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm">
@@ -287,7 +355,7 @@ export default function ClientPaymentsPage() {
         </div>
       )}
 
-      {/* Payment History */}
+      {/* Payment History (placeholder) */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="font-semibold text-gray-900">Payment History</h3>
@@ -313,6 +381,54 @@ export default function ClientPaymentsPage() {
               </tbody>
             </table>
           </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ScheduleRow({
+  icon,
+  label,
+  sublabel,
+  amount,
+  paid,
+  accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  sublabel: string;
+  amount: number;
+  paid: boolean;
+  accent: 'pink' | 'amber' | 'gray';
+}) {
+  const accentClasses = {
+    pink: 'bg-pink-50 border-pink-200 text-pink-700',
+    amber: 'bg-amber-50 border-amber-200 text-amber-700',
+    gray: 'bg-gray-50 border-gray-200 text-gray-700',
+  }[accent];
+
+  return (
+    <div className={`flex items-center justify-between gap-4 p-3 rounded-xl border ${accentClasses}`}>
+      <div className="flex items-start gap-3 min-w-0 flex-1">
+        <div className="mt-0.5 shrink-0">{icon}</div>
+        <div className="min-w-0">
+          <p className="font-semibold text-gray-900">{label}</p>
+          <p className="text-xs text-gray-600 mt-0.5">{sublabel}</p>
+        </div>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="font-bold text-gray-900">₹{amount.toLocaleString()}</p>
+        {paid ? (
+          <span className="inline-flex items-center gap-1 text-xs text-green-600 font-semibold mt-0.5">
+            <CheckCircle className="w-3 h-3" />
+            Paid
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-xs text-gray-500 font-medium mt-0.5">
+            <Clock className="w-3 h-3" />
+            Pending
+          </span>
         )}
       </div>
     </div>

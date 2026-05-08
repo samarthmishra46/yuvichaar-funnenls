@@ -14,6 +14,7 @@ import StaffTasksTab from '@/components/staff/tabs/StaffTasksTab';
 import StaffBrandResearchTab from '@/components/staff/tabs/StaffBrandResearchTab';
 import StaffAdVideosTab from '@/components/staff/tabs/StaffAdVideosTab';
 import StaffLandingPageTab from '@/components/staff/tabs/StaffLandingPageTab';
+import StaffExpensesTab from '@/components/staff/tabs/StaffExpensesTab';
 
 interface Task {
   _id: string;
@@ -461,6 +462,7 @@ export default function StaffPortalPage() {
               <TabsTrigger value="research" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Research</TabsTrigger>
               <TabsTrigger value="videos" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Ad Videos</TabsTrigger>
               <TabsTrigger value="landing-page" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Landing Page</TabsTrigger>
+              <TabsTrigger value="expenses" className="data-[state=active]:!text-[#f472b6] data-[state=active]:!border-[#f472b6]">Expenses</TabsTrigger>
             </TabsList>
 
             <TabsContent value="tasks">
@@ -474,6 +476,9 @@ export default function StaffPortalPage() {
             </TabsContent>
             <TabsContent value="landing-page">
               <StaffLandingPageTab orgId={selectedOrgId} />
+            </TabsContent>
+            <TabsContent value="expenses">
+              <StaffExpensesTab orgId={selectedOrgId} staffEmail={session.user.email} />
             </TabsContent>
           </Tabs>
         </div>

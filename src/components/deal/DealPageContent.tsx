@@ -553,7 +553,7 @@ export default function DealPageContent({ data, token }: Props) {
                     <div className="tc-when">On signing — due today</div>
                     <div className="tc-title">Lock-in payment</div>
                     <div className="tc-amount">₹{formatCurrency(Math.round(data.lockInAmount * 1.18))}</div>
-                    <div className="tc-note">₹{formatCurrency(data.lockInAmount)} + 18% GST<br/>This small amount locks in your slot and starts onboarding</div>
+                    <div className="tc-note">₹{formatCurrency(data.lockInAmount)} + 18% GST · counts toward your advance<br/>This small amount locks in your slot and starts onboarding</div>
                   </div>
                 </div>
               ) : (
@@ -567,17 +567,24 @@ export default function DealPageContent({ data, token }: Props) {
                   </div>
                 </div>
               )}
-              {data.hasLockIn && data.lockInAmount && (
-                <div className="track-item">
-                  <div className="track-dot"><div className="track-dot-inner"></div></div>
-                  <div className="track-card">
-                    <div className="tc-when">After onboarding</div>
-                    <div className="tc-title">Advance payment</div>
-                    <div className="tc-amount">₹{formatCurrency(data.advanceWithGst)}</div>
-                    <div className="tc-note">{Math.round((data.advanceAmount / data.fixedFee) * 100)}% of fixed fee (₹{formatCurrency(data.advanceAmount)}) + 18% GST</div>
+              {data.hasLockIn && data.lockInAmount && (() => {
+                const remainingAdvance = Math.max(0, data.advanceAmount - data.lockInAmount);
+                const remainingAdvanceWithGst = Math.round(remainingAdvance * 1.18);
+                return (
+                  <div className="track-item">
+                    <div className="track-dot"><div className="track-dot-inner"></div></div>
+                    <div className="track-card">
+                      <div className="tc-when">After onboarding</div>
+                      <div className="tc-title">Remaining advance</div>
+                      <div className="tc-amount">₹{formatCurrency(remainingAdvanceWithGst)}</div>
+                      <div className="tc-note">
+                        ₹{formatCurrency(remainingAdvance)} + 18% GST<br/>
+                        Advance ₹{formatCurrency(data.advanceAmount)} − lock-in ₹{formatCurrency(data.lockInAmount)} already paid
+                      </div>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
               <div className="track-item">
                 <div className="track-dot"><div className="track-dot-inner"></div></div>
                 <div className="track-card">
