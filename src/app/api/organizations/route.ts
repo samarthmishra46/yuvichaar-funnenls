@@ -6,10 +6,10 @@ import Organization from '@/models/Organization';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 
-// GET /api/organizations — list all orgs (admin only)
+// GET /api/organizations — list all orgs (admin/superadmin only)
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || session.user.role !== 'admin') {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

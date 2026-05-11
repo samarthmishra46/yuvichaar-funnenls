@@ -9,7 +9,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -33,7 +33,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -42,7 +42,7 @@ export async function PATCH(
 
   try {
     const updates = await request.json();
-    const role = session.user.role as 'admin' | 'staff';
+    const role = session.user.role as 'admin' | 'superadmin' | 'staff';
 
     const existing = await Expense.findById(id);
     if (!existing) {
@@ -113,7 +113,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -121,7 +121,7 @@ export async function DELETE(
   await dbConnect();
 
   try {
-    const role = session.user.role as 'admin' | 'staff';
+    const role = session.user.role as 'admin' | 'superadmin' | 'staff';
     const existing = await Expense.findById(id);
     if (!existing) {
       return NextResponse.json({ error: 'Expense not found' }, { status: 404 });

@@ -42,6 +42,41 @@ export const authOptions: NextAuthOptions = {
     }),
 
     CredentialsProvider({
+      id: 'superadmin-login',
+      name: 'Superadmin Login',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Email and password are required');
+        }
+
+        const superadminEmail = process.env.SUPERADMIN_EMAIL;
+        const superadminPassword = process.env.SUPERADMIN_PASSWORD;
+
+        if (!superadminEmail || !superadminPassword) {
+          throw new Error('Superadmin credentials not configured');
+        }
+
+        if (
+          credentials.email !== superadminEmail ||
+          credentials.password !== superadminPassword
+        ) {
+          throw new Error('Invalid superadmin credentials');
+        }
+
+        return {
+          id: 'superadmin',
+          name: 'Superadmin',
+          email: superadminEmail,
+          role: 'superadmin' as const,
+        };
+      },
+    }),
+
+    CredentialsProvider({
       id: 'client-login',
       name: 'Client Login',
       credentials: {

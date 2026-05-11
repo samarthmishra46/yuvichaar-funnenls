@@ -20,13 +20,38 @@ export async function middleware(request: NextRequest) {
   });
 
   /* ──────────────────────────────────────────
-     Admin routes — require admin role
+     Superadmin routes — require superadmin role
+     ────────────────────────────────────────── */
+  if (pathname.startsWith('/superadmin')) {
+    // Allow superadmin login page to be accessed without auth
+    if (pathname === '/superadmin/login') {
+      if (token?.role === 'superadmin') {
+        return NextResponse.redirect(new URL('/superadmin/finances', request.url));
+      }
+      return NextResponse.next();
+    }
+
+    if (!token) {
+      const loginUrl = new URL('/superadmin/login', request.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (token.role !== 'superadmin') {
+      return NextResponse.redirect(new URL('/superadmin/login', request.url));
+    }
+
+    return NextResponse.next();
+  }
+
+  /* ──────────────────────────────────────────
+     Admin routes — admin OR superadmin role
      ────────────────────────────────────────── */
   if (pathname.startsWith('/admin')) {
     // Allow admin login page to be accessed without auth
     if (pathname === '/admin/login') {
-      // If already logged in as admin, redirect to dashboard
-      if (token?.role === 'admin') {
+      // If already logged in as admin/superadmin, redirect to dashboard
+      if (token?.role === 'admin' || token?.role === 'superadmin') {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
       return NextResponse.next();
@@ -39,8 +64,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Authenticated but not admin → redirect to admin login
-    if (token.role !== 'admin') {
+    // Authenticated but not admin/superadmin → redirect to admin login
+    if (token.role !== 'admin' && token.role !== 'superadmin') {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
 
@@ -82,6 +107,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
+    '/superadmin/:path*',
     '/client/:path*',
     '/login',
   ],

@@ -126,20 +126,20 @@ export default function FinancesPage() {
   useEffect(() => {
     if (status === 'loading') return;
     if (status === 'unauthenticated') {
-      router.push('/admin/login');
-    } else if (session?.user?.role !== 'admin') {
+      router.push('/superadmin/login');
+    } else if (session?.user?.role !== 'superadmin') {
       router.push('/');
     }
   }, [session, status, router]);
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role === 'admin') {
+    if (status === 'authenticated' && session?.user?.role === 'superadmin') {
       fetchOrganizations();
     }
   }, [status, session]);
 
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.role === 'admin') {
+    if (status === 'authenticated' && session?.user?.role === 'superadmin') {
       fetchAllData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

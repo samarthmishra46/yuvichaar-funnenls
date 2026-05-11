@@ -7,7 +7,7 @@ import Organization from '@/models/Organization';
 
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -171,7 +171,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user.role !== 'admin' && session.user.role !== 'staff')) {
+  if (!session || (session.user.role !== 'admin' && session.user.role !== 'superadmin' && session.user.role !== 'staff')) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -208,8 +208,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Only admin can create company-wide expenses
-    if (isCompany && session.user.role !== 'admin') {
+    // Only admin/superadmin can create company-wide expenses
+    if (isCompany && session.user.role !== 'admin' && session.user.role !== 'superadmin') {
       return NextResponse.json(
         { error: 'Only admins can create company-wide expenses' },
         { status: 403 }
@@ -241,7 +241,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const role = session.user.role as 'admin' | 'staff';
+    const role = session.user.role as 'admin' | 'superadmin' | 'staff';
+    const isPrivileged = role === 'admin' || role === 'superadmin';
 
     const expense = await Expense.create({
       orgId: isCompany ? null : orgId,
@@ -254,11 +255,11 @@ export async function POST(request: NextRequest) {
       notes: notes || undefined,
       attachmentUrl: attachmentUrl || undefined,
       creatorBreakdown: normalizedBreakdown,
-      status: role === 'admin' ? 'approved' : 'pending',
+      status: isPrivileged ? 'approved' : 'pending',
       createdBy: session.user.email,
-      createdByRole: role,
-      verifiedBy: role === 'admin' ? session.user.email : undefined,
-      verifiedAt: role === 'admin' ? new Date() : undefined,
+      createdByRole: role === 'superadmin' ? 'admin' : role,
+      verifiedBy: isPrivileged ? session.user.email : undefined,
+      verifiedAt: isPrivileged ? new Date() : undefined,
     });
 
     return NextResponse.json({ expense }, { status: 201 });
