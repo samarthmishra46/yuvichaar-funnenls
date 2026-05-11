@@ -755,50 +755,94 @@ export default function FinancesPage() {
 
                 {/* Creator breakdown */}
                 {form.subcategory === 'creator_talent' && (
-                  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Creator Breakdown</span>
+                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Creator Breakdown</p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Split this expense across multiple creators. Each row stores name, fee, and notes (deliverables, commute, hours).
+                        </p>
+                      </div>
                       <Button type="button" size="sm" variant="outline" onClick={addCreator}>
                         <Plus className="w-3 h-3 mr-1" /> Add Creator
                       </Button>
                     </div>
                     {form.creatorBreakdown.length === 0 ? (
-                      <p className="text-xs text-gray-500">No creators added — or use single amount below.</p>
+                      <div className="text-xs text-gray-500 bg-white border border-dashed border-gray-200 rounded-lg p-4 text-center">
+                        No creators added yet. Click <span className="font-semibold text-gray-900">Add Creator</span> to start, or skip and use a single amount below.
+                      </div>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {form.creatorBreakdown.map((c, i) => (
-                          <div key={i} className="grid grid-cols-12 gap-2 items-center">
-                            <Input
-                              className="col-span-4"
-                              placeholder="Creator name"
-                              value={c.name}
-                              onChange={(e) => updateCreator(i, 'name', e.target.value)}
-                            />
-                            <Input
-                              className="col-span-3"
-                              type="number"
-                              placeholder="Amount"
-                              value={c.amount || ''}
-                              onChange={(e) => updateCreator(i, 'amount', e.target.value)}
-                            />
-                            <Input
-                              className="col-span-4"
-                              placeholder="Notes (commute, hours)"
-                              value={c.notes || ''}
-                              onChange={(e) => updateCreator(i, 'notes', e.target.value)}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeCreator(i)}
-                              className="col-span-1 p-1 text-red-500 hover:bg-red-50 rounded"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                          <div key={i} className="bg-white border border-gray-200 rounded-lg p-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[#e91e8c] text-white text-xs font-semibold">
+                                {i + 1}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeCreator(i)}
+                                className="p-1.5 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Remove creator"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[0.75rem] font-semibold text-gray-700">Creator Name *</label>
+                                <Input
+                                  placeholder="e.g., Priya Sharma"
+                                  value={c.name}
+                                  onChange={(e) => updateCreator(i, 'name', e.target.value)}
+                                />
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[0.75rem] font-semibold text-gray-700">Fee Paid (₹) *</label>
+                                <Input
+                                  type="number"
+                                  placeholder="15000"
+                                  value={c.amount || ''}
+                                  onChange={(e) => updateCreator(i, 'amount', e.target.value)}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              <label className="text-[0.75rem] font-semibold text-gray-700">Notes</label>
+                              <textarea
+                                rows={2}
+                                placeholder="Deliverables, commute, hours, etc."
+                                value={c.notes || ''}
+                                onChange={(e) => updateCreator(i, 'notes', e.target.value)}
+                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:border-[#e91e8c] resize-none"
+                              />
+                            </div>
                           </div>
                         ))}
-                        <p className="text-xs text-gray-500 mt-1">
-                          Breakdown total: {formatCurrency(form.creatorBreakdown.reduce((s, c) => s + (Number(c.amount) || 0), 0))}
-                        </p>
+                        <div className="flex items-center justify-between bg-white border border-gray-200 rounded-lg px-4 py-3">
+                          <div>
+                            <p className="text-xs text-gray-500 uppercase font-semibold tracking-wider">Breakdown Total</p>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {form.creatorBreakdown.length} creator{form.creatorBreakdown.length === 1 ? '' : 's'}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-lg font-bold text-gray-900">
+                              {formatCurrency(form.creatorBreakdown.reduce((s, c) => s + (Number(c.amount) || 0), 0))}
+                            </span>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setForm((p) => ({
+                                ...p,
+                                amount: String(p.creatorBreakdown.reduce((s, c) => s + (Number(c.amount) || 0), 0)),
+                              }))}
+                            >
+                              Copy to Amount
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -975,12 +1019,33 @@ function ExpenseList({
                   <p className="text-xs text-gray-500 mt-1 italic">{expense.notes}</p>
                 )}
                 {expense.creatorBreakdown && expense.creatorBreakdown.length > 0 && (
-                  <div className="text-xs text-gray-500 mt-1">
-                    {expense.creatorBreakdown.map((c, i) => (
-                      <span key={i} className="mr-3">
-                        {c.name}: {formatCurrency(c.amount)}
+                  <div className="mt-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                        Creator Breakdown ({expense.creatorBreakdown.length})
                       </span>
-                    ))}
+                      <span className="text-xs font-semibold text-gray-900">
+                        Total: {formatCurrency(expense.creatorBreakdown.reduce((s, c) => s + (Number(c.amount) || 0), 0))}
+                      </span>
+                    </div>
+                    <div className="space-y-1.5">
+                      {expense.creatorBreakdown.map((c, i) => (
+                        <div key={i} className="flex items-start gap-2 text-xs">
+                          <span className="inline-flex items-center justify-center w-5 h-5 shrink-0 rounded-full bg-[#e91e8c]/10 text-[#e91e8c] font-semibold">
+                            {i + 1}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-baseline gap-2">
+                              <span className="font-semibold text-gray-900">{c.name || '—'}</span>
+                              <span className="text-gray-600">{formatCurrency(c.amount)}</span>
+                            </div>
+                            {c.notes && (
+                              <p className="text-gray-500 mt-0.5 break-words">{c.notes}</p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -1066,13 +1131,33 @@ function PendingExpenseRow({
             </div>
             {expense.notes && <p className="text-xs text-gray-500 mt-1 italic">{expense.notes}</p>}
             {expense.creatorBreakdown && expense.creatorBreakdown.length > 0 && (
-              <div className="text-xs text-gray-600 mt-1.5 bg-gray-50 rounded p-2">
-                <span className="font-medium">Creators: </span>
-                {expense.creatorBreakdown.map((c, i) => (
-                  <span key={i} className="mr-3">
-                    {c.name}: {formatCurrency(c.amount)}{c.notes ? ` (${c.notes})` : ''}
+              <div className="mt-2 bg-gray-50 rounded-lg p-3 border border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-gray-900 uppercase tracking-wider">
+                    Creator Breakdown ({expense.creatorBreakdown.length})
                   </span>
-                ))}
+                  <span className="text-xs font-semibold text-gray-900">
+                    Total: {formatCurrency(expense.creatorBreakdown.reduce((s, c) => s + (Number(c.amount) || 0), 0))}
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {expense.creatorBreakdown.map((c, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs">
+                      <span className="inline-flex items-center justify-center w-5 h-5 shrink-0 rounded-full bg-[#e91e8c]/10 text-[#e91e8c] font-semibold">
+                        {i + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-baseline gap-2">
+                          <span className="font-semibold text-gray-900">{c.name || '—'}</span>
+                          <span className="text-gray-600">{formatCurrency(c.amount)}</span>
+                        </div>
+                        {c.notes && (
+                          <p className="text-gray-500 mt-0.5 break-words">{c.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

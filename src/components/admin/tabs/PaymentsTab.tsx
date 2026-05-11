@@ -12,6 +12,7 @@ interface PaymentRecord {
   date: string;
   note?: string;
   razorpayPaymentId?: string;
+  tdsAmount?: number;
 }
 
 interface Organization {
@@ -42,6 +43,7 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
   const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
+    tdsAmount: '',
     date: new Date().toISOString().split('T')[0],
     note: '',
   });
@@ -80,13 +82,20 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
   const totalPerformanceWithGst = performanceFee + performanceFeeGst;
   const grandTotal = totalFixedWithGst + totalPerformanceWithGst;
 
-  const totalPaid = (org.payment?.payments || []).reduce((sum, p) => sum + p.amount, 0);
+  const totalReceived = (org.payment?.payments || []).reduce((sum, p) => sum + p.amount, 0);
+  const totalTds = (org.payment?.payments || []).reduce((sum, p) => sum + (p.tdsAmount || 0), 0);
+  const totalPaid = totalReceived + totalTds;
   const amountDue = grandTotal - totalPaid;
 
   const handleLogPayment = async () => {
     const amount = parseFloat(paymentForm.amount);
+    const tdsAmount = parseFloat(paymentForm.tdsAmount) || 0;
     if (!amount || amount <= 0) {
       toast.error('Enter a valid amount');
+      return;
+    }
+    if (tdsAmount < 0) {
+      toast.error('TDS amount cannot be negative');
       return;
     }
 
@@ -95,6 +104,7 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
       const currentPayments = org.payment?.payments || [];
       const newPayment = {
         amount,
+        tdsAmount,
         date: paymentForm.date,
         note: paymentForm.note,
       };
@@ -109,7 +119,7 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
 
       if (res.ok) {
         toast.success('Payment logged');
-        setPaymentForm({ amount: '', date: new Date().toISOString().split('T')[0], note: '' });
+        setPaymentForm({ amount: '', tdsAmount: '', date: new Date().toISOString().split('T')[0], note: '' });
         onUpdate();
       } else {
         toast.error('Failed to log payment');
@@ -192,14 +202,18 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Total Contract</p>
           <p className="text-2xl font-bold text-[#0f172a]">₹{grandTotal.toLocaleString()}</p>
         </div>
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
-          <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Total Paid</p>
-          <p className="text-2xl font-bold text-[#22c55e]">₹{totalPaid.toLocaleString()}</p>
+          <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Amount Received</p>
+          <p className="text-2xl font-bold text-[#22c55e]">₹{totalReceived.toLocaleString()}</p>
+        </div>
+        <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
+          <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">TDS Deducted</p>
+          <p className="text-2xl font-bold text-[#f59e0b]">₹{totalTds.toLocaleString()}</p>
         </div>
         <div className="bg-white border border-[#e2e8f0] rounded-2xl p-5 shadow-sm">
           <p className="text-xs text-[#64748b] uppercase font-semibold tracking-wider mb-1">Amount Due</p>
@@ -223,11 +237,21 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
             <CreditCard className="w-4 h-4 text-[#e91e8c]" />
             Log a Payment
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input id="pay-amount" label="Amount (₹)" type="number" placeholder="25000" value={paymentForm.amount} onChange={(e) => setPaymentForm((p) => ({ ...p, amount: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input id="pay-amount" label="Amount Received (₹)" type="number" placeholder="25000" value={paymentForm.amount} onChange={(e) => setPaymentForm((p) => ({ ...p, amount: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
+            <Input id="pay-tds" label="TDS Deducted (₹)" type="number" placeholder="0 (if client deducted TDS)" value={paymentForm.tdsAmount} onChange={(e) => setPaymentForm((p) => ({ ...p, tdsAmount: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
             <Input id="pay-date" label="Date" type="date" value={paymentForm.date} onChange={(e) => setPaymentForm((p) => ({ ...p, date: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
             <Input id="pay-note" label="Note" placeholder="Optional note" value={paymentForm.note} onChange={(e) => setPaymentForm((p) => ({ ...p, note: e.target.value }))} className="!bg-white !border-[#e2e8f0] !text-[#0f172a]" />
           </div>
+          {(parseFloat(paymentForm.amount) > 0 || parseFloat(paymentForm.tdsAmount) > 0) && (
+            <div className="mt-3 px-4 py-2 bg-[#f8fafc] border border-[#e2e8f0] rounded-lg text-xs text-[#64748b]">
+              Total credited to contract:{' '}
+              <span className="font-semibold text-[#0f172a]">
+                ₹{((parseFloat(paymentForm.amount) || 0) + (parseFloat(paymentForm.tdsAmount) || 0)).toLocaleString()}
+              </span>{' '}
+              (Received ₹{(parseFloat(paymentForm.amount) || 0).toLocaleString()} + TDS ₹{(parseFloat(paymentForm.tdsAmount) || 0).toLocaleString()})
+            </div>
+          )}
           <div className="flex justify-end mt-4">
             <Button onClick={handleLogPayment} disabled={loggingPayment}>
               {loggingPayment ? <><Loader2 className="w-4 h-4 animate-spin" /> Logging…</> : 'Log Payment'}
@@ -248,7 +272,9 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
                 <thead className="bg-[#f8f9fa]">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Amount</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Received</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">TDS</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Total</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Note</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-[#64748b] uppercase tracking-wider">Razorpay ID</th>
                     <th className="px-4 py-3 text-right text-xs font-semibold text-[#64748b] uppercase tracking-wider">Action</th>
@@ -258,10 +284,19 @@ export default function PaymentsTab({ org, onUpdate }: PaymentsTabProps) {
                   {[...(org.payment?.payments || [])].map((payment, idx) => {
                     // We map over the original order so that idx matches the actual array index for deletion
                     const originalIdx = idx;
+                    const tds = payment.tdsAmount || 0;
                     return (
                       <tr key={idx}>
                         <td className="px-4 py-3 text-[#94a3b8]">{new Date(payment.date).toLocaleDateString()}</td>
                         <td className="px-4 py-3 text-[#4ade80] font-semibold">₹{payment.amount.toLocaleString()}</td>
+                        <td className="px-4 py-3 font-semibold">
+                          {tds > 0 ? (
+                            <span className="text-[#f59e0b]">₹{tds.toLocaleString()}</span>
+                          ) : (
+                            <span className="text-[#cbd5e1]">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-[#0f172a] font-semibold">₹{(payment.amount + tds).toLocaleString()}</td>
                         <td className="px-4 py-3 text-[#94a3b8]">{payment.note || '—'}</td>
                         <td className="px-4 py-3 text-[#64748b] text-xs font-mono">{payment.razorpayPaymentId || '—'}</td>
                         <td className="px-4 py-3 text-right">

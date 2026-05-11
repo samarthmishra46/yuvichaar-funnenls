@@ -9,6 +9,7 @@ export interface IPaymentRecord {
   date: Date;
   note?: string;
   razorpayPaymentId?: string;
+  tdsAmount?: number;
 }
 
 export interface ICustomSection {
@@ -184,6 +185,7 @@ const PaymentRecordSchema = new Schema<IPaymentRecord>(
     date: { type: Date, required: true, default: Date.now },
     note: { type: String },
     razorpayPaymentId: { type: String },
+    tdsAmount: { type: Number, default: 0 },
   },
   { _id: false }
 );
