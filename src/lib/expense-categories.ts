@@ -19,10 +19,7 @@ export const EXPENSE_CATEGORIES: CategoryGroup[] = [
       { value: 'location_stay', label: 'Location & Stay (Airbnb / Studio / Venue)' },
       { value: 'dop_camera', label: 'DOP / Camera Team (DOP fees, Mic)' },
       { value: 'creator_talent', label: 'Creator / Talent Expenses' },
-      { value: 'travel_transport', label: 'Travel & Transport (Cab / Fuel)' },
-      { value: 'food_hospitality', label: 'Food & Hospitality' },
-      { value: 'props_materials', label: 'Props & Shoot Materials' },
-      { value: 'courier_logistics', label: 'Courier & Logistics' },
+      { value: 'miscellaneous', label: 'Miscellaneous (Travel / Food / Props / Courier)' },
     ],
   },
   {
