@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import {
   Loader2, TrendingUp, TrendingDown, DollarSign, PieChart as PieChartIcon,
   Calendar, Building2, Plus, Trash2, Filter, X, BarChart3, CheckCircle2,
-  XCircle, Clock, Paperclip, Upload, AlertCircle, FileText, Edit2
+  XCircle, Clock, Paperclip, Upload, AlertCircle, FileText, Edit2, Wallet
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,9 @@ interface Expense {
   creatorBreakdown?: CreatorBreakdownItem[];
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
+  paymentStatus: 'cleared' | 'due';
+  clearedAt?: string;
+  clearedBy?: string;
   createdBy: string;
   createdByRole?: 'admin' | 'staff';
   verifiedBy?: string;
@@ -64,6 +67,8 @@ interface Summary {
   totalCompanyExpenses: number;
   profit: number;
   pendingCount: number;
+  totalDue: number;
+  dueCount: number;
   expensesByCategory: Record<string, number>;
   expensesBySubcategory: Record<string, number>;
   expensesByOrg: Record<string, number>;
@@ -103,6 +108,7 @@ export default function FinancesPage() {
 
   const [periodFilter, setPeriodFilter] = useState('all');
   const [orgFilter, setOrgFilter] = useState('all');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'cleared' | 'due'>('all');
 
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
@@ -119,6 +125,7 @@ export default function FinancesPage() {
     notes: '',
     attachmentUrl: '',
     creatorBreakdown: [] as CreatorBreakdownItem[],
+    paymentStatus: 'cleared' as 'cleared' | 'due',
   };
   const [form, setForm] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
@@ -143,7 +150,7 @@ export default function FinancesPage() {
       fetchAllData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, session, periodFilter, orgFilter]);
+  }, [status, session, periodFilter, orgFilter, paymentFilter]);
 
   const fetchOrganizations = async () => {
     try {
@@ -163,6 +170,7 @@ export default function FinancesPage() {
       params.set('status', 'approved');
       params.set('scope', 'client');
       if (orgFilter !== 'all') params.set('orgId', orgFilter);
+      if (paymentFilter !== 'all') params.set('paymentStatus', paymentFilter);
 
       const [overviewRes, pendingRes, companyRes] = await Promise.all([
         fetch(`/api/expenses?${params.toString()}`),
@@ -229,6 +237,7 @@ export default function FinancesPage() {
       notes: expense.notes || '',
       attachmentUrl: expense.attachmentUrl || '',
       creatorBreakdown: expense.creatorBreakdown || [],
+      paymentStatus: expense.paymentStatus || 'cleared',
     });
     setShowAddForm(true);
   };
@@ -259,6 +268,7 @@ export default function FinancesPage() {
           form.subcategory === 'creator_talent' && form.creatorBreakdown.length > 0
             ? form.creatorBreakdown
             : undefined,
+        paymentStatus: form.paymentStatus,
       };
 
       const url = editingExpense ? `/api/expenses/${editingExpense._id}` : '/api/expenses';
@@ -316,6 +326,25 @@ export default function FinancesPage() {
       }
     } catch {
       toast.error('Failed to approve');
+    }
+  };
+
+  const handleTogglePayment = async (expense: Expense) => {
+    const next: 'cleared' | 'due' = expense.paymentStatus === 'cleared' ? 'due' : 'cleared';
+    try {
+      const res = await fetch(`/api/expenses/${expense._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentStatus: next }),
+      });
+      if (res.ok) {
+        toast.success(next === 'cleared' ? 'Marked as cleared' : 'Marked as due');
+        fetchAllData();
+      } else {
+        toast.error('Failed to update payment status');
+      }
+    } catch {
+      toast.error('Failed to update payment status');
     }
   };
 
@@ -435,12 +464,24 @@ export default function FinancesPage() {
                       ))}
                     </select>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <Wallet className="w-4 h-4 text-gray-400" />
+                    <select
+                      value={paymentFilter}
+                      onChange={(e) => setPaymentFilter(e.target.value as 'all' | 'cleared' | 'due')}
+                      className="px-3 py-1.5 text-sm bg-white border border-gray-200 rounded-lg outline-none focus:border-[#e91e8c]"
+                    >
+                      <option value="all">All Payments</option>
+                      <option value="cleared">Cleared</option>
+                      <option value="due">Due</option>
+                    </select>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {summary && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
                 <Card>
                   <CardContent className="p-5">
                     <div className="flex items-center gap-3 mb-2">
@@ -485,6 +526,24 @@ export default function FinancesPage() {
                     <p className={`text-2xl font-bold ${(summary.profit - summary.totalCompanyExpenses) >= 0 ? 'text-purple-600' : 'text-red-600'}`}>
                       {formatCurrency(summary.profit - summary.totalCompanyExpenses)}
                     </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-amber-100">
+                        <Wallet className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-500">
+                        Outstanding Dues
+                      </span>
+                    </div>
+                    <p className="text-2xl font-bold text-amber-600">{formatCurrency(summary.totalDue || 0)}</p>
+                    {summary.dueCount > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        {summary.dueCount} expense{summary.dueCount === 1 ? '' : 's'} unpaid
+                      </p>
+                    )}
                   </CardContent>
                 </Card>
               </div>
@@ -585,6 +644,7 @@ export default function FinancesPage() {
                     expenses={expenses}
                     onEdit={openEditForm}
                     onDelete={handleDelete}
+                    onTogglePayment={handleTogglePayment}
                   />
                 )}
               </CardContent>
@@ -661,6 +721,7 @@ export default function FinancesPage() {
                     expenses={companyExpenses}
                     onEdit={openEditForm}
                     onDelete={handleDelete}
+                    onTogglePayment={handleTogglePayment}
                   />
                 )}
               </CardContent>
@@ -751,6 +812,39 @@ export default function FinancesPage() {
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="e.g., Studio booking for March 12 shoot"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Payment Status</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paymentStatus: 'cleared' })}
+                      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                        form.paymentStatus === 'cleared'
+                          ? 'bg-green-50 border-green-300 text-green-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      Cleared (already paid)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, paymentStatus: 'due' })}
+                      className={`flex items-center justify-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                        form.paymentStatus === 'due'
+                          ? 'bg-amber-50 border-amber-300 text-amber-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                      }`}
+                    >
+                      <Wallet className="w-4 h-4" />
+                      Due (need to pay)
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Mark as "Due" if this is something owed but not yet paid.
+                  </p>
                 </div>
 
                 {/* Creator breakdown */}
@@ -965,10 +1059,12 @@ function ExpenseList({
   expenses,
   onEdit,
   onDelete,
+  onTogglePayment,
 }: {
   expenses: Expense[];
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
+  onTogglePayment?: (expense: Expense) => void;
 }) {
   return (
     <div className="divide-y divide-gray-100">
@@ -983,7 +1079,15 @@ function ExpenseList({
                 {getCategoryLabel(expense.category).charAt(0)}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-gray-900">{expense.description}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-medium text-gray-900">{expense.description}</p>
+                  {expense.paymentStatus === 'due' && (
+                    <Badge className="!bg-amber-100 !text-amber-700 border-amber-200 text-xs">
+                      <Wallet className="w-3 h-3 mr-1" />
+                      Due
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
                   <Badge variant="outline" className="text-xs">
                     {getCategoryLabel(expense.category)}
@@ -1050,22 +1154,45 @@ function ExpenseList({
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex flex-col items-end gap-2 shrink-0">
               <span className="text-lg font-semibold text-red-600">
                 -{formatCurrency(expense.amount)}
               </span>
-              <button
-                onClick={() => onEdit(expense)}
-                className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded"
-              >
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onDelete(expense._id)}
-                className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1">
+                {onTogglePayment && (
+                  expense.paymentStatus === 'due' ? (
+                    <Button
+                      size="sm"
+                      onClick={() => onTogglePayment(expense)}
+                      className="!bg-green-600 hover:!bg-green-700 h-8"
+                      title="Mark as paid / cleared"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                      Mark Cleared
+                    </Button>
+                  ) : (
+                    <button
+                      onClick={() => onTogglePayment(expense)}
+                      className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded"
+                      title="Mark as due (unpaid)"
+                    >
+                      <Wallet className="w-4 h-4" />
+                    </button>
+                  )
+                )}
+                <button
+                  onClick={() => onEdit(expense)}
+                  className="p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => onDelete(expense._id)}
+                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

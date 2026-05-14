@@ -78,12 +78,21 @@ export async function PATCH(
         'notes',
         'attachmentUrl',
         'creatorBreakdown',
+        'paymentStatus',
       ];
       editable.forEach((field) => {
         if (updates[field] !== undefined) {
           allowed[field] = field === 'date' && updates[field] ? new Date(updates[field]) : updates[field];
         }
       });
+
+      if (allowed.paymentStatus === 'cleared' && existing.paymentStatus !== 'cleared') {
+        allowed.clearedAt = new Date();
+        allowed.clearedBy = session.user.email;
+      } else if (allowed.paymentStatus === 'due') {
+        allowed.clearedAt = undefined;
+        allowed.clearedBy = undefined;
+      }
 
       const updated = await Expense.findByIdAndUpdate(id, allowed, { new: true }).lean();
       return NextResponse.json({ expense: updated });
@@ -96,6 +105,14 @@ export async function PATCH(
     delete sanitized.verifiedBy;
     delete sanitized.verifiedAt;
     if (sanitized.date) sanitized.date = new Date(sanitized.date);
+
+    if (sanitized.paymentStatus === 'cleared' && existing.paymentStatus !== 'cleared') {
+      sanitized.clearedAt = new Date();
+      sanitized.clearedBy = session.user.email;
+    } else if (sanitized.paymentStatus === 'due') {
+      sanitized.clearedAt = undefined;
+      sanitized.clearedBy = undefined;
+    }
 
     const expense = await Expense.findByIdAndUpdate(id, sanitized, { new: true }).lean();
     return NextResponse.json({ expense });

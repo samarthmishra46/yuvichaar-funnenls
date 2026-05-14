@@ -21,6 +21,7 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get('endDate');
     const status = searchParams.get('status'); // pending | approved | rejected | all
     const scope = searchParams.get('scope'); // 'company' | 'client' | 'all'
+    const paymentStatus = searchParams.get('paymentStatus'); // cleared | due | all
 
     const filter: any = {};
 
@@ -35,6 +36,10 @@ export async function GET(request: NextRequest) {
 
     if (status && status !== 'all') {
       filter.status = status;
+    }
+
+    if (paymentStatus && paymentStatus !== 'all') {
+      filter.paymentStatus = paymentStatus;
     }
 
     if (startDate && endDate) {
@@ -70,9 +75,11 @@ export async function GET(request: NextRequest) {
     const expensesRaw = await Expense.find(filter).sort({ date: -1 }).lean();
 
     // Backwards-compat: old expenses without status are treated as approved
+    // and legacy records without a paymentStatus are treated as cleared.
     const expenses = expensesRaw.map((e: any) => ({
       ...e,
       status: e.status || 'approved',
+      paymentStatus: e.paymentStatus || 'cleared',
       isCompanyExpense: !!e.isCompanyExpense,
     }));
 
@@ -91,6 +98,12 @@ export async function GET(request: NextRequest) {
     const approvedExpenses = expenses.filter((e: any) => e.status === 'approved');
     const totalExpenses = approvedExpenses.reduce((sum: number, e: any) => sum + e.amount, 0);
     const pendingCount = expenses.filter((e: any) => e.status === 'pending').length;
+    const totalDue = approvedExpenses
+      .filter((e: any) => e.paymentStatus === 'due')
+      .reduce((sum: number, e: any) => sum + e.amount, 0);
+    const dueCount = expenses.filter(
+      (e: any) => e.status !== 'rejected' && e.paymentStatus === 'due'
+    ).length;
 
     // Revenue scope: only when looking at client expenses
     let totalRevenue = 0;
@@ -157,6 +170,8 @@ export async function GET(request: NextRequest) {
         totalCompanyExpenses,
         profit: totalRevenue - totalExpenses,
         pendingCount,
+        totalDue,
+        dueCount,
         expensesByCategory,
         expensesBySubcategory,
         expensesByOrg,
@@ -190,7 +205,11 @@ export async function POST(request: NextRequest) {
       notes,
       attachmentUrl,
       creatorBreakdown,
+      paymentStatus,
     } = body;
+
+    const normalizedPaymentStatus: 'cleared' | 'due' =
+      paymentStatus === 'due' ? 'due' : 'cleared';
 
     const isCompany = !!isCompanyExpense;
 
@@ -256,6 +275,9 @@ export async function POST(request: NextRequest) {
       attachmentUrl: attachmentUrl || undefined,
       creatorBreakdown: normalizedBreakdown,
       status: isPrivileged ? 'approved' : 'pending',
+      paymentStatus: normalizedPaymentStatus,
+      clearedAt: normalizedPaymentStatus === 'cleared' ? new Date() : undefined,
+      clearedBy: normalizedPaymentStatus === 'cleared' ? session.user.email : undefined,
       createdBy: session.user.email,
       createdByRole: role === 'superadmin' ? 'admin' : role,
       verifiedBy: isPrivileged ? session.user.email : undefined,

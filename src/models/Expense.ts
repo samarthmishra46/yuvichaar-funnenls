@@ -33,6 +33,10 @@ export interface IExpense extends Document {
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
 
+  paymentStatus: 'cleared' | 'due';
+  clearedAt?: Date;
+  clearedBy?: string;
+
   createdBy: string;
   createdByRole: 'admin' | 'staff';
   verifiedBy?: string;
@@ -79,6 +83,15 @@ const ExpenseSchema = new Schema<IExpense>(
       index: true,
     },
     rejectionReason: { type: String },
+
+    paymentStatus: {
+      type: String,
+      enum: ['cleared', 'due'],
+      default: 'cleared',
+      index: true,
+    },
+    clearedAt: { type: Date },
+    clearedBy: { type: String },
 
     createdBy: { type: String, required: true },
     createdByRole: { type: String, enum: ['admin', 'staff'], required: true },

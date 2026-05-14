@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Loader2, Plus, Trash2, Upload, CheckCircle2, Clock, XCircle, Paperclip, Edit2, X
+  Loader2, Plus, Trash2, Upload, CheckCircle2, Clock, XCircle, Paperclip, Edit2, X, Wallet
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -37,6 +37,7 @@ interface Expense {
   creatorBreakdown?: CreatorBreakdownItem[];
   status: 'pending' | 'approved' | 'rejected';
   rejectionReason?: string;
+  paymentStatus: 'cleared' | 'due';
   createdBy: string;
   verifiedBy?: string;
   verifiedAt?: string;
@@ -70,8 +71,10 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
     notes: '',
     attachmentUrl: '',
     creatorBreakdown: [] as CreatorBreakdownItem[],
+    paymentStatus: 'cleared' as 'cleared' | 'due',
   };
   const [form, setForm] = useState(emptyForm);
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'cleared' | 'due'>('all');
 
   const fetchExpenses = async () => {
     setLoading(true);
@@ -150,6 +153,7 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
       notes: expense.notes || '',
       attachmentUrl: expense.attachmentUrl || '',
       creatorBreakdown: expense.creatorBreakdown || [],
+      paymentStatus: expense.paymentStatus || 'cleared',
     });
     setShowForm(true);
   };
@@ -182,6 +186,7 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
           form.subcategory === 'creator_talent' && form.creatorBreakdown.length > 0
             ? form.creatorBreakdown
             : undefined,
+        paymentStatus: form.paymentStatus,
       };
 
       const url = editingId ? `/api/expenses/${editingId}` : '/api/expenses';
@@ -223,13 +228,21 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
     }
   };
 
-  const myExpenses = expenses.filter((e) => e.createdBy === staffEmail);
-  const otherExpenses = expenses.filter((e) => e.createdBy !== staffEmail);
+  const filteredExpenses = useMemo(() => {
+    if (paymentFilter === 'all') return expenses;
+    return expenses.filter((e) => (e.paymentStatus || 'cleared') === paymentFilter);
+  }, [expenses, paymentFilter]);
+
+  const myExpenses = filteredExpenses.filter((e) => e.createdBy === staffEmail);
+  const otherExpenses = filteredExpenses.filter((e) => e.createdBy !== staffEmail);
 
   const totals = useMemo(() => {
     const approved = expenses.filter((e) => e.status === 'approved').reduce((s, e) => s + e.amount, 0);
     const pending = expenses.filter((e) => e.status === 'pending').reduce((s, e) => s + e.amount, 0);
-    return { approved, pending };
+    const due = expenses
+      .filter((e) => e.status !== 'rejected' && (e.paymentStatus || 'cleared') === 'due')
+      .reduce((s, e) => s + e.amount, 0);
+    return { approved, pending, due };
   }, [expenses]);
 
   return (
@@ -248,7 +261,7 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
       </div>
 
       {/* Totals */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 shadow-sm">
           <p className="text-sm text-[#64748b] mb-1">Approved</p>
           <p className="text-2xl font-bold text-green-600">{formatCurrency(totals.approved)}</p>
@@ -257,6 +270,31 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
           <p className="text-sm text-[#64748b] mb-1">Pending verification</p>
           <p className="text-2xl font-bold text-amber-600">{formatCurrency(totals.pending)}</p>
         </div>
+        <div className="bg-white border border-[#e2e8f0] rounded-xl p-4 shadow-sm">
+          <p className="text-sm text-[#64748b] mb-1 flex items-center gap-1.5">
+            <Wallet className="w-3.5 h-3.5" />
+            Outstanding Dues
+          </p>
+          <p className="text-2xl font-bold text-amber-600">{formatCurrency(totals.due)}</p>
+        </div>
+      </div>
+
+      {/* Filter */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-[#64748b]">Payment:</span>
+        {(['all', 'cleared', 'due'] as const).map((opt) => (
+          <button
+            key={opt}
+            onClick={() => setPaymentFilter(opt)}
+            className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors capitalize ${
+              paymentFilter === opt
+                ? 'bg-[#e91e8c] border-[#e91e8c] text-white'
+                : 'bg-white border-[#e2e8f0] text-[#64748b] hover:bg-[#f8f9fa]'
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
       </div>
 
       {/* Add/Edit Form */}
@@ -306,6 +344,39 @@ export default function StaffExpensesTab({ orgId, staffEmail }: StaffExpensesTab
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 placeholder="e.g., Studio booking for shoot on March 12"
               />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[0.8125rem] font-semibold text-[#475569]">Payment Status</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, paymentStatus: 'cleared' })}
+                  className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
+                    form.paymentStatus === 'cleared'
+                      ? 'bg-green-50 border-green-300 text-green-700'
+                      : 'bg-white border-[#e2e8f0] text-[#64748b] hover:bg-[#f8f9fa]'
+                  }`}
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Cleared (already paid)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, paymentStatus: 'due' })}
+                  className={`flex items-center justify-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
+                    form.paymentStatus === 'due'
+                      ? 'bg-amber-50 border-amber-300 text-amber-700'
+                      : 'bg-white border-[#e2e8f0] text-[#64748b] hover:bg-[#f8f9fa]'
+                  }`}
+                >
+                  <Wallet className="w-4 h-4" />
+                  Due (need to pay)
+                </button>
+              </div>
+              <p className="text-xs text-[#94a3b8]">
+                Mark as "Due" if this is something owed but not yet paid.
+              </p>
             </div>
 
             {form.subcategory === 'creator_talent' && (
@@ -578,6 +649,12 @@ function ExpenseRow({
             <div className="flex items-center gap-2 flex-wrap">
               <p className="font-medium text-[#0f172a]">{expense.description}</p>
               <StatusBadge status={expense.status} />
+              {(expense.paymentStatus || 'cleared') === 'due' && (
+                <Badge className="!bg-amber-100 !text-amber-700 border-amber-200 text-xs">
+                  <Wallet className="w-3 h-3 mr-1" />
+                  Due
+                </Badge>
+              )}
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-[#64748b]">
               <Badge variant="outline" className="text-xs">
